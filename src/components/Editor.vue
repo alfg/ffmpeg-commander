@@ -32,42 +32,32 @@
         <label for="player">Codec</label>
         <b-form-select
           class="u-full-width"
-          v-model="form.codec"
+          v-model="form.videoCodec"
         >
           <option :value="null" disabled>-- Please select an option --</option>
-          <option v-for="o in filteredCodecs" :key="o.id" :value="o.value">{{o.name}}</option>
+          <option v-for="o in filteredVideoCodecs" :key="o.id" :value="o.value">{{o.name}}</option>
         </b-form-select>
       </b-tab>
-      <b-tab title="Audio"></b-tab>
-      <b-tab title="Filters"></b-tab>
-      <b-tab title="Settings"></b-tab>
+      <b-tab title="Audio">
+        <label for="player">Codec</label>
+        <b-form-select
+          class="u-full-width"
+          v-model="form.audioCodec"
+        >
+          <option :value="null" disabled>-- Please select an option --</option>
+          <option v-for="o in filteredAudioCodecs" :key="o.id" :value="o.value">{{o.name}}</option>
+        </b-form-select>
+      </b-tab>
+      <!-- <b-tab title="Filters"></b-tab>
+      <b-tab title="Settings"></b-tab> -->
     </b-tabs>
 
     <div class="code">
-      <code>
-      ffmpeg -y
-      -i tears-of-steel-1m.mp4
-      -c:v libx264
-      -preset medium -crf 16
-      -pix_fmt yuv444p
-      -r film
-      -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2"
-      -profile:v baseline -level 3.0 -movflags +faststart
-      -map 0:v:0? -map_chapters 0
-      -c:s mov_text
-      -map 0:s?
-      -c:a aac
-      -b:a 129k
-      -map 0:a?
-      -map_metadata 0
-      -f mp4
-      -threads 0
-      tears-of-steel-1m-out.mp4
-      </code>
+      <code>{{cmd}}</code>
     </div>
 
     <div class="mt-4">
-      <b-button>Generate</b-button>
+      <b-button @click="generateCommand">Generate</b-button>
     </div>
 
     <b-card class="mt-3" header="Form Data Result">
@@ -78,6 +68,8 @@
 
 <script>
 import config from '@/config';
+import codecMap from '@/codecs';
+import ffmpeg from '@/ffmpeg';
 
 const {
   containers,
@@ -90,18 +82,43 @@ export default {
   data() {
     return {
       form: {
-        input: '',
-        output: '',
+        input: 'input.mp4',
+        output: 'output.mp4',
         container: null,
-        codec: null,
+        videoCodec: null,
+        audioCodec: null,
       },
       containers,
       codecs,
+      cmd: null,
     };
   },
   computed: {
-    filteredCodecs() {
-      return this.codecs.filter(o => o.type === this.form.container);
+    filteredVideoCodecs() {
+      return this.codecs.video.filter(
+        o => !o.supported || o.supported.includes(this.form.container),
+      );
+    },
+    filteredAudioCodecs() {
+      return this.codecs.audio.filter(
+        o => !o.supported || o.supported.includes(this.form.container),
+      );
+    },
+  },
+  methods: {
+    generateCommand() {
+      const {
+        input, output, container, videoCodec, audioCodec,
+      } = this.form;
+
+      const options = {
+        input,
+        output,
+        container,
+        vcodec: codecMap[videoCodec],
+        acodec: codecMap[audioCodec],
+      };
+      this.cmd = ffmpeg.build(options);
     },
   },
 };
