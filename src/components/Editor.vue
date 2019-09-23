@@ -16,15 +16,28 @@
     />
 
     <b-tabs class="mt-4">
-      <b-tab title="Format">
+      <b-tab title="Format" class="mt-2">
         <label for="player">Container</label>
         <b-form-select
           class="u-full-width"
+          v-model="form.container"
         >
-          <option v-for="o in containers" :key="o.id" :value="o.name">{{o.name}}</option>
+          <option :value="null" disabled>-- Please select an option --</option>
+          <optgroup v-for="(o, i) in containers" :label="i" v-bind:key="i">
+            <option v-for="item in o" :key="item.id" :value="item.value">{{item.name}}</option>
+          </optgroup>
         </b-form-select>
       </b-tab>
-      <b-tab title="Video"></b-tab>
+      <b-tab title="Video" class="mt-2">
+        <label for="player">Codec</label>
+        <b-form-select
+          class="u-full-width"
+          v-model="form.codec"
+        >
+          <option :value="null" disabled>-- Please select an option --</option>
+          <option v-for="o in filteredCodecs" :key="o.id" :value="o.value">{{o.name}}</option>
+        </b-form-select>
+      </b-tab>
       <b-tab title="Audio"></b-tab>
       <b-tab title="Filters"></b-tab>
       <b-tab title="Settings"></b-tab>
@@ -56,6 +69,10 @@
     <div class="mt-4">
       <b-button>Generate</b-button>
     </div>
+
+    <b-card class="mt-3" header="Form Data Result">
+      <pre class="m-0">{{ form }}</pre>
+    </b-card>
   </div>
 </template>
 
@@ -64,6 +81,7 @@ import config from '@/config';
 
 const {
   containers,
+  codecs,
 } = config;
 
 export default {
@@ -74,9 +92,17 @@ export default {
       form: {
         input: '',
         output: '',
+        container: null,
+        codec: null,
       },
       containers,
+      codecs,
     };
+  },
+  computed: {
+    filteredCodecs() {
+      return this.codecs.filter(o => o.type === this.form.container);
+    },
   },
 };
 </script>
