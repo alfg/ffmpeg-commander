@@ -23,6 +23,11 @@ function build(opt) {
     str.push(...arg);
   }
 
+  if (options.videoSpeed) {
+    const arg = ['-preset', options.videoSpeed];
+    str.push(...arg);
+  }
+
   // Extra flags.
   const extra = [
     '-pass', '1',

@@ -29,13 +29,22 @@
         </b-form-select>
       </b-tab>
       <b-tab title="Video" class="mt-2">
-        <label for="player">Codec</label>
+        <label for="codec">Codec</label>
         <b-form-select
           class="u-full-width"
           v-model="form.videoCodec"
         >
           <option :value="null" disabled>-- Please select an option --</option>
           <option v-for="o in filteredVideoCodecs" :key="o.id" :value="o.value">{{o.name}}</option>
+        </b-form-select>
+
+        <label for="speed">Speed</label>
+        <b-form-select
+          class="u-full-width"
+          v-model="form.videoSpeed"
+        >
+          <option :value="null" disabled>-- Please select an option --</option>
+          <option v-for="o in videoSpeeds" :key="o.id" :value="o.value">{{o.name}}</option>
         </b-form-select>
       </b-tab>
       <b-tab title="Audio">
@@ -74,6 +83,7 @@ import ffmpeg from '@/ffmpeg';
 const {
   containers,
   codecs,
+  videoSpeeds,
 } = config;
 
 export default {
@@ -86,10 +96,12 @@ export default {
         output: 'output.mp4',
         container: null,
         videoCodec: null,
+        videoSpeed: null,
         audioCodec: null,
       },
       containers,
       codecs,
+      videoSpeeds,
       cmd: null,
     };
   },
@@ -108,7 +120,7 @@ export default {
   methods: {
     generateCommand() {
       const {
-        input, output, container, videoCodec, audioCodec,
+        input, output, container, videoCodec, audioCodec, videoSpeed,
       } = this.form;
 
       const options = {
@@ -117,6 +129,7 @@ export default {
         container,
         vcodec: codecMap[videoCodec],
         acodec: codecMap[audioCodec],
+        videoSpeed,
       };
       this.cmd = ffmpeg.build(options);
     },
