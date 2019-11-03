@@ -6,7 +6,7 @@
 https://alfg.github.io/ffmpeg-commander/
 
 ## Development
-`ffmpeg-commander` is build with [Vue.js](https://vuejs.org
+`ffmpeg-commander` is built with [Vue.js](https://vuejs.org)
 
 ### Install
 ```
