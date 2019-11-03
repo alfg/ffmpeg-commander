@@ -14,7 +14,7 @@
     <b-form-input
       v-model="form.output"
       :state="Boolean(form.output)"
-      placeholder="Choose a file or drop it here..."
+      placeholder="Example: output.mp4"
     ></b-form-input>
 
     <b-tabs class="mt-4">
