@@ -2,18 +2,20 @@
   <div class="editor">
 
     <label>Input</label>
-    <b-input
+    <b-form-file
       v-model="form.input"
-      class="u-full-width"
-      type="text"
-    />
+      :state="Boolean(form.input)"
+      placeholder="Choose a file or drop it here..."
+      drop-placeholder="Drop file here..."
+    ></b-form-file>
 
     <label>Output</label>
-    <b-form-input
+    <b-form-file
       v-model="form.output"
-      class="u-full-width"
-      type="text"
-    />
+      :state="Boolean(form.output)"
+      placeholder="Choose a file or drop it here..."
+      drop-placeholder="Drop file here..."
+    ></b-form-file>
 
     <b-tabs class="mt-4">
       <b-tab title="Format" class="mt-2">
@@ -62,11 +64,18 @@
     </b-tabs>
 
     <div class="code">
-      <code>{{cmd}}</code>
+      <b-form-textarea
+        ref="code"
+        placeholder="FFmpeg command will be generated here!"
+        v-model="cmd"
+        rows="3"
+        max-rows="6"
+        plaintext
+      ></b-form-textarea>
     </div>
 
     <div class="mt-4">
-      <b-button @click="generateCommand">Generate</b-button>
+      <b-button @click="copyToClipboard">Copy</b-button>
     </div>
 
     <b-card class="mt-3" header="Form Data Result">
@@ -92,8 +101,8 @@ export default {
   data() {
     return {
       form: {
-        input: 'input.mp4',
-        output: 'output.mp4',
+        input: '',
+        output: '',
         container: null,
         videoCodec: null,
         videoSpeed: null,
@@ -104,6 +113,14 @@ export default {
       videoSpeeds,
       cmd: null,
     };
+  },
+  watch: {
+    form: {
+      handler() {
+        this.generateCommand();
+      },
+      deep: true,
+    },
   },
   computed: {
     filteredVideoCodecs() {
@@ -124,14 +141,19 @@ export default {
       } = this.form;
 
       const options = {
-        input,
-        output,
+        input: input.name,
+        output: output.name,
         container,
         vcodec: codecMap[videoCodec],
         acodec: codecMap[audioCodec],
         videoSpeed,
       };
       this.cmd = ffmpeg.build(options);
+    },
+    copyToClipboard() {
+      const copyText = this.$refs.code;
+      copyText.select();
+      document.execCommand('copy');
     },
   },
 };
@@ -143,10 +165,7 @@ export default {
   border: 1px solid #aaa;
   color: #000;
   font-family: monospace;
-  height: 300px;
   margin-top: 10px;
-  overflow-x: hidden;
-  overflow-y: scroll;
   padding: 5px;
 }
 </style>

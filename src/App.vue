@@ -1,6 +1,6 @@
 <template>
   <div id="app" class="container">
-    <h1>FFmpeg Builder</h1>
+    <h1>FFmpeg Commander</h1>
     <Editor />
   </div>
 </template>
