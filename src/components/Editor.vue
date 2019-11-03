@@ -3,6 +3,7 @@
 
     <label>Input</label>
     <b-form-file
+      class="mb-2"
       v-model="form.input"
       :state="Boolean(form.input)"
       placeholder="Choose a file or drop it here..."
@@ -10,12 +11,11 @@
     ></b-form-file>
 
     <label>Output</label>
-    <b-form-file
+    <b-form-input
       v-model="form.output"
       :state="Boolean(form.output)"
       placeholder="Choose a file or drop it here..."
-      drop-placeholder="Drop file here..."
-    ></b-form-file>
+    ></b-form-input>
 
     <b-tabs class="mt-4">
       <b-tab title="Format" class="mt-2">
@@ -142,7 +142,7 @@ export default {
 
       const options = {
         input: input.name,
-        output: output.name,
+        output,
         container,
         vcodec: codecMap[videoCodec],
         acodec: codecMap[audioCodec],
