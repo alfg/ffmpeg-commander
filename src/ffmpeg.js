@@ -29,7 +29,7 @@ function build(opt) {
   }
 
   if (options.hardwareAccelerationOption === 'nvenc') {
-    // Replace encoder with hardware accelerated encoder.
+    // Replace encoder with NVidia hardware accelerated encoder.
     // eslint-disable-next-line array-callback-return
     str.map((item, i) => {
       if (item === 'libx264') {
@@ -43,9 +43,17 @@ function build(opt) {
     str.push(...arg);
   }
 
+  if (options.pass === '2') {
+    // TODO: Generate -pass 1 and -pass 2 command.
+  }
+
+  if (options.crf !== '0' && options.pass === 'crf') {
+    const arg = ['-crf', options.crf];
+    str.push(...arg);
+  }
+
   // Extra flags.
   const extra = [
-    '-pass', '1',
     '-sn',
     '-f', `${container}`,
     output,

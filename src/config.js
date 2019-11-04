@@ -59,6 +59,12 @@ const config = {
     // NVidia HW Codec.
     { name: 'nvenc', value: 'nvenc' },
   ],
+  passOptions: [
+    { name: 'CRF', value: 'crf' },
+    { name: '1 Pass', value: '1' },
+    { name: '2 Pass', value: '2' },
+  ],
+
 };
 
 export default config;

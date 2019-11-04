@@ -61,6 +61,27 @@
             :value="o.value"
           >{{o.name}}</option>
         </b-form-select>
+
+        <label for="pass">Pass</label>
+        <b-form-select
+          class="u-full-width mb-2"
+          v-model="form.pass"
+        >
+          <option :value="null" disabled>-- Please select an option --</option>
+          <option
+            v-for="o in passOptions"
+            :key="o.id"
+            :value="o.value"
+          >{{o.name}}</option>
+        </b-form-select>
+
+        <div v-if="form.pass == 'crf'">
+          <label for="crf">CRF: {{ form.crf }}</label>
+          <b-form-input
+            id="crf"
+            v-model="form.crf"
+            type="range" min="0" max="51"></b-form-input>
+        </div>
       </b-tab>
       <b-tab title="Audio">
         <label for="player">Codec</label>
@@ -91,7 +112,7 @@
       <b-button @click="copyToClipboard">Copy</b-button>
     </div>
 
-    <b-card class="mt-3" header="Form Data Result">
+    <b-card class="mt-3" header="Form Options">
       <pre class="m-0">{{ form }}</pre>
     </b-card>
   </div>
@@ -107,6 +128,7 @@ const {
   codecs,
   videoSpeeds,
   hardwareAccelerationOptions,
+  passOptions,
 } = config;
 
 export default {
@@ -121,12 +143,15 @@ export default {
         videoCodec: null,
         videoSpeed: null,
         audioCodec: null,
-        hardwareAccelerationOption: null,
+        hardwareAccelerationOption: 'off',
+        pass: 'crf',
+        crf: 23,
       },
       containers,
       codecs,
       videoSpeeds,
       hardwareAccelerationOptions,
+      passOptions,
       cmd: null,
     };
   },
@@ -153,7 +178,8 @@ export default {
   methods: {
     generateCommand() {
       const {
-        input, output, container, videoCodec, audioCodec, videoSpeed, hardwareAccelerationOption,
+        input, output, container, videoCodec, audioCodec, videoSpeed,
+        hardwareAccelerationOption, pass, crf,
       } = this.form;
 
       const options = {
@@ -164,6 +190,8 @@ export default {
         acodec: codecMap[audioCodec],
         videoSpeed,
         hardwareAccelerationOption,
+        pass,
+        crf,
       };
       this.cmd = ffmpeg.build(options);
     },
