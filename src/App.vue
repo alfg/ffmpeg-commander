@@ -1,6 +1,7 @@
 <template>
   <div id="app" class="container">
     <h1>FFmpeg Commander</h1>
+    <b-alert variant="warning" show>Currently a work in progress. Check back for updates.</b-alert>
     <Editor />
   </div>
 </template>

@@ -42,7 +42,7 @@ const config = {
   videoSpeeds: [
     { name: 'Placebo', value: 'placebo' },
     { name: 'Very Slow', value: 'veryslow' },
-    { name: 'Sloer', value: 'veryslow' },
+    { name: 'Slower', value: 'slower' },
     { name: 'Slow', value: 'slow' },
     { name: 'Medium', value: 'medium' },
     { name: 'Fast', value: 'fast' },
@@ -51,6 +51,13 @@ const config = {
     { name: 'Super Fast', value: 'superfast' },
     { name: 'Ultra Fast', value: 'ultrafast' },
     { name: 'None', value: 'none' },
+  ],
+  hardwareAccelerationOptions: [
+    { name: 'Off', value: 'off' },
+    { name: 'dxva2', value: 'dxva2' },
+
+    // NVidia HW Codec.
+    { name: 'nvenc', value: 'nvenc' },
   ],
 };
 

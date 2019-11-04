@@ -48,6 +48,19 @@
           <option :value="null" disabled>-- Please select an option --</option>
           <option v-for="o in videoSpeeds" :key="o.id" :value="o.value">{{o.name}}</option>
         </b-form-select>
+
+        <label for="hw-accel">Hardware Acceleration</label>
+        <b-form-select
+          class="u-full-width"
+          v-model="form.hardwareAccelerationOption"
+        >
+          <option :value="null" disabled>-- Please select an option --</option>
+          <option
+            v-for="o in hardwareAccelerationOptions"
+            :key="o.id"
+            :value="o.value"
+          >{{o.name}}</option>
+        </b-form-select>
       </b-tab>
       <b-tab title="Audio">
         <label for="player">Codec</label>
@@ -93,6 +106,7 @@ const {
   containers,
   codecs,
   videoSpeeds,
+  hardwareAccelerationOptions,
 } = config;
 
 export default {
@@ -107,10 +121,12 @@ export default {
         videoCodec: null,
         videoSpeed: null,
         audioCodec: null,
+        hardwareAccelerationOption: null,
       },
       containers,
       codecs,
       videoSpeeds,
+      hardwareAccelerationOptions,
       cmd: null,
     };
   },
@@ -137,7 +153,7 @@ export default {
   methods: {
     generateCommand() {
       const {
-        input, output, container, videoCodec, audioCodec, videoSpeed,
+        input, output, container, videoCodec, audioCodec, videoSpeed, hardwareAccelerationOption,
       } = this.form;
 
       const options = {
@@ -147,6 +163,7 @@ export default {
         vcodec: codecMap[videoCodec],
         acodec: codecMap[audioCodec],
         videoSpeed,
+        hardwareAccelerationOption,
       };
       this.cmd = ffmpeg.build(options);
     },

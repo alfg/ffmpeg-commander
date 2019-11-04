@@ -28,6 +28,21 @@ function build(opt) {
     str.push(...arg);
   }
 
+  if (options.hardwareAccelerationOption === 'nvenc') {
+    // Replace encoder with hardware accelerated encoder.
+    // eslint-disable-next-line array-callback-return
+    str.map((item, i) => {
+      if (item === 'libx264') {
+        str[i] = 'h264_nvenc';
+      } else if (item === 'libx265') {
+        str[i] = 'hevc_nvenc';
+      }
+    });
+  } else if (options.hardwareAccelerationOption !== 'off') {
+    const arg = ['-hwaccel', options.hardwareAccelerationOption];
+    str.push(...arg);
+  }
+
   // Extra flags.
   const extra = [
     '-pass', '1',
