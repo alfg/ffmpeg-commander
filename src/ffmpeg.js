@@ -52,6 +52,11 @@ function build(opt) {
     str.push(...arg);
   }
 
+  if (options.bitrate) {
+    const arg = ['-b:v', options.bitrate];
+    str.push(...arg);
+  }
+
   // Extra flags.
   const extra = [
     '-sn',

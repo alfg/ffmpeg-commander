@@ -82,6 +82,13 @@
             v-model="form.crf"
             type="range" min="0" max="51"></b-form-input>
         </div>
+
+        <label for="bitrate">Bitrate</label>
+        <b-form-input
+          v-model="form.bitrate"
+          placeholder="Bitrate"
+          :formatter="formatBitrate"
+          lazy-formatter></b-form-input>
       </b-tab>
       <b-tab title="Audio">
         <label for="player">Codec</label>
@@ -146,6 +153,7 @@ export default {
         hardwareAccelerationOption: 'off',
         pass: 'crf',
         crf: 23,
+        bitrate: null,
       },
       containers,
       codecs,
@@ -179,7 +187,7 @@ export default {
     generateCommand() {
       const {
         input, output, container, videoCodec, audioCodec, videoSpeed,
-        hardwareAccelerationOption, pass, crf,
+        hardwareAccelerationOption, pass, crf, bitrate,
       } = this.form;
 
       const options = {
@@ -192,6 +200,7 @@ export default {
         hardwareAccelerationOption,
         pass,
         crf,
+        bitrate,
       };
       this.cmd = ffmpeg.build(options);
     },
@@ -199,6 +208,9 @@ export default {
       const copyText = this.$refs.code;
       copyText.select();
       document.execCommand('copy');
+    },
+    formatBitrate(value) {
+      return `${parseInt(value, 10)}K`;
     },
   },
 };
