@@ -94,9 +94,12 @@ export default {
           minrate: null,
           maxrate: null,
           bufsize: null,
-          pixelFormat: 'yuv422p',
+          pixelFormat: 'yuv420p',
           frameRate: null,
           speed: null,
+          tune: null,
+          profile: null,
+          level: null,
         },
         audio: {
           audioCodec: null,
@@ -139,6 +142,9 @@ export default {
         pixelFormat: video.pixelFormat,
         frameRate: video.frameRate,
         speed: video.speed,
+        tune: video.tune,
+        profile: video.profile,
+        level: video.level,
       };
       this.cmd = ffmpeg.build(options);
     },

@@ -81,6 +81,21 @@ function build(opt) {
     str.push(...arg);
   }
 
+  if (options.tune) {
+    const arg = ['-tune', options.tune];
+    str.push(...arg);
+  }
+
+  if (options.profile) {
+    const arg = ['-profile:v', options.profile];
+    str.push(...arg);
+  }
+
+  if (options.level) {
+    const arg = ['-level', options.level];
+    str.push(...arg);
+  }
+
   // Video Filters.
   const vf = [
     '-vf', '"',

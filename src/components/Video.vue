@@ -118,6 +118,36 @@
       <option :value="null" disabled>-- Please select an option --</option>
       <option v-for="o in speeds" :key="o.id" :value="o.value">{{o.name}}</option>
     </b-form-select>
+
+    <label for="tune">Tune</label>
+    <b-form-select
+      class="u-full-width"
+      v-bind:value="value.tune"
+      @input="update('tune', $event)"
+    >
+      <option :value="null" disabled>-- Please select an option --</option>
+      <option v-for="o in tunes" :key="o.id" :value="o.value">{{o.name}}</option>
+    </b-form-select>
+
+    <label for="profile">Profile</label>
+    <b-form-select
+      class="u-full-width"
+      v-bind:value="value.profile"
+      @input="update('profile', $event)"
+    >
+      <option :value="null" disabled>-- Please select an option --</option>
+      <option v-for="o in profiles" :key="o.id" :value="o.value">{{o.name}}</option>
+    </b-form-select>
+
+    <label for="level">Level</label>
+    <b-form-select
+      class="u-full-width"
+      v-bind:value="value.level"
+      @input="update('level', $event)"
+    >
+      <option :value="null" disabled>-- Please select an option --</option>
+      <option v-for="o in levels" :key="o.id" :value="o.value">{{o.name}}</option>
+    </b-form-select>
   </div>
 </template>
 
@@ -132,6 +162,9 @@ const {
   pixelFormats,
   frameRates,
   speeds,
+  tunes,
+  profiles,
+  levels,
 } = config;
 
 export default {
@@ -146,6 +179,9 @@ export default {
       pixelFormats,
       frameRates,
       speeds,
+      tunes,
+      profiles,
+      levels,
     };
   },
   computed: {
