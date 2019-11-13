@@ -64,6 +64,40 @@
       placeholder="Bitrate"
       :formatter="formatBitrate"
       lazy-formatter></b-form-input>
+
+    <label for="minrate">Min Rate</label>
+    <b-form-input
+      v-bind:value="value.minrate"
+      @input="update('minrate', $event)"
+      placeholder="Bitrate"
+      :formatter="formatBitrate"
+      lazy-formatter></b-form-input>
+
+    <label for="maxrate">Max Rate</label>
+    <b-form-input
+      v-bind:value="value.maxrate"
+      @input="update('maxrate', $event)"
+      placeholder="Bitrate"
+      :formatter="formatBitrate"
+      lazy-formatter></b-form-input>
+
+    <label for="bufsize">Buffer Size</label>
+    <b-form-input
+      v-bind:value="value.bufsize"
+      @input="update('bufsize', $event)"
+      placeholder="Buffer Size"
+      :formatter="formatBitrate"
+      lazy-formatter></b-form-input>
+
+    <label for="pixelFormat">Pixel Format</label>
+    <b-form-select
+      class="u-full-width"
+      v-bind:value="value.pixelFormat"
+      @input="update('pixelFormat', $event)"
+    >
+      <option :value="null" disabled>-- Please select an option --</option>
+      <option v-for="o in pixelFormats" :key="o.id" :value="o.value">{{o.name}}</option>
+    </b-form-select>
   </div>
 </template>
 
@@ -75,6 +109,7 @@ const {
   videoSpeeds,
   hardwareAccelerationOptions,
   passOptions,
+  pixelFormats,
 } = config;
 
 export default {
@@ -86,6 +121,7 @@ export default {
       videoSpeeds,
       hardwareAccelerationOptions,
       passOptions,
+      pixelFormats,
     };
   },
   computed: {

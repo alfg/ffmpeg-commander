@@ -91,6 +91,10 @@ export default {
           pass: 'crf',
           crf: 23,
           bitrate: null,
+          minrate: null,
+          maxrate: null,
+          bufsize: null,
+          pixelFormat: 'yuv422p',
         },
         audio: {
           audioCodec: null,
@@ -127,6 +131,10 @@ export default {
         pass: video.pass,
         crf: video.crf,
         bitrate: video.bitrate,
+        minrate: video.minrate,
+        maxrate: video.maxrate,
+        bufsize: video.bufsize,
+        pixelFormat: video.pixelFormat,
       };
       this.cmd = ffmpeg.build(options);
     },

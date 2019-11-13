@@ -57,6 +57,26 @@ function build(opt) {
     str.push(...arg);
   }
 
+  if (options.minrate) {
+    const arg = ['-minrate', options.minrate];
+    str.push(...arg);
+  }
+
+  if (options.maxrate) {
+    const arg = ['-maxrate', options.maxrate];
+    str.push(...arg);
+  }
+
+  if (options.bufsize) {
+    const arg = ['-bufsize', options.bufsize];
+    str.push(...arg);
+  }
+
+  if (options.pixelFormat) {
+    const arg = ['-pix_fmt', options.pixelFormat];
+    str.push(...arg);
+  }
+
   // Extra flags.
   const extra = [
     '-sn',

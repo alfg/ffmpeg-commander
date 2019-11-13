@@ -64,7 +64,24 @@ const config = {
     { name: '1 Pass', value: '1' },
     { name: '2 Pass', value: '2' },
   ],
-
+  pixelFormats: [
+    { name: 'auto', value: 'auto' },
+    { name: 'gray', value: 'gray' },
+    { name: 'gray10le', value: 'gray10le' },
+    { name: 'nv12', value: 'nv12' },
+    { name: 'nv16', value: 'nv16' },
+    { name: 'nv20le', value: 'nv20le' },
+    { name: 'nv21', value: 'nv21' },
+    { name: 'yuv420p', value: 'yuv420p' },
+    { name: 'yuv420p10le', value: 'yuv420p10le' },
+    { name: 'yuv422p', value: 'yuv422p' },
+    { name: 'yuv422p10le', value: 'yuv422p10le' },
+    { name: 'yuv444p', value: 'yuv444p' },
+    { name: 'yuv444p10le', value: 'yuv444p10le' },
+    { name: 'yuvj420p', value: 'yuvj420p' },
+    { name: 'yuvj422p', value: 'yuvj422p' },
+    { name: 'yuvj444p', value: 'yuvj444p' },
+  ],
 };
 
 export default config;
