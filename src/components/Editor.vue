@@ -95,6 +95,8 @@ export default {
           maxrate: null,
           bufsize: null,
           pixelFormat: 'yuv422p',
+          frameRate: null,
+          speed: null,
         },
         audio: {
           audioCodec: null,
@@ -135,6 +137,8 @@ export default {
         maxrate: video.maxrate,
         bufsize: video.bufsize,
         pixelFormat: video.pixelFormat,
+        frameRate: video.frameRate,
+        speed: video.speed,
       };
       this.cmd = ffmpeg.build(options);
     },

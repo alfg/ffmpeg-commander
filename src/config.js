@@ -82,6 +82,33 @@ const config = {
     { name: 'yuvj422p', value: 'yuvj422p' },
     { name: 'yuvj444p', value: 'yuvj444p' },
   ],
+  frameRates: [
+    { name: 'auto', value: 'auto' },
+    { name: 'ntsc', value: 'ntsc' },
+    { name: 'pal', value: 'pal' },
+    { name: 'film', value: 'film' },
+    { name: '23.976', value: '24000/1001' },
+    { name: '24', value: '24' },
+    { name: '25', value: '25' },
+    { name: '29.97', value: '30000/1001' },
+    { name: '30', value: '30' },
+    { name: '48', value: '48' },
+    { name: '50', value: '50' },
+    { name: '59.94', value: '60000/1001' },
+    { name: '60', value: '60' },
+  ],
+  speeds: [
+    { name: 'auto', value: 'auto' },
+    { name: '10%', value: '10*PTS' },
+    { name: '25%', value: '4*PTS' },
+    { name: '50%', value: '2*PTS' },
+    { name: '75%', value: '1.33333*PTS' },
+    { name: '150%', value: '.66667*PTS' },
+    { name: '200%', value: '.5*PTS' },
+    { name: '250%', value: '.4*PTS' },
+    { name: '300%', value: '.33333*PTS' },
+    { name: '500%', value: '.2*PTS' },
+  ],
 };
 
 export default config;

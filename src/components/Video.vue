@@ -98,6 +98,26 @@
       <option :value="null" disabled>-- Please select an option --</option>
       <option v-for="o in pixelFormats" :key="o.id" :value="o.value">{{o.name}}</option>
     </b-form-select>
+
+    <label for="frameRate">Frame Rate</label>
+    <b-form-select
+      class="u-full-width"
+      v-bind:value="value.frameRate"
+      @input="update('frameRate', $event)"
+    >
+      <option :value="null" disabled>-- Please select an option --</option>
+      <option v-for="o in frameRates" :key="o.id" :value="o.value">{{o.name}}</option>
+    </b-form-select>
+
+    <label for="speed">Speed</label>
+    <b-form-select
+      class="u-full-width"
+      v-bind:value="value.speed"
+      @input="update('speed', $event)"
+    >
+      <option :value="null" disabled>-- Please select an option --</option>
+      <option v-for="o in speeds" :key="o.id" :value="o.value">{{o.name}}</option>
+    </b-form-select>
   </div>
 </template>
 
@@ -110,6 +130,8 @@ const {
   hardwareAccelerationOptions,
   passOptions,
   pixelFormats,
+  frameRates,
+  speeds,
 } = config;
 
 export default {
@@ -122,6 +144,8 @@ export default {
       hardwareAccelerationOptions,
       passOptions,
       pixelFormats,
+      frameRates,
+      speeds,
     };
   },
   computed: {

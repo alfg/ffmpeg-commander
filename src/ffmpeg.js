@@ -9,7 +9,6 @@ function build(opt) {
 
   const str = [
     'ffmpeg',
-    '-v', '0',
     '-i', `${input}`,
   ];
 
@@ -75,6 +74,27 @@ function build(opt) {
   if (options.pixelFormat) {
     const arg = ['-pix_fmt', options.pixelFormat];
     str.push(...arg);
+  }
+
+  if (options.frameRate) {
+    const arg = ['-r', options.frameRate];
+    str.push(...arg);
+  }
+
+  // Video Filters.
+  const vf = [
+    '-vf', '"',
+  ];
+
+  if (options.speed) {
+    const arg = [`setpts=${options.speed}`];
+    vf.push(...arg);
+  }
+  vf.push('"'); // End of video filters.
+
+  // Only push -vf flag if there are video filter arguments.
+  if (vf.length > 3) {
+    str.push(...vf);
   }
 
   // Extra flags.
