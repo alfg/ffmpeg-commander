@@ -48,8 +48,8 @@
       <b-button @click="copyToClipboard">Copy</b-button>
     </div>
 
-    <b-card class="mt-3" header="Form Options">
-      <pre class="m-0">{{ form }}</pre>
+    <b-card no-body class="mt-3" header="JSON Format">
+      <pre class="m-0" v-highlightjs><code>{{ form }}</code></pre>
     </b-card>
   </div>
 </template>
@@ -80,7 +80,7 @@ export default {
   data() {
     return {
       form: {
-        input: {},
+        input: null,
         output: '',
         container: 'mp4',
         video: {
