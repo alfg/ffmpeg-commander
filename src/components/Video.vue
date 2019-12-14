@@ -3,8 +3,8 @@
     <label for="codec">Codec</label>
     <b-form-select
       class="u-full-width"
-      :value="value.videoCodec"
-      @input="update('videoCodec', $event)"
+      :value="value.video_codec"
+      @input="update('video_codec', $event)"
     >
       <option :value="null" disabled>-- Please select an option --</option>
       <option v-for="o in filteredVideoCodecs" :key="o.id" :value="o.value">{{o.name}}</option>
@@ -13,8 +13,8 @@
     <label for="speed">Speed</label>
     <b-form-select
       class="u-full-width"
-      v-bind:value="value.videoSpeed"
-      @input="update('videoSpeed', $event)"
+      v-bind:value="value.video_speed"
+      @input="update('video_speed', $event)"
     >
       <option :value="null" disabled>-- Please select an option --</option>
       <option v-for="o in videoSpeeds" :key="o.id" :value="o.value">{{o.name}}</option>
@@ -23,8 +23,8 @@
     <label for="hw-accel">Hardware Acceleration</label>
     <b-form-select
       class="u-full-width"
-      v-bind:value="value.hardwareAccelerationOption"
-      @input="update('hardwareAccelerationOption', $event)"
+      v-bind:value="value.hardware_acceleration_option"
+      @input="update('hardware_acceleration_option', $event)"
     >
       <option :value="null" disabled>-- Please select an option --</option>
       <option
@@ -89,20 +89,20 @@
       :formatter="formatBitrate"
       lazy-formatter></b-form-input>
 
-    <label for="pixelFormat">Pixel Format</label>
+    <label for="pixel_format">Pixel Format</label>
     <b-form-select
       class="u-full-width"
-      v-bind:value="value.pixelFormat"
-      @input="update('pixelFormat', $event)"
+      v-bind:value="value.pixel_format"
+      @input="update('pixel_format', $event)"
     >
       <option :value="null" disabled>-- Please select an option --</option>
       <option v-for="o in pixelFormats" :key="o.id" :value="o.value">{{o.name}}</option>
     </b-form-select>
 
-    <label for="frameRate">Frame Rate</label>
+    <label for="frame_rate">Frame Rate</label>
     <b-form-select
       class="u-full-width"
-      v-bind:value="value.frameRate"
+      v-bind:value="value.frame_rate"
       @input="update('frameRate', $event)"
     >
       <option :value="null" disabled>-- Please select an option --</option>

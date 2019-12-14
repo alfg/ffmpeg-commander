@@ -4,8 +4,9 @@
     <label>Input</label>
     <b-form-file
       class="mb-2"
-      v-model="form.input"
+      v-model="fileInput"
       :state="Boolean(form.input)"
+      @input="updateFile"
       placeholder="Choose a file or drop it here..."
       drop-placeholder="Drop file here..."
     ></b-form-file>
@@ -49,7 +50,7 @@
     </div>
 
     <b-card no-body class="mt-3" header="JSON Format">
-      <pre class="m-0" v-highlightjs><code>{{ form }}</code></pre>
+      <pre class="m-0" v-highlightjs="formString"><code></code></pre>
     </b-card>
   </div>
 </template>
@@ -79,36 +80,42 @@ export default {
   props: {},
   data() {
     return {
+      fileInput: null,
       form: {
-        input: null,
+        input: '',
         output: '',
         container: 'mp4',
         video: {
-          videoCodec: null,
-          videoSpeed: null,
-          audioCodec: null,
-          hardwareAccelerationOption: 'off',
+          video_codec: null,
+          video_speed: null,
+          audio_codec: null,
+          hardware_acceleration_option: 'off',
           pass: 'crf',
           crf: 23,
           bitrate: null,
           minrate: null,
           maxrate: null,
           bufsize: null,
-          pixelFormat: 'yuv420p',
-          frameRate: null,
+          pixel_format: 'yuv420p',
+          frame_rate: null,
           speed: null,
           tune: null,
           profile: null,
           level: null,
         },
         audio: {
-          audioCodec: null,
+          audio_codec: null,
         },
       },
       containers,
       codecs,
       cmd: null,
     };
+  },
+  computed: {
+    formString() {
+      return JSON.stringify(this.form, null, 2);
+    },
   },
   watch: {
     form: {
@@ -120,27 +127,32 @@ export default {
     },
   },
   methods: {
+    updateFile(file) {
+      this.form.input = file ? file.name : '';
+      this.updateOutput();
+      this.generateCommand();
+    },
     generateCommand() {
       const {
         input, output, container, video, audio,
       } = this.form;
 
       const options = {
-        input: input.name,
+        input,
         output,
         container,
-        vcodec: codecMap[video.videoCodec],
-        acodec: codecMap[audio.audioCodec],
-        videoSpeed: video.videoSpeed,
-        hardwareAccelerationOption: video.hardwareAccelerationOption,
+        vcodec: codecMap[video.video_codec],
+        acodec: codecMap[audio.audio_codec],
+        videoSpeed: video.video_speed,
+        hardwareAccelerationOption: video.hardware_acceleration_option,
         pass: video.pass,
         crf: video.crf,
         bitrate: video.bitrate,
         minrate: video.minrate,
         maxrate: video.maxrate,
         bufsize: video.bufsize,
-        pixelFormat: video.pixelFormat,
-        frameRate: video.frameRate,
+        pixelFormat: video.pixel_format,
+        frameRate: video.frame_rate,
         speed: video.speed,
         tune: video.tune,
         profile: video.profile,
@@ -149,10 +161,11 @@ export default {
       this.cmd = ffmpeg.build(options);
     },
     updateOutput() {
-      if (this.form.input && this.form.input.name) {
-        const { input, container } = this.form;
-        const ext = path.extname(input.name);
-        const outfile = `${input.name.replace(ext, `.out.${container}`)}`;
+      if (this.fileInput && this.fileInput.name) {
+        const { container } = this.form;
+        const { name } = this.fileInput;
+        const ext = path.extname(name);
+        const outfile = `${name.replace(ext, `.out.${container}`)}`;
         this.form.output = outfile;
       }
     },
