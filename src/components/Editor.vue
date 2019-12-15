@@ -1,22 +1,23 @@
 <template>
   <div class="editor">
+    <b-form-group label="Input:" label-for="input">
+      <b-form-file
+        class="mb-2"
+        v-model="fileInput"
+        :state="Boolean(form.input)"
+        @input="updateFile"
+        placeholder="Choose a file or drop it here..."
+        drop-placeholder="Drop file here..."
+      ></b-form-file>
+    </b-form-group>
 
-    <label>Input</label>
-    <b-form-file
-      class="mb-2"
-      v-model="fileInput"
-      :state="Boolean(form.input)"
-      @input="updateFile"
-      placeholder="Choose a file or drop it here..."
-      drop-placeholder="Drop file here..."
-    ></b-form-file>
-
-    <label>Output</label>
-    <b-form-input
-      v-model="form.output"
-      :state="Boolean(form.output)"
-      placeholder="Example: output.mp4"
-    ></b-form-input>
+    <b-form-group label="Output:" label-for="output">
+      <b-form-input
+        v-model="form.output"
+        :state="Boolean(form.output)"
+        placeholder="Example: output.mp4"
+      ></b-form-input>
+    </b-form-group>
 
     <b-tabs class="mt-4">
       <b-tab title="Format" class="mt-2">
@@ -27,11 +28,11 @@
         <Video :container="form.container" v-model="form.video" />
       </b-tab>
 
-      <b-tab title="Audio">
+      <b-tab title="Audio" class="mt-2">
         <Audio :container="form.container" v-model="form.audio" />
       </b-tab>
-      <!-- <b-tab title="Filters"></b-tab>
-      <b-tab title="Settings"></b-tab> -->
+      <b-tab title="Filters" class="mt-2" disabled></b-tab>
+      <b-tab title="Settings" class="mt-2" disabled></b-tab>
     </b-tabs>
 
     <div class="code">
@@ -47,9 +48,12 @@
 
     <div class="mt-4">
       <b-button @click="copyToClipboard">Copy</b-button>
+      <b-button
+        class="ml-2"
+        @click="toggleJSON">{{ this.showJSON ? 'Hide' : 'Show' }} JSON</b-button>
     </div>
 
-    <b-card no-body class="mt-3" header="JSON Format">
+    <b-card v-if="showJSON" no-body class="mt-3" header="JSON Format">
       <pre class="m-0" v-highlightjs="formString"><code></code></pre>
     </b-card>
   </div>
@@ -82,34 +86,34 @@ export default {
     return {
       fileInput: null,
       form: {
-        input: '',
-        output: '',
+        input: null,
+        output: null,
         container: 'mp4',
         video: {
-          video_codec: null,
-          video_speed: null,
-          audio_codec: null,
+          video_codec: 'x264',
+          video_speed: 'none',
           hardware_acceleration_option: 'off',
-          pass: 'crf',
+          pass: '1',
           crf: 23,
           bitrate: null,
           minrate: null,
           maxrate: null,
           bufsize: null,
-          pixel_format: 'yuv420p',
-          frame_rate: null,
-          speed: null,
-          tune: null,
-          profile: null,
-          level: null,
+          pixel_format: 'auto',
+          frame_rate: 'auto',
+          speed: 'auto',
+          tune: 'none',
+          profile: 'none',
+          level: 'none',
         },
         audio: {
-          audio_codec: null,
+          audio_codec: 'copy',
         },
       },
       containers,
       codecs,
       cmd: null,
+      showJSON: false,
     };
   },
   computed: {
@@ -173,6 +177,9 @@ export default {
       const copyText = this.$refs.code;
       copyText.select();
       document.execCommand('copy');
+    },
+    toggleJSON() {
+      this.showJSON = !this.showJSON;
     },
   },
 };

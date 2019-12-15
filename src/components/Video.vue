@@ -1,153 +1,208 @@
 <template>
   <div>
-    <label for="codec">Codec</label>
-    <b-form-select
-      class="u-full-width"
-      :value="value.video_codec"
-      @input="update('video_codec', $event)"
-    >
-      <option :value="null" disabled>-- Please select an option --</option>
-      <option v-for="o in filteredVideoCodecs" :key="o.id" :value="o.value">{{o.name}}</option>
-    </b-form-select>
+    <b-form-row>
+      <b-col>
+        <b-form-group label="Codec:" label-for="codec">
+          <b-form-select
+            class="u-full-width"
+            :value="value.video_codec"
+            @input="update('video_codec', $event)"
+          >
+            <option :value="null" disabled>-- Please select an option --</option>
+            <option
+              v-for="o in filteredVideoCodecs"
+              :key="o.id"
+              :value="o.value">{{o.name}}</option>
+          </b-form-select>
+        </b-form-group>
+      </b-col>
 
-    <label for="speed">Speed</label>
-    <b-form-select
-      class="u-full-width"
-      v-bind:value="value.video_speed"
-      @input="update('video_speed', $event)"
-    >
-      <option :value="null" disabled>-- Please select an option --</option>
-      <option v-for="o in videoSpeeds" :key="o.id" :value="o.value">{{o.name}}</option>
-    </b-form-select>
+      <b-col>
+        <b-form-group label="Speed:" label-for="speed">
+          <b-form-select
+            class="u-full-width"
+            v-bind:value="value.video_speed"
+            @input="update('video_speed', $event)"
+          >
+            <option :value="null" disabled>-- Please select an option --</option>
+            <option
+              v-for="o in videoSpeeds"
+              :key="o.id"
+              :value="o.value">{{o.name}}</option>
+          </b-form-select>
+        </b-form-group>
+      </b-col>
 
-    <label for="hw-accel">Hardware Acceleration</label>
-    <b-form-select
-      class="u-full-width"
-      v-bind:value="value.hardware_acceleration_option"
-      @input="update('hardware_acceleration_option', $event)"
-    >
-      <option :value="null" disabled>-- Please select an option --</option>
-      <option
-        v-for="o in hardwareAccelerationOptions"
-        :key="o.id"
-        :value="o.value"
-      >{{o.name}}</option>
-    </b-form-select>
+      <b-col>
+        <b-form-group label="Hardware Acceleration:" label-for="hw-accel">
+          <b-form-select
+            class="u-full-width"
+            v-bind:value="value.hardware_acceleration_option"
+            @input="update('hardware_acceleration_option', $event)"
+          >
+            <option :value="null" disabled>-- Please select an option --</option>
+            <option
+              v-for="o in hardwareAccelerationOptions"
+              :key="o.id"
+              :value="o.value"
+            >{{o.name}}</option>
+          </b-form-select>
+        </b-form-group>
+      </b-col>
 
-    <label for="pass">Pass</label>
-    <b-form-select
-      class="u-full-width mb-2"
-      v-bind:value="value.pass"
-      @input="update('pass', $event)"
-    >
-      <option :value="null" disabled>-- Please select an option --</option>
-      <option
-        v-for="o in passOptions"
-        :key="o.id"
-        :value="o.value"
-      >{{o.name}}</option>
-    </b-form-select>
+      <b-col>
+        <b-form-group label="Pass:" label-for="pass">
+          <b-form-select
+            class="u-full-width mb-2"
+            v-bind:value="value.pass"
+            @input="update('pass', $event)"
+          >
+            <option :value="null" disabled>-- Please select an option --</option>
+            <option
+              v-for="o in passOptions"
+              :key="o.id"
+              :value="o.value"
+            >{{o.name}}</option>
+          </b-form-select>
+        </b-form-group>
+      </b-col>
+    </b-form-row>
 
     <div v-if="value.pass == 'crf'">
-      <label for="crf">CRF: {{ value.crf }}</label>
-      <b-form-input
-        id="crf"
-        v-bind:value="value.crf"
-        @input="update('crf', $event)"
-        type="range" min="0" max="51"></b-form-input>
+      <b-form-group :label="'CRF:' + value.crf" label-for="crf">
+        <b-form-input
+          id="crf"
+          v-bind:value="value.crf"
+          @input="update('crf', $event)"
+          type="range" min="0" max="51"></b-form-input>
+      </b-form-group>
     </div>
 
-    <label for="bitrate">Bitrate</label>
-    <b-form-input
-      v-bind:value="value.bitrate"
-      @input="update('bitrate', $event)"
-      placeholder="Bitrate"
-      :formatter="formatBitrate"
-      lazy-formatter></b-form-input>
+    <b-form-row>
+      <b-col>
+        <b-form-group label="Bitrate:" label-for="bitrate">
+          <b-form-input
+            v-bind:value="value.bitrate"
+            @input="update('bitrate', $event)"
+            placeholder="Bitrate"
+            :formatter="formatBitrate"
+            lazy-formatter></b-form-input>
+        </b-form-group>
+      </b-col>
 
-    <label for="minrate">Min Rate</label>
-    <b-form-input
-      v-bind:value="value.minrate"
-      @input="update('minrate', $event)"
-      placeholder="Bitrate"
-      :formatter="formatBitrate"
-      lazy-formatter></b-form-input>
+      <b-col>
+        <b-form-group label="Min Rate:" label-for="minrate">
+          <b-form-input
+            v-bind:value="value.minrate"
+            @input="update('minrate', $event)"
+            placeholder="Bitrate"
+            :formatter="formatBitrate"
+            lazy-formatter></b-form-input>
+        </b-form-group>
+      </b-col>
 
-    <label for="maxrate">Max Rate</label>
-    <b-form-input
-      v-bind:value="value.maxrate"
-      @input="update('maxrate', $event)"
-      placeholder="Bitrate"
-      :formatter="formatBitrate"
-      lazy-formatter></b-form-input>
+      <b-col>
+        <b-form-group label="Max Rate:" label-for="maxrate">
+          <b-form-input
+            v-bind:value="value.maxrate"
+            @input="update('maxrate', $event)"
+            placeholder="Bitrate"
+            :formatter="formatBitrate"
+            lazy-formatter></b-form-input>
+        </b-form-group>
+      </b-col>
 
-    <label for="bufsize">Buffer Size</label>
-    <b-form-input
-      v-bind:value="value.bufsize"
-      @input="update('bufsize', $event)"
-      placeholder="Buffer Size"
-      :formatter="formatBitrate"
-      lazy-formatter></b-form-input>
+      <b-col>
+        <b-form-group label="Buffer Size:" label-for="bufsize">
+          <b-form-input
+            v-bind:value="value.bufsize"
+            @input="update('bufsize', $event)"
+            placeholder="Buffer Size"
+            :formatter="formatBitrate"
+            lazy-formatter></b-form-input>
+        </b-form-group>
+      </b-col>
+    </b-form-row>
 
-    <label for="pixel_format">Pixel Format</label>
-    <b-form-select
-      class="u-full-width"
-      v-bind:value="value.pixel_format"
-      @input="update('pixel_format', $event)"
-    >
-      <option :value="null" disabled>-- Please select an option --</option>
-      <option v-for="o in pixelFormats" :key="o.id" :value="o.value">{{o.name}}</option>
-    </b-form-select>
+    <b-form-row>
+      <b-col>
+        <b-form-group label="Pixel Format:" label-for="pixel_format">
+          <b-form-select
+            class="u-full-width"
+            v-bind:value="value.pixel_format"
+            @input="update('pixel_format', $event)"
+          >
+            <option :value="null" disabled>-- Please select an option --</option>
+            <option v-for="o in pixelFormats" :key="o.id" :value="o.value">{{o.name}}</option>
+          </b-form-select>
+        </b-form-group>
+      </b-col>
 
-    <label for="frame_rate">Frame Rate</label>
-    <b-form-select
-      class="u-full-width"
-      v-bind:value="value.frame_rate"
-      @input="update('frameRate', $event)"
-    >
-      <option :value="null" disabled>-- Please select an option --</option>
-      <option v-for="o in frameRates" :key="o.id" :value="o.value">{{o.name}}</option>
-    </b-form-select>
+      <b-col>
+        <b-form-group label="Frame Rate:" label-for="frame_rate">
+          <b-form-select
+            class="u-full-width"
+            v-bind:value="value.frame_rate"
+            @input="update('frame_rate', $event)"
+          >
+            <option :value="null" disabled>-- Please select an option --</option>
+            <option v-for="o in frameRates" :key="o.id" :value="o.value">{{o.name}}</option>
+          </b-form-select>
+        </b-form-group>
+      </b-col>
 
-    <label for="speed">Speed</label>
-    <b-form-select
-      class="u-full-width"
-      v-bind:value="value.speed"
-      @input="update('speed', $event)"
-    >
-      <option :value="null" disabled>-- Please select an option --</option>
-      <option v-for="o in speeds" :key="o.id" :value="o.value">{{o.name}}</option>
-    </b-form-select>
+      <b-col>
+        <b-form-group label="Speed:" label-for="speed">
+          <b-form-select
+            class="u-full-width"
+            v-bind:value="value.speed"
+            @input="update('speed', $event)"
+          >
+            <option :value="null" disabled>-- Please select an option --</option>
+            <option v-for="o in speeds" :key="o.id" :value="o.value">{{o.name}}</option>
+          </b-form-select>
+        </b-form-group>
+      </b-col>
 
-    <label for="tune">Tune</label>
-    <b-form-select
-      class="u-full-width"
-      v-bind:value="value.tune"
-      @input="update('tune', $event)"
-    >
-      <option :value="null" disabled>-- Please select an option --</option>
-      <option v-for="o in tunes" :key="o.id" :value="o.value">{{o.name}}</option>
-    </b-form-select>
+      <b-col>
+        <b-form-group label="Tune:" label-for="tune">
+          <b-form-select
+            class="u-full-width"
+            v-bind:value="value.tune"
+            @input="update('tune', $event)"
+          >
+            <option :value="null" disabled>-- Please select an option --</option>
+            <option v-for="o in tunes" :key="o.id" :value="o.value">{{o.name}}</option>
+          </b-form-select>
+        </b-form-group>
+      </b-col>
 
-    <label for="profile">Profile</label>
-    <b-form-select
-      class="u-full-width"
-      v-bind:value="value.profile"
-      @input="update('profile', $event)"
-    >
-      <option :value="null" disabled>-- Please select an option --</option>
-      <option v-for="o in profiles" :key="o.id" :value="o.value">{{o.name}}</option>
-    </b-form-select>
+      <b-col>
+        <b-form-group label="Profile:" label-for="profile">
+          <b-form-select
+            class="u-full-width"
+            v-bind:value="value.profile"
+            @input="update('profile', $event)"
+          >
+            <option :value="null" disabled>-- Please select an option --</option>
+            <option v-for="o in profiles" :key="o.id" :value="o.value">{{o.name}}</option>
+          </b-form-select>
+        </b-form-group>
+      </b-col>
 
-    <label for="level">Level</label>
-    <b-form-select
-      class="u-full-width"
-      v-bind:value="value.level"
-      @input="update('level', $event)"
-    >
-      <option :value="null" disabled>-- Please select an option --</option>
-      <option v-for="o in levels" :key="o.id" :value="o.value">{{o.name}}</option>
-    </b-form-select>
+      <b-col>
+        <b-form-group label="Level:" label-for="level">
+          <b-form-select
+            class="u-full-width"
+            v-bind:value="value.level"
+            @input="update('level', $event)"
+          >
+            <option :value="null" disabled>-- Please select an option --</option>
+            <option v-for="o in levels" :key="o.id" :value="o.value">{{o.name}}</option>
+          </b-form-select>
+        </b-form-group>
+      </b-col>
+    </b-form-row>
   </div>
 </template>
 
