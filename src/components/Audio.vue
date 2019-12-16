@@ -3,8 +3,8 @@
     <b-form-group label="Audio Codec:" label-for="audio-codec">
       <b-form-select
         class="u-full-width"
-        v-bind:value="value.audio_codec"
-        @input="update('audio_codec', $event)"
+        v-bind:value="value.codec"
+        @input="update('codec', $event)"
       >
         <option :value="null" disabled>-- Please select an option --</option>
         <option v-for="o in filteredAudioCodecs" :key="o.id" :value="o.value">{{o.name}}</option>

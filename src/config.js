@@ -39,7 +39,7 @@ const config = {
       { name: 'None', value: 'none', supported: null },
     ],
   },
-  videoSpeeds: [
+  presets: [
     { name: 'Placebo', value: 'placebo' },
     { name: 'Very Slow', value: 'veryslow' },
     { name: 'Slower', value: 'slower' },

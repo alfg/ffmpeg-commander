@@ -5,8 +5,8 @@
         <b-form-group label="Codec:" label-for="codec">
           <b-form-select
             class="u-full-width"
-            :value="value.video_codec"
-            @input="update('video_codec', $event)"
+            :value="value.codec"
+            @input="update('codec', $event)"
           >
             <option :value="null" disabled>-- Please select an option --</option>
             <option
@@ -18,15 +18,15 @@
       </b-col>
 
       <b-col>
-        <b-form-group label="Speed:" label-for="speed">
+        <b-form-group label="Preset:" label-for="preset">
           <b-form-select
             class="u-full-width"
-            v-bind:value="value.video_speed"
-            @input="update('video_speed', $event)"
+            v-bind:value="value.preset"
+            @input="update('preset', $event)"
           >
             <option :value="null" disabled>-- Please select an option --</option>
             <option
-              v-for="o in videoSpeeds"
+              v-for="o in presets"
               :key="o.id"
               :value="o.value">{{o.name}}</option>
           </b-form-select>
@@ -211,7 +211,7 @@ import config from '@/config';
 
 const {
   codecs,
-  videoSpeeds,
+  presets,
   hardwareAccelerationOptions,
   passOptions,
   pixelFormats,
@@ -228,7 +228,7 @@ export default {
   data() {
     return {
       codecs,
-      videoSpeeds,
+      presets,
       hardwareAccelerationOptions,
       passOptions,
       pixelFormats,

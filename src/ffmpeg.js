@@ -22,8 +22,8 @@ function build(opt) {
     str.push(...arg);
   }
 
-  if (options.videoSpeed && options.videoSpeed !== 'none') {
-    const arg = ['-preset', options.videoSpeed];
+  if (options.preset && options.preset !== 'none') {
+    const arg = ['-preset', options.preset];
     str.push(...arg);
   }
 
@@ -71,7 +71,7 @@ function build(opt) {
     str.push(...arg);
   }
 
-  if (options.pixelFormat && options.pixelFormat !== 'none') {
+  if (options.pixelFormat && options.pixelFormat !== 'auto') {
     const arg = ['-pix_fmt', options.pixelFormat];
     str.push(...arg);
   }
@@ -86,7 +86,7 @@ function build(opt) {
     str.push(...arg);
   }
 
-  if (options.profile && options.tune !== 'none') {
+  if (options.profile && options.profile !== 'none') {
     const arg = ['-profile:v', options.profile];
     str.push(...arg);
   }
@@ -101,7 +101,7 @@ function build(opt) {
     '-vf', '"',
   ];
 
-  if (options.speed) {
+  if (options.speed && options.speed !== 'auto') {
     const arg = [`setpts=${options.speed}`];
     vf.push(...arg);
   }
