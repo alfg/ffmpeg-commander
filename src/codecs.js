@@ -15,6 +15,9 @@ const codecs = {
   dts: 'dca',
   ac3: 'ac3',
   vorbis: 'libvorbias',
+
+  // Copy codec.
+  copy: 'copy',
 };
 
 export default codecs;

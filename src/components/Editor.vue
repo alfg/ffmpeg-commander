@@ -90,7 +90,7 @@ export default {
         output: null,
         container: 'mp4',
         video: {
-          codec: 'x264',
+          codec: 'x264', // TOODO: Need to display codec option for JSON format.
           preset: 'none',
           hardware_acceleration_option: 'off',
           pass: '1',
@@ -118,7 +118,15 @@ export default {
   },
   computed: {
     formString() {
-      return JSON.stringify(this.form, null, 2);
+      const { form } = this;
+      const json = this.transformToJSON(form);
+
+      // Only return non-null values in JSON string.
+      const jsonStr = JSON.stringify(json, (k, v) => {
+        if (v === null) return undefined;
+        return v;
+      }, 2);
+      return jsonStr;
     },
   },
   watch: {
@@ -180,6 +188,36 @@ export default {
     },
     toggleJSON() {
       this.showJSON = !this.showJSON;
+    },
+    transformToJSON(form) {
+      const {
+        container, video, audio,
+      } = form;
+
+      const json = {
+        container,
+        video: {
+          codec: codecMap[video.codec],
+          preset: video.preset,
+          hardware_acceleration_option: video.hardware_acceleration_option,
+          pass: video.pass,
+          crf: video.crf,
+          bitrate: video.bitrate,
+          minrate: video.minrate,
+          maxrate: video.maxrate,
+          bufsize: video.bufsize,
+          pixel_format: video.pixel_format,
+          frame_rate: video.frame_rate,
+          speed: video.speed,
+          tune: video.tune,
+          profile: video.profile,
+          level: video.level,
+        },
+        audio: {
+          codec: codecMap[audio.codec],
+        },
+      };
+      return json;
     },
   },
 };
