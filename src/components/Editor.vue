@@ -90,7 +90,7 @@ export default {
         output: null,
         container: 'mp4',
         video: {
-          codec: 'x264', // TOODO: Need to display codec option for JSON format.
+          codec: 'x264',
           preset: 'none',
           hardware_acceleration_option: 'off',
           pass: '1',
