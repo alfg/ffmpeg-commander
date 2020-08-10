@@ -203,6 +203,93 @@
         </b-form-group>
       </b-col>
     </b-form-row>
+
+    <b-form-row>
+      <b-col>
+        <b-form-group label="Optimize for Web:" label-for="optimize">
+          <b-form-select
+            class="u-full-width"
+            v-bind:value="value.optimize"
+            @input="update('optimize', $event)"
+          >
+            <option :value="null" disabled>-- Please select an option --</option>
+            <option v-for="o in optimize" :key="o.id" :value="o.value">{{o.name}}</option>
+          </b-form-select>
+        </b-form-group>
+      </b-col>
+
+      <b-col>
+        <b-form-group label="Size:" label-for="size">
+          <b-form-select
+            class="u-full-width"
+            v-bind:value="value.size"
+            @input="update('size', $event)"
+          >
+            <option :value="null" disabled>-- Please select an option --</option>
+            <option v-for="o in sizes" :key="o.id" :value="o.value">{{o.name}}</option>
+          </b-form-select>
+        </b-form-group>
+      </b-col>
+
+      <b-col v-if="value.size == 'custom'">
+        <b-form-group label="Width:" label-for="width">
+          <b-form-input
+            v-bind:value="value.width"
+            @input="update('width', $event)"
+            placeholder="Width"
+          ></b-form-input>
+        </b-form-group>
+      </b-col>
+
+      <b-col v-if="value.size == 'custom'">
+        <b-form-group label="Height:" label-for="height">
+          <b-form-input
+            v-bind:value="value.height"
+            @input="update('height', $event)"
+            placeholder="Height"
+          ></b-form-input>
+        </b-form-group>
+      </b-col>
+
+      <b-col>
+        <b-form-group label="Format:" label-for="format">
+          <b-form-select
+            class="u-full-width"
+            v-bind:value="value.format"
+            @input="update('format', $event)"
+          >
+            <option :value="null" disabled>-- Please select an option --</option>
+            <option v-for="o in formats" :key="o.id" :value="o.value">{{o.name}}</option>
+          </b-form-select>
+        </b-form-group>
+      </b-col>
+
+      <b-col>
+        <b-form-group label="Aspect Ratio:" label-for="aspect-ratio">
+          <b-form-select
+            class="u-full-width"
+            v-bind:value="value.aspect"
+            @input="update('aspect', $event)"
+          >
+            <option :value="null" disabled>-- Please select an option --</option>
+            <option v-for="o in aspects" :key="o.id" :value="o.value">{{o.name}}</option>
+          </b-form-select>
+        </b-form-group>
+      </b-col>
+
+      <b-col>
+        <b-form-group label="Scaling:" label-for="scaling">
+          <b-form-select
+            class="u-full-width"
+            v-bind:value="value.scaling"
+            @input="update('scaling', $event)"
+          >
+            <option :value="null" disabled>-- Please select an option --</option>
+            <option v-for="o in scalings" :key="o.id" :value="o.value">{{o.name}}</option>
+          </b-form-select>
+        </b-form-group>
+      </b-col>
+    </b-form-row>
   </div>
 </template>
 
@@ -220,6 +307,11 @@ const {
   tunes,
   profiles,
   levels,
+  optimize,
+  sizes,
+  formats,
+  aspects,
+  scalings,
 } = config;
 
 export default {
@@ -237,6 +329,11 @@ export default {
       tunes,
       profiles,
       levels,
+      optimize,
+      sizes,
+      formats,
+      aspects,
+      scalings,
     };
   },
   computed: {

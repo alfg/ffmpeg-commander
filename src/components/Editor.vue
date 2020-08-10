@@ -1,14 +1,13 @@
 <template>
   <div class="editor">
     <b-form-group label="Input:" label-for="input">
-      <b-form-file
+      <b-form-input
         class="mb-2"
-        v-model="fileInput"
+        v-model="form.input"
         :state="Boolean(form.input)"
         @input="updateFile"
-        placeholder="Choose a file or drop it here..."
-        drop-placeholder="Drop file here..."
-      ></b-form-file>
+        placeholder="Example: input.mp4"
+      ></b-form-input>
     </b-form-group>
 
     <b-form-group label="Output:" label-for="output">
@@ -31,7 +30,10 @@
       <b-tab title="Audio" class="mt-2">
         <Audio :container="form.container" v-model="form.audio" />
       </b-tab>
-      <b-tab title="Filters" class="mt-2" disabled></b-tab>
+
+      <b-tab title="Filters" class="mt-2" disabled>
+        <Filters v-model="form.filters" />
+      </b-tab>
       <b-tab title="Settings" class="mt-2" disabled></b-tab>
     </b-tabs>
 
@@ -68,6 +70,7 @@ import ffmpeg from '@/ffmpeg';
 import Format from './Format.vue';
 import Video from './Video.vue';
 import Audio from './Audio.vue';
+import Filters from './Filters.vue';
 
 const {
   containers,
@@ -80,14 +83,14 @@ export default {
     Format,
     Video,
     Audio,
+    Filters,
   },
   props: {},
   data() {
     return {
-      fileInput: null,
       form: {
-        input: null,
-        output: null,
+        input: 'input.mp4',
+        output: 'output.mp4',
         container: 'mp4',
         video: {
           codec: 'x264',
@@ -105,9 +108,18 @@ export default {
           tune: 'none',
           profile: 'none',
           level: 'none',
+          optimize: 'web',
+          size: 'source',
+          width: '1080',
+          height: '1920',
+          format: 'widescreen',
+          aspect: 'auto',
+          scaling: 'auto',
         },
         audio: {
           codec: 'copy',
+        },
+        filters: {
         },
       },
       containers,
@@ -169,6 +181,13 @@ export default {
         tune: video.tune,
         profile: video.profile,
         level: video.level,
+        optimize: video.optimize,
+        size: video.size,
+        width: video.width,
+        height: video.height,
+        format: video.format,
+        aspect: video.aspect,
+        scaling: video.scaling,
       };
       this.cmd = ffmpeg.build(options);
     },
@@ -212,6 +231,13 @@ export default {
           tune: video.tune,
           profile: video.profile,
           level: video.level,
+          optimize: video.optimize,
+          size: video.size,
+          width: video.width,
+          height: video.height,
+          format: video.format,
+          aspect: video.aspect,
+          scaling: video.scaling,
         },
         audio: {
           codec: codecMap[audio.codec],

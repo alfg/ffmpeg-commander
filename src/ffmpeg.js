@@ -96,6 +96,16 @@ function build(opt) {
     str.push(...arg);
   }
 
+  if (options.optimize && options.optimize !== 'none') {
+    const arg = ['-movflags', 'faststart'];
+    str.push(...arg);
+  }
+
+  if (options.aspect && options.aspect !== 'auto') {
+    const arg = ['-aspect', options.aspect];
+    str.push(...arg);
+  }
+
   // Video Filters.
   const vf = [
     '-vf', '"',
@@ -105,6 +115,29 @@ function build(opt) {
     const arg = [`setpts=${options.speed}`];
     vf.push(...arg);
   }
+
+  // Scale Filters.
+  const scaleFilters = [];
+  if (options.size && options.size !== 'source') {
+    let arg;
+    if (options.size === 'custom') {
+      arg = [`scale=${options.width}:${options.height}`];
+    } else {
+      arg = options.format === 'widescreen' ? [`scale=${options.size}:-1`] : [`scale=-1:${options.size}`];
+    }
+    scaleFilters.push(...arg);
+  }
+
+  if (options.scaling && options.scaling !== 'auto') {
+    const arg = [`flags=${options.scaling}`];
+    scaleFilters.push(...arg);
+  }
+
+  // Add Scale Filters to the vf flags
+  if (scaleFilters.length > 0) {
+    vf.push(scaleFilters.join(':'));
+  }
+
   vf.push('"'); // End of video filters.
 
   // Only push -vf flag if there are video filter arguments.
