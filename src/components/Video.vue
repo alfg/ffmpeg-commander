@@ -85,8 +85,7 @@
             v-bind:value="value.bitrate"
             @input="update('bitrate', $event)"
             placeholder="Bitrate"
-            :formatter="formatBitrate"
-            lazy-formatter></b-form-input>
+          ></b-form-input>
         </b-form-group>
       </b-col>
 
@@ -96,8 +95,7 @@
             v-bind:value="value.minrate"
             @input="update('minrate', $event)"
             placeholder="Bitrate"
-            :formatter="formatBitrate"
-            lazy-formatter></b-form-input>
+          ></b-form-input>
         </b-form-group>
       </b-col>
 
@@ -107,8 +105,7 @@
             v-bind:value="value.maxrate"
             @input="update('maxrate', $event)"
             placeholder="Bitrate"
-            :formatter="formatBitrate"
-            lazy-formatter></b-form-input>
+          ></b-form-input>
         </b-form-group>
       </b-col>
 
@@ -118,8 +115,7 @@
             v-bind:value="value.bufsize"
             @input="update('bufsize', $event)"
             placeholder="Buffer Size"
-            :formatter="formatBitrate"
-            lazy-formatter></b-form-input>
+          ></b-form-input>
         </b-form-group>
       </b-col>
     </b-form-row>
@@ -346,9 +342,6 @@ export default {
   methods: {
     update(key, value) {
       this.$emit('input', { ...this.value, [key]: value });
-    },
-    formatBitrate(value) {
-      return `${parseInt(value, 10)}K`;
     },
   },
 };

@@ -52,7 +52,8 @@ function build(opt) {
   }
 
   if (options.bitrate) {
-    const arg = ['-b:v', options.bitrate];
+    const vbr = options.vbr ? 'q' : 'b';
+    const arg = [`-${vbr}:v`, options.bitrate];
     str.push(...arg);
   }
 
@@ -143,6 +144,16 @@ function build(opt) {
   // Only push -vf flag if there are video filter arguments.
   if (vf.length > 3) {
     str.push(...vf);
+  }
+
+  if (options.pass === '2') {
+    const op = '/dev/null && \\ \n'; // For Windows use `NUL && \`
+    const copy = str.slice(); // Array clone for pass 2.
+
+    // Rewrite command with 1 and 2 pass flags and append to str array.
+    str.push(...['-pass', '1', op]);
+    copy.push(...['-pass', '2']);
+    str.push(...copy);
   }
 
   // Extra flags.
