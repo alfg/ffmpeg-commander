@@ -118,6 +118,9 @@ export default {
         },
         audio: {
           codec: 'copy',
+          channel: 'source',
+          quality: 'auto',
+          sampleRate: 'auto',
         },
         filters: {
         },
