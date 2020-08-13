@@ -5,7 +5,6 @@
         class="mb-2"
         v-model="form.input"
         :state="Boolean(form.input)"
-        @input="updateFile"
         placeholder="Example: input.mp4"
       ></b-form-input>
     </b-form-group>
@@ -121,6 +120,7 @@ export default {
           channel: 'source',
           quality: 'auto',
           sampleRate: 'auto',
+          volume: 100,
         },
         filters: {
         },
@@ -143,6 +143,9 @@ export default {
       }, 2);
       return jsonStr;
     },
+  },
+  created() {
+    this.generateCommand();
   },
   watch: {
     form: {
@@ -169,7 +172,6 @@ export default {
         output,
         container,
         vcodec: codecMap[video.codec],
-        acodec: codecMap[audio.codec],
         preset: video.preset,
         hardwareAccelerationOption: video.hardware_acceleration_option,
         pass: video.pass,
@@ -191,6 +193,14 @@ export default {
         format: video.format,
         aspect: video.aspect,
         scaling: video.scaling,
+
+        acodec: codecMap[audio.codec],
+        channel: audio.channel,
+        quality: audio.quality,
+        audioBitrate: audio.bitrate,
+        sampleRate: audio.sampleRate,
+        volume: audio.volume,
+
       };
       this.cmd = ffmpeg.build(options);
     },
@@ -244,6 +254,11 @@ export default {
         },
         audio: {
           codec: codecMap[audio.codec],
+          channel: audio.channel,
+          quality: audio.quality,
+          bitrate: audio.bitrate,
+          sampleRate: audio.sampleRate,
+          volume: audio.volume,
         },
       };
       return json;

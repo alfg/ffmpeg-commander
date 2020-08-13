@@ -42,10 +42,6 @@ function build(opt) {
     str.push(...arg);
   }
 
-  if (options.pass === '2') {
-    // TODO: Generate -pass 1 and -pass 2 command.
-  }
-
   if (options.crf !== '0' && options.pass === 'crf') {
     const arg = ['-crf', options.crf];
     str.push(...arg);
@@ -144,6 +140,44 @@ function build(opt) {
   // Only push -vf flag if there are video filter arguments.
   if (vf.length > 3) {
     str.push(...vf);
+  }
+
+  // Audio.
+  if (options.channel && options.channel !== 'source') {
+    const arg = ['-rematrix_maxval', '1.0', '-ac', options.channel];
+    str.push(...arg);
+  }
+
+  if (options.quality && options.quality !== 'auto') {
+    let arg;
+    if (options.quality === 'custom') {
+      arg = ['-b:a', options.audioBitrate];
+    } else {
+      arg = ['-b:a', options.quality];
+    }
+    str.push(...arg);
+  }
+
+  if (options.sampleRate && options.sampleRate !== 'auto') {
+    const arg = ['-ar', options.sampleRate];
+    str.push(...arg);
+  }
+
+  // Audio Filters.
+  const af = [
+    '-af', '"',
+  ];
+
+  if (options.volume && parseInt(options.volume, 10) !== 100) {
+    const arg = [`volume=${options.volume / 100}`];
+    af.push(...arg);
+  }
+
+  af.push('"'); // End of audio filters.
+
+  // Only push -af flag if there are audio filter arguments.
+  if (af.length > 3) {
+    str.push(...af);
   }
 
   if (options.pass === '2') {
