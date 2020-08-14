@@ -1,3 +1,66 @@
+// Builds an array of FFmpeg video filters (-vf).
+function setVideoFilters(options) {
+  const vf = [
+    '-vf', '"',
+  ];
+
+  if (options.speed && options.speed !== 'auto') {
+    const arg = [`setpts=${options.speed}`];
+    vf.push(...arg);
+  }
+
+  // Scale Filters.
+  const scaleFilters = [];
+  if (options.size && options.size !== 'source') {
+    let arg;
+    if (options.size === 'custom') {
+      arg = [`scale=${options.width}:${options.height}`];
+    } else {
+      arg = options.format === 'widescreen' ? [`scale=${options.size}:-1`] : [`scale=-1:${options.size}`];
+    }
+    scaleFilters.push(...arg);
+  }
+
+  if (options.scaling && options.scaling !== 'auto') {
+    const arg = [`flags=${options.scaling}`];
+    scaleFilters.push(...arg);
+  }
+
+  // Add Scale Filters to the vf flags
+  if (scaleFilters.length > 0) {
+    vf.push(scaleFilters.join(':'));
+  }
+
+  vf.push('"'); // End of video filters.
+
+  // Only return -vf flag if there are video filter arguments.
+  if (vf.length > 3) {
+    return vf;
+  }
+  return [];
+}
+
+// Builds an array of FFmpeg audio filters (-af).
+function setAudioFilters(options) {
+  const af = [
+    '-af', '"',
+  ];
+
+  if (options.volume && parseInt(options.volume, 10) !== 100) {
+    const arg = [`volume=${options.volume / 100}`];
+    af.push(...arg);
+  }
+
+  af.push('"'); // End of audio filters.
+
+  // Only return -af flag if there are audio filter arguments.
+  if (af.length > 3) {
+    return af;
+  }
+  return [];
+}
+
+// Build an array of FFmpeg from options parameter.
 function build(opt) {
   const options = opt || {};
 
@@ -103,44 +166,9 @@ function build(opt) {
     str.push(...arg);
   }
 
-  // Video Filters.
-  const vf = [
-    '-vf', '"',
-  ];
-
-  if (options.speed && options.speed !== 'auto') {
-    const arg = [`setpts=${options.speed}`];
-    vf.push(...arg);
-  }
-
-  // Scale Filters.
-  const scaleFilters = [];
-  if (options.size && options.size !== 'source') {
-    let arg;
-    if (options.size === 'custom') {
-      arg = [`scale=${options.width}:${options.height}`];
-    } else {
-      arg = options.format === 'widescreen' ? [`scale=${options.size}:-1`] : [`scale=-1:${options.size}`];
-    }
-    scaleFilters.push(...arg);
-  }
-
-  if (options.scaling && options.scaling !== 'auto') {
-    const arg = [`flags=${options.scaling}`];
-    scaleFilters.push(...arg);
-  }
-
-  // Add Scale Filters to the vf flags
-  if (scaleFilters.length > 0) {
-    vf.push(scaleFilters.join(':'));
-  }
-
-  vf.push('"'); // End of video filters.
-
-  // Only push -vf flag if there are video filter arguments.
-  if (vf.length > 3) {
-    str.push(...vf);
-  }
+  // Set video filters.
+  const vf = setVideoFilters(options);
+  str.push(...vf);
 
   // Audio.
   if (options.channel && options.channel !== 'source') {
@@ -163,22 +191,9 @@ function build(opt) {
     str.push(...arg);
   }
 
-  // Audio Filters.
-  const af = [
-    '-af', '"',
-  ];
-
-  if (options.volume && parseInt(options.volume, 10) !== 100) {
-    const arg = [`volume=${options.volume / 100}`];
-    af.push(...arg);
-  }
-
-  af.push('"'); // End of audio filters.
-
-  // Only push -af flag if there are audio filter arguments.
-  if (af.length > 3) {
-    str.push(...af);
-  }
+  // Set audio filters.
+  const af = setAudioFilters(options);
+  str.push(...af);
 
   if (options.pass === '2') {
     const op = '/dev/null && \\ \n'; // For Windows use `NUL && \`

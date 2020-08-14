@@ -1,8 +1,30 @@
 <template>
-  <div id="app" class="container">
-    <h1>FFmpeg Commander</h1>
-    <b-alert variant="warning" show>Currently a work in progress. Check back for updates.</b-alert>
-    <Editor />
+  <div>
+    <b-navbar type="dark" variant="dark">
+      <b-navbar-nav>
+        <b-nav-item href="#">FFmpeg Commander</b-nav-item>
+      </b-navbar-nav>
+    </b-navbar>
+
+    <div id="app" class="container">
+      <div class="mt-2">
+        <b-alert
+          variant="warning"
+          show
+        >⚠️ Currently a work in progress. Check back for updates.</b-alert>
+      </div>
+      <Editor />
+    </div>
+
+    <footer class="container mt-4 text-center">
+      <hr />
+      <div class="text-muted">
+        <ul>
+          <li><a href="https://github.com/alfg/ffmpeg-commander">GitHub</a></li>
+          <li><a href="https://ffmpeg.org/ffmpeg.html">FFmpeg Documentation</a></li>
+        </ul>
+      </div>
+    </footer>
   </div>
 </template>
 
@@ -24,5 +46,18 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
   margin-top: 30px;
+}
+
+footer ul {
+  display: inline-block;
+  padding-left: 0;
+  text-align: left;
+  width: 100%;
+}
+
+footer ul li {
+  display: inline;
+  margin: 0 6px;
+  list-style: none;
 }
 </style>
