@@ -1,3 +1,20 @@
+const optionsMap = {
+  vcodec: '-c:v',
+  preset: '-preset',
+  bitrate: '-b:v',
+  minrate: '-minrate',
+  maxrate: '-maxrate',
+  bufsize: '-bufsize',
+  pixelFormat: '-pix_fmt',
+  frameRate: '-r',
+  tune: '-tune',
+  profile: '-profile:v',
+  level: '-level',
+  aspect: '-aspect',
+
+  acodec: '-c:a',
+};
+
 // Builds an array of FFmpeg video filters (-vf).
 function setVideoFilters(options) {
   const vf = [
@@ -60,6 +77,16 @@ function setAudioFilters(options) {
   return [];
 }
 
+function set2Pass(flags) {
+  const op = '/dev/null && \\ \n'; // For Windows use `NUL && \`
+  const copy = flags.slice(); // Array clone for pass 2.
+
+  // Rewrite command with 1 and 2 pass flags and append to flags array.
+  flags.push(...['-pass', '1', op]);
+  copy.push(...['-pass', '2']);
+  return copy;
+}
+
 // Build an array of FFmpeg from options parameter.
 function build(opt) {
   const options = opt || {};
@@ -70,110 +97,57 @@ function build(opt) {
     container,
   } = options;
 
-  const str = [
+  const flags = [
     'ffmpeg',
     '-i', `${input}`,
   ];
 
-  if (options.vcodec) {
-    const arg = ['-c:v', options.vcodec];
-    str.push(...arg);
-  }
+  // Set flags by adding provided options from the optionsMap and adding the
+  // value to the flags array.
+  Object.keys(optionsMap).forEach((o) => {
+    if (options[o] && options[o] !== 'none' && options[o] !== 'auto') {
+      const arg = [optionsMap[o], options[o]];
+      flags.push(...arg);
+    }
+  });
 
-  if (options.acodec) {
-    const arg = ['-c:a', options.acodec];
-    str.push(...arg);
-  }
-
-  if (options.preset && options.preset !== 'none') {
-    const arg = ['-preset', options.preset];
-    str.push(...arg);
-  }
+  //
+  // Set more complex options that can't be set from the optionsMap.
+  //
 
   if (options.hardwareAccelerationOption === 'nvenc') {
     // Replace encoder with NVidia hardware accelerated encoder.
     // eslint-disable-next-line array-callback-return
-    str.map((item, i) => {
+    flags.map((item, i) => {
       if (item === 'libx264') {
-        str[i] = 'h264_nvenc';
+        flags[i] = 'h264_nvenc';
       } else if (item === 'libx265') {
-        str[i] = 'hevc_nvenc';
+        flags[i] = 'hevc_nvenc';
       }
     });
   } else if (options.hardwareAccelerationOption !== 'off') {
     const arg = ['-hwaccel', options.hardwareAccelerationOption];
-    str.push(...arg);
+    flags.push(...arg);
   }
 
   if (options.crf !== '0' && options.pass === 'crf') {
     const arg = ['-crf', options.crf];
-    str.push(...arg);
-  }
-
-  if (options.bitrate) {
-    const vbr = options.vbr ? 'q' : 'b';
-    const arg = [`-${vbr}:v`, options.bitrate];
-    str.push(...arg);
-  }
-
-  if (options.minrate) {
-    const arg = ['-minrate', options.minrate];
-    str.push(...arg);
-  }
-
-  if (options.maxrate) {
-    const arg = ['-maxrate', options.maxrate];
-    str.push(...arg);
-  }
-
-  if (options.bufsize) {
-    const arg = ['-bufsize', options.bufsize];
-    str.push(...arg);
-  }
-
-  if (options.pixelFormat && options.pixelFormat !== 'auto') {
-    const arg = ['-pix_fmt', options.pixelFormat];
-    str.push(...arg);
-  }
-
-  if (options.frameRate && options.frameRate !== 'auto') {
-    const arg = ['-r', options.frameRate];
-    str.push(...arg);
-  }
-
-  if (options.tune && options.tune !== 'none') {
-    const arg = ['-tune', options.tune];
-    str.push(...arg);
-  }
-
-  if (options.profile && options.profile !== 'none') {
-    const arg = ['-profile:v', options.profile];
-    str.push(...arg);
-  }
-
-  if (options.level && options.level !== 'none') {
-    const arg = ['-level', options.level];
-    str.push(...arg);
+    flags.push(...arg);
   }
 
   if (options.optimize && options.optimize !== 'none') {
     const arg = ['-movflags', 'faststart'];
-    str.push(...arg);
-  }
-
-  if (options.aspect && options.aspect !== 'auto') {
-    const arg = ['-aspect', options.aspect];
-    str.push(...arg);
+    flags.push(...arg);
   }
 
   // Set video filters.
   const vf = setVideoFilters(options);
-  str.push(...vf);
+  flags.push(...vf);
 
   // Audio.
   if (options.channel && options.channel !== 'source') {
     const arg = ['-rematrix_maxval', '1.0', '-ac', options.channel];
-    str.push(...arg);
+    flags.push(...arg);
   }
 
   if (options.quality && options.quality !== 'auto') {
@@ -183,26 +157,22 @@ function build(opt) {
     } else {
       arg = ['-b:a', options.quality];
     }
-    str.push(...arg);
+    flags.push(...arg);
   }
 
   if (options.sampleRate && options.sampleRate !== 'auto') {
     const arg = ['-ar', options.sampleRate];
-    str.push(...arg);
+    flags.push(...arg);
   }
 
   // Set audio filters.
   const af = setAudioFilters(options);
-  str.push(...af);
+  flags.push(...af);
 
+  // Set 2 pass output if option is set.
   if (options.pass === '2') {
-    const op = '/dev/null && \\ \n'; // For Windows use `NUL && \`
-    const copy = str.slice(); // Array clone for pass 2.
-
-    // Rewrite command with 1 and 2 pass flags and append to str array.
-    str.push(...['-pass', '1', op]);
-    copy.push(...['-pass', '2']);
-    str.push(...copy);
+    const copy = set2Pass(flags);
+    flags.push(...copy);
   }
 
   // Extra flags.
@@ -211,9 +181,9 @@ function build(opt) {
     '-f', `${container}`,
     output,
   ];
-  str.push(...extra);
+  flags.push(...extra);
 
-  return str.join(' ');
+  return flags.join(' ');
 }
 
 export default {
