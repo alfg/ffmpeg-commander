@@ -16,6 +16,10 @@ const config = {
       { name: 'WAV', value: 'wav' },
     ],
   },
+  trim: [
+    { name: 'None', value: false },
+    { name: 'Enabled', value: true },
+  ],
   codecs: {
     video: [
       { name: 'x264', value: 'x264', supported: ['mp4', 'mkv'] },

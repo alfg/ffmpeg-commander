@@ -1,4 +1,9 @@
-const optionsMap = {
+const formatOptionsMap = {
+  startTime: '-ss',
+  stopTime: '-to',
+};
+
+const videoOptionsMap = {
   vcodec: '-c:v',
   preset: '-preset',
   bitrate: '-b:v',
@@ -17,6 +22,19 @@ const audioOptionsMap = {
   acodec: '-c:a',
   sampleRate: '-ar',
 };
+
+function setFlagsFromMap(map, options) {
+  const flags = [];
+  // Set flags by adding provided options from the map parameter and adding the
+  // value to the flags array.
+  Object.keys(map).forEach((o) => {
+    if (options[o] && options[o] !== 'none' && options[o] !== 'auto') {
+      const arg = [map[o], options[o]];
+      flags.push(...arg);
+    }
+  });
+  return flags;
+}
 
 // Builds an array of FFmpeg video filters (-vf).
 function setVideoFilters(options) {
@@ -90,22 +108,16 @@ function set2Pass(flags) {
   return copy;
 }
 
+function setFormatFlags(options) {
+  return setFlagsFromMap(formatOptionsMap, options);
+}
+
 function setVideoFlags(options) {
-  const flags = [];
-
-  // Set flags by adding provided options from the optionsMap and adding the
-  // value to the flags array.
-  Object.keys(optionsMap).forEach((o) => {
-    if (options[o] && options[o] !== 'none' && options[o] !== 'auto') {
-      const arg = [optionsMap[o], options[o]];
-      flags.push(...arg);
-    }
-  });
+  const flags = setFlagsFromMap(videoOptionsMap, options);
 
   //
-  // Set more complex options that can't be set from the optionsMap.
+  // Set more complex options that can't be set from the videoOptionsMap.
   //
-
   if (options.hardwareAccelerationOption === 'nvenc') {
     // Replace encoder with NVidia hardware accelerated encoder.
     // eslint-disable-next-line array-callback-return
@@ -134,21 +146,11 @@ function setVideoFlags(options) {
 }
 
 function setAudioFlags(options) {
-  const flags = [];
-
-  // Set flags by adding provided options from the audioOptionsMap and adding the
-  // value to the flags array.
-  Object.keys(audioOptionsMap).forEach((o) => {
-    if (options[o] && options[o] !== 'none' && options[o] !== 'auto') {
-      const arg = [audioOptionsMap[o], options[o]];
-      flags.push(...arg);
-    }
-  });
+  const flags = setFlagsFromMap(audioOptionsMap, options);
 
   //
-  // Set more complex options that can't be set from the optionsMap.
+  // Set more complex options that can't be set from the audioOptionsMap.
   //
-
   if (options.channel && options.channel !== 'source') {
     const arg = ['-rematrix_maxval', '1.0', '-ac', options.channel];
     flags.push(...arg);
@@ -175,6 +177,12 @@ function build(opt) {
     'ffmpeg',
     '-i', `${input}`,
   ];
+
+  // Set format flags if trim options are set.
+  if (options.trim) {
+    const formatFlags = setFormatFlags(options);
+    flags.push(...formatFlags);
+  }
 
   // Set video flags.
   const videoFlags = setVideoFlags(options);

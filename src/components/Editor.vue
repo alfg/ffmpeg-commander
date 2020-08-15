@@ -19,15 +19,15 @@
 
     <b-tabs class="mt-4">
       <b-tab title="Format" class="mt-2">
-        <Format v-model="form.container" />
+        <Format v-model="form.format" />
       </b-tab>
 
       <b-tab title="Video" class="mt-2">
-        <Video :container="form.container" v-model="form.video" />
+        <Video :container="form.format.container" v-model="form.video" />
       </b-tab>
 
       <b-tab title="Audio" class="mt-2">
-        <Audio :container="form.container" v-model="form.audio" />
+        <Audio :container="form.format.container" v-model="form.audio" />
       </b-tab>
 
       <b-tab title="Filters" class="mt-2" disabled>
@@ -90,7 +90,12 @@ export default {
       form: {
         input: 'input.mp4',
         output: 'output.mp4',
-        container: 'mp4',
+        format: {
+          container: 'mp4',
+          trim: false,
+          startTime: null,
+          stopTime: null,
+        },
         video: {
           codec: 'x264',
           preset: 'none',
@@ -164,13 +169,17 @@ export default {
     },
     generateCommand() {
       const {
-        input, output, container, video, audio,
+        input, output, format, video, audio,
       } = this.form;
 
       const options = {
         input,
         output,
-        container,
+
+        container: format.container,
+        trim: format.trim,
+        startTime: format.startTime,
+        stopTime: format.stopTime,
         vcodec: codecMap[video.codec],
         preset: video.preset,
         hardwareAccelerationOption: video.hardware_acceleration_option,
@@ -206,9 +215,9 @@ export default {
     },
     updateOutput() {
       if (this.form.output) {
-        const { container, output } = this.form;
+        const { format, output } = this.form;
         const ext = path.extname(output);
-        this.form.output = `${output.replace(ext, `.${container}`)}`;
+        this.form.output = `${output.replace(ext, `.${format.container}`)}`;
       }
     },
     copyToClipboard() {
@@ -221,11 +230,16 @@ export default {
     },
     transformToJSON(form) {
       const {
-        container, video, audio,
+        format, video, audio,
       } = form;
 
       const json = {
-        container,
+        format: {
+          container: format.container,
+          trim: format.trim,
+          startTime: format.startTime,
+          stopTime: format.stopTime,
+        },
         video: {
           codec: codecMap[video.codec],
           preset: video.preset,
