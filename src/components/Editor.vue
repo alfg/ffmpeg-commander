@@ -205,12 +205,10 @@ export default {
       this.cmd = ffmpeg.build(options);
     },
     updateOutput() {
-      if (this.fileInput && this.fileInput.name) {
-        const { container } = this.form;
-        const { name } = this.fileInput;
-        const ext = path.extname(name);
-        const outfile = `${name.replace(ext, `.out.${container}`)}`;
-        this.form.output = outfile;
+      if (this.form.output) {
+        const { container, output } = this.form;
+        const ext = path.extname(output);
+        this.form.output = `${output.replace(ext, `.${container}`)}`;
       }
     },
     copyToClipboard() {
