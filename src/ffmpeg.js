@@ -11,8 +11,11 @@ const optionsMap = {
   profile: '-profile:v',
   level: '-level',
   aspect: '-aspect',
+};
 
+const audioOptionsMap = {
   acodec: '-c:a',
+  sampleRate: '-ar',
 };
 
 // Builds an array of FFmpeg video filters (-vf).
@@ -87,20 +90,8 @@ function set2Pass(flags) {
   return copy;
 }
 
-// Build an array of FFmpeg from options parameter.
-function build(opt) {
-  const options = opt || {};
-
-  const {
-    input,
-    output,
-    container,
-  } = options;
-
-  const flags = [
-    'ffmpeg',
-    '-i', `${input}`,
-  ];
+function setVideoFlags(options) {
+  const flags = [];
 
   // Set flags by adding provided options from the optionsMap and adding the
   // value to the flags array.
@@ -139,31 +130,63 @@ function build(opt) {
     const arg = ['-movflags', 'faststart'];
     flags.push(...arg);
   }
+  return flags;
+}
 
-  // Set video filters.
-  const vf = setVideoFilters(options);
-  flags.push(...vf);
+function setAudioFlags(options) {
+  const flags = [];
 
-  // Audio.
+  // Set flags by adding provided options from the audioOptionsMap and adding the
+  // value to the flags array.
+  Object.keys(audioOptionsMap).forEach((o) => {
+    if (options[o] && options[o] !== 'none' && options[o] !== 'auto') {
+      const arg = [audioOptionsMap[o], options[o]];
+      flags.push(...arg);
+    }
+  });
+
+  //
+  // Set more complex options that can't be set from the optionsMap.
+  //
+
   if (options.channel && options.channel !== 'source') {
     const arg = ['-rematrix_maxval', '1.0', '-ac', options.channel];
     flags.push(...arg);
   }
 
   if (options.quality && options.quality !== 'auto') {
-    let arg;
-    if (options.quality === 'custom') {
-      arg = ['-b:a', options.audioBitrate];
-    } else {
-      arg = ['-b:a', options.quality];
-    }
+    const arg = ['-b:a', options.quality === 'custom' ? options.audioBitrate : options.quality];
     flags.push(...arg);
   }
+  return flags;
+}
 
-  if (options.sampleRate && options.sampleRate !== 'auto') {
-    const arg = ['-ar', options.sampleRate];
-    flags.push(...arg);
-  }
+// Build an array of FFmpeg from options parameter.
+function build(opt) {
+  const options = opt || {};
+
+  const {
+    input,
+    output,
+    container,
+  } = options;
+
+  const flags = [
+    'ffmpeg',
+    '-i', `${input}`,
+  ];
+
+  // Set video flags.
+  const videoFlags = setVideoFlags(options);
+  flags.push(...videoFlags);
+
+  // Set video filters.
+  const vf = setVideoFilters(options);
+  flags.push(...vf);
+
+  // Set audio flags.
+  const audioFlags = setAudioFlags(options);
+  flags.push(...audioFlags);
 
   // Set audio filters.
   const af = setAudioFilters(options);
