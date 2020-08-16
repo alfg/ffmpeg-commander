@@ -27,9 +27,16 @@ jobs:
       - run: npm ci 
       - run: npm run build
 
-      - name: deploy
-        uses: peaceiris/actions-gh-pages@v3.6.4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
+      # - name: deploy
+      #   uses: peaceiris/actions-gh-pages@v3.6.4
+      #   with:
+      #     github_token: ${{ secrets.GITHUB_TOKEN }}
+      #     publish_dir: ./dist
+
+      - name: Publish
+        run: |
+          git remote set-url origin https://git:${GITHUB_TOKEN}@github.com/alfg/ffmpeg-commander.git
+          npx gh-pages -d build -u "github-actions-bot <support+actions@github.com>"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
