@@ -1,21 +1,27 @@
 <template>
   <div class="editor">
-    <b-form-group label="Input:" label-for="input">
-      <b-form-input
-        class="mb-2"
-        v-model="form.input"
-        :state="Boolean(form.input)"
-        placeholder="Example: input.mp4"
-      ></b-form-input>
-    </b-form-group>
+    <b-form-row>
+      <b-col>
+        <b-form-group label="Input:" label-for="input">
+          <b-form-input
+            class="mb-2"
+            v-model="form.input"
+            :state="Boolean(form.input)"
+            placeholder="Example: input.mp4"
+          ></b-form-input>
+        </b-form-group>
+      </b-col>
 
-    <b-form-group label="Output:" label-for="output">
-      <b-form-input
-        v-model="form.output"
-        :state="Boolean(form.output)"
-        placeholder="Example: output.mp4"
-      ></b-form-input>
-    </b-form-group>
+      <b-col>
+        <b-form-group label="Output:" label-for="output">
+          <b-form-input
+            v-model="form.output"
+            :state="Boolean(form.output)"
+            placeholder="Example: output.mp4"
+          ></b-form-input>
+        </b-form-group>
+      </b-col>
+    </b-form-row>
 
     <b-tabs class="mt-4">
       <b-tab title="Format" class="mt-2">
@@ -30,11 +36,13 @@
         <Audio :container="form.format.container" v-model="form.audio" />
       </b-tab>
 
-      <b-tab title="Filters" class="mt-2" disabled>
+      <b-tab title="Filters" class="mt-2">
         <Filters v-model="form.filters" />
       </b-tab>
-      <b-tab title="Settings" class="mt-2" disabled></b-tab>
+      <b-tab title="Options" class="mt-2" disabled></b-tab>
     </b-tabs>
+
+    <hr />
 
     <div class="code">
       <b-form-textarea
@@ -92,7 +100,7 @@ export default {
         output: 'output.mp4',
         format: {
           container: 'mp4',
-          trim: false,
+          clip: false,
           startTime: null,
           stopTime: null,
         },
@@ -128,6 +136,16 @@ export default {
           volume: 100,
         },
         filters: {
+          deband: false,
+          deshake: false,
+          deflicker: false,
+          dejudder: false,
+          denoise: 'none',
+          deinterlace: 'none',
+          brightness: 0,
+          contrast: 0,
+          saturation: 0,
+          gamma: 0,
         },
       },
       containers,
@@ -169,17 +187,20 @@ export default {
     },
     generateCommand() {
       const {
-        input, output, format, video, audio,
+        input, output, format, video, audio, filters,
       } = this.form;
 
       const options = {
         input,
         output,
 
+        // Format.
         container: format.container,
-        trim: format.trim,
+        clip: format.clip,
         startTime: format.startTime,
         stopTime: format.stopTime,
+
+        // Video.
         vcodec: codecMap[video.codec],
         preset: video.preset,
         hardwareAccelerationOption: video.hardware_acceleration_option,
@@ -203,6 +224,7 @@ export default {
         aspect: video.aspect,
         scaling: video.scaling,
 
+        // Audio.
         acodec: codecMap[audio.codec],
         channel: audio.channel,
         quality: audio.quality,
@@ -210,6 +232,17 @@ export default {
         sampleRate: audio.sampleRate,
         volume: audio.volume,
 
+        // Filters.
+        deband: filters.deband,
+        deshake: filters.deshake,
+        deflicker: filters.deflicker,
+        dejudder: filters.dejudder,
+        denoise: filters.denoise,
+        deinterlace: filters.deinterlace,
+        brightness: filters.brightness,
+        contrast: filters.contrast,
+        saturation: filters.saturation,
+        gamma: filters.gamma,
       };
       this.cmd = ffmpeg.build(options);
     },
@@ -230,13 +263,13 @@ export default {
     },
     transformToJSON(form) {
       const {
-        format, video, audio,
+        format, video, audio, filters,
       } = form;
 
       const json = {
         format: {
           container: format.container,
-          trim: format.trim,
+          clip: format.clip,
           startTime: format.startTime,
           stopTime: format.stopTime,
         },
@@ -271,6 +304,18 @@ export default {
           bitrate: audio.bitrate,
           sampleRate: audio.sampleRate,
           volume: audio.volume,
+        },
+        filter: {
+          deband: filters.deband,
+          deshake: filters.deshake,
+          deflicker: filters.deflicker,
+          dejudder: filters.dejudder,
+          denoise: filters.denoise,
+          deinterlace: filters.deinterlace,
+          brightness: filters.brightness,
+          contrast: filters.contrast,
+          saturation: filters.saturation,
+          gamma: filters.gamma,
         },
       };
       return json;

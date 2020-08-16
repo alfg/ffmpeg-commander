@@ -1,7 +1,5 @@
 # ffmpeg-commander
-> `ffmpeg-commander` is a simple web UI for generating FFmpeg commands.
-
-* Currently a work-in-progress! Check back for updates!
+> `ffmpeg-commander` is a simple web UI for generating common FFmpeg commands.
 
 https://alfg.github.io/ffmpeg-commander/
 
@@ -31,6 +29,14 @@ npm run deploy
 docker build -t ffmpeg-commander .
 docker run -it -p 8080:80 --rm ffmpeg-commander
 ```
+
+### TODO
+* Pre-configured presets
+* Expand on Filter options
+* Local settings & preferences
+* Codec-specific options
+* Share-friendly URLs
+* Roll-over explain tooltips
 
 ## License
 MIT

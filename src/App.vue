@@ -10,12 +10,6 @@
     </b-navbar>
 
     <div id="app" class="container">
-      <div class="mt-2">
-        <b-alert
-          variant="warning"
-          show
-        >⚠️ Currently a work in progress. Check back for updates.</b-alert>
-      </div>
       <Editor />
     </div>
 

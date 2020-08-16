@@ -16,7 +16,7 @@ const config = {
       { name: 'WAV', value: 'wav' },
     ],
   },
-  trim: [
+  clip: [
     { name: 'None', value: false },
     { name: 'Enabled', value: true },
   ],
@@ -246,6 +246,36 @@ const config = {
     { name: '32k', value: '32000' },
     { name: '44.1k', value: '44100' },
     { name: '48k', value: '48000' },
+  ],
+  deband: [
+    { name: 'None', value: false },
+    { name: 'Enabled', value: true },
+  ],
+  deshake: [
+    { name: 'None', value: false },
+    { name: 'Enabled', value: true },
+  ],
+  deflicker: [
+    { name: 'None', value: false },
+    { name: 'Enabled', value: true },
+  ],
+  dejudder: [
+    { name: 'None', value: false },
+    { name: 'Enabled', value: true },
+  ],
+  denoise: [
+    { name: 'None', value: 'none' },
+    { name: 'Default', value: 'default' },
+    { name: 'Light', value: 'light' },
+    { name: 'Medium', value: 'medium' },
+    { name: 'Heavy', value: 'heavy' },
+  ],
+  deinterlace: [
+    { name: 'None', value: 'none' },
+    { name: 'Frame', value: 'frame' },
+    { name: 'Field', value: 'field' },
+    { name: 'Frame Nospatial', value: 'frame_nospatial' },
+    { name: 'Field Nospatial', value: 'field_nospatial' },
   ],
 };
 

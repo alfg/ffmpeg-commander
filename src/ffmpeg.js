@@ -38,9 +38,7 @@ function setFlagsFromMap(map, options) {
 
 // Builds an array of FFmpeg video filters (-vf).
 function setVideoFilters(options) {
-  const vf = [
-    '-vf', '"',
-  ];
+  const vf = [];
 
   if (options.speed && options.speed !== 'auto') {
     const arg = [`setpts=${options.speed}`];
@@ -69,33 +67,105 @@ function setVideoFilters(options) {
     vf.push(scaleFilters.join(':'));
   }
 
-  vf.push('"'); // End of video filters.
-
-  // Only return -vf flag if there are video filter arguments.
-  if (vf.length > 3) {
-    return vf;
+  if (options.deband) {
+    const arg = ['deband'];
+    vf.push(...arg);
   }
-  return [];
+
+  if (options.deshake) {
+    const arg = ['deshake'];
+    vf.push(...arg);
+  }
+
+  if (options.deflicker) {
+    const arg = ['deflicker'];
+    vf.push(...arg);
+  }
+
+  if (options.dejudder) {
+    const arg = ['dejudder'];
+    vf.push(...arg);
+  }
+
+  if (options.denoise !== 'none') {
+    let arg;
+    switch (options.denoise) {
+      case 'light':
+        arg = ['removegrain=22'];
+        break;
+      case 'medium':
+        arg = ['vaguedenoiser=threshold=3:method=soft:nsteps=5'];
+        break;
+      case 'heavy':
+        arg = ['vaguedenoiser=threshold=6:method=soft:nsteps=5'];
+        break;
+      default:
+        arg = ['removegrain=0'];
+        break;
+    }
+    vf.push(...arg);
+  }
+
+  if (options.deinterlace !== 'none') {
+    let arg;
+    switch (options.deinterlace) {
+      case 'frame':
+        arg = ['yadif=0:-1:0'];
+        break;
+      case 'field':
+        arg = ['yadif=1:-1:0'];
+        break;
+      case 'frame_nospatial':
+        arg = ['yadif=2:-1:0'];
+        break;
+      case 'field_nospatial':
+        arg = ['yadif=3:-1:0'];
+        break;
+      default:
+        break;
+    }
+    vf.push(...arg);
+  }
+
+  // EQ Filters.
+  const eq = [];
+  if (parseInt(options.contrast, 10) !== 0) {
+    const arg = [`contrast=${options.contrast}`];
+    eq.push(...arg);
+  }
+
+  if (parseInt(options.brightness, 10) !== 0) {
+    const arg = [`brightness=${options.brightness / 100}`];
+    eq.push(...arg);
+  }
+
+  if (parseInt(options.saturation, 10) !== 0) {
+    const arg = [`saturation=${(options.saturation)}`];
+    eq.push(...arg);
+  }
+
+  if (parseInt(options.gamma, 10) !== 0) {
+    const arg = [`gamma=${options.gamma / 10}`];
+    eq.push(...arg);
+  }
+
+  if (eq.length > 0) {
+    const eqStr = eq.join(':');
+    vf.push(`eq=${eqStr}`);
+  }
+
+  return vf.join(',');
 }
 
 // Builds an array of FFmpeg audio filters (-af).
 function setAudioFilters(options) {
-  const af = [
-    '-af', '"',
-  ];
+  const af = [];
 
   if (options.volume && parseInt(options.volume, 10) !== 100) {
     const arg = [`volume=${options.volume / 100}`];
     af.push(...arg);
   }
-
-  af.push('"'); // End of audio filters.
-
-  // Only return -af flag if there are audio filter arguments.
-  if (af.length > 3) {
-    return af;
-  }
-  return [];
+  return af.join(',');
 }
 
 function set2Pass(flags) {
@@ -178,8 +248,8 @@ function build(opt) {
     '-i', `${input}`,
   ];
 
-  // Set format flags if trim options are set.
-  if (options.trim) {
+  // Set format flags if clip options are set.
+  if (options.clip) {
     const formatFlags = setFormatFlags(options);
     flags.push(...formatFlags);
   }
@@ -190,7 +260,9 @@ function build(opt) {
 
   // Set video filters.
   const vf = setVideoFilters(options);
-  flags.push(...vf);
+  if (vf) {
+    flags.push(`-vf "${vf}"`);
+  }
 
   // Set audio flags.
   const audioFlags = setAudioFlags(options);
@@ -198,7 +270,9 @@ function build(opt) {
 
   // Set audio filters.
   const af = setAudioFilters(options);
-  flags.push(...af);
+  if (af) {
+    flags.push(`-af "${af}"`);
+  }
 
   // Set 2 pass output if option is set.
   if (options.pass === '2') {
@@ -213,7 +287,6 @@ function build(opt) {
     output,
   ];
   flags.push(...extra);
-
   return flags.join(' ');
 }
 

@@ -78,6 +78,8 @@
       </b-form-group>
     </div>
 
+    <hr />
+
     <b-form-row>
       <b-col>
         <b-form-group label="Bitrate:" label-for="bitrate">
@@ -119,6 +121,8 @@
         </b-form-group>
       </b-col>
     </b-form-row>
+
+    <hr />
 
     <b-form-row>
       <b-col>
@@ -199,6 +203,8 @@
         </b-form-group>
       </b-col>
     </b-form-row>
+
+    <hr />
 
     <b-form-row>
       <b-col>
