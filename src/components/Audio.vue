@@ -1,44 +1,18 @@
 <template>
   <div>
     <b-form-row>
-      <b-col>
-        <b-form-group label="Codec:" label-for="audio-codec">
+      <b-col v-for="item in items" :key="item.name">
+        <b-form-group :label="`${item.name}:`" :label-for="item.name">
           <b-form-select
             class="u-full-width"
-            v-bind:value="value.codec"
-            @input="update('codec', $event)"
+            v-bind:value="value[item.name]"
+            @input="update(item.name, $event)"
           >
             <option :value="null" disabled>-- Please select an option --</option>
             <option
-              v-for="o in filteredAudioCodecs"
+              v-for="o in filtered(item.name)"
               :key="o.id"
               :value="o.value">{{o.name}}</option>
-          </b-form-select>
-        </b-form-group>
-      </b-col>
-
-      <b-col>
-        <b-form-group label="Channel:" label-for="audio-channels">
-          <b-form-select
-            class="u-full-width"
-            v-bind:value="value.channel"
-            @input="update('channel', $event)"
-          >
-            <option :value="null" disabled>-- Please select an option --</option>
-            <option v-for="o in audioChannels" :key="o.id" :value="o.value">{{o.name}}</option>
-          </b-form-select>
-        </b-form-group>
-      </b-col>
-
-      <b-col>
-        <b-form-group label="Quality:" label-for="audio-quality">
-          <b-form-select
-            class="u-full-width"
-            v-bind:value="value.quality"
-            @input="update('quality', $event)"
-          >
-            <option :value="null" disabled>-- Please select an option --</option>
-            <option v-for="o in audioQualities" :key="o.id" :value="o.value">{{o.name}}</option>
           </b-form-select>
         </b-form-group>
       </b-col>
@@ -49,19 +23,6 @@
             v-bind:value="value.bitrate"
             @input="update('bitrate', $event)"
           ></b-form-input>
-        </b-form-group>
-      </b-col>
-
-      <b-col>
-        <b-form-group label="Sample Rate:" label-for="audio-sample-rate">
-          <b-form-select
-            class="u-full-width"
-            v-bind:value="value.sampleRate"
-            @input="update('sampleRate', $event)"
-          >
-            <option :value="null" disabled>-- Please select an option --</option>
-            <option v-for="o in sampleRates" :key="o.id" :value="o.value">{{o.name}}</option>
-          </b-form-select>
         </b-form-group>
       </b-col>
 
@@ -93,20 +54,24 @@ export default {
   props: ['value', 'container'],
   data() {
     return {
+      items: [
+        { name: 'codec', config: codecs },
+        { name: 'channel', config: audioChannels },
+        { name: 'quality', config: audioQualities },
+        { name: 'sampleRate', config: sampleRates },
+      ],
       codecs,
-      audioChannels,
-      audioQualities,
-      sampleRates,
     };
   },
-  computed: {
-    filteredAudioCodecs() {
-      return this.codecs.audio.filter(
-        o => !o.supported || o.supported.includes(this.container),
-      );
-    },
-  },
   methods: {
+    filtered(name) {
+      if (name === 'codec') {
+        return this.codecs.audio.filter(
+          o => !o.supported || o.supported.includes(this.container),
+        );
+      }
+      return this.items.find(o => o.name === name).config;
+    },
     update(key, value) {
       this.$emit('input', { ...this.value, [key]: value });
     },

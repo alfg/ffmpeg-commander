@@ -208,7 +208,7 @@ function setVideoFlags(options) {
     flags.push(...arg);
   }
 
-  if (options.optimize && options.optimize !== 'none') {
+  if (options.faststart) {
     const arg = ['-movflags', 'faststart'];
     flags.push(...arg);
   }

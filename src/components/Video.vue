@@ -1,73 +1,25 @@
 <template>
   <div>
+    <!-- 1st Row: Codec and Preset options -->
     <b-form-row>
-      <b-col>
-        <b-form-group label="Codec:" label-for="codec">
+      <b-col v-for="item in items" :key="item.name">
+        <b-form-group :label="`${item.name.replaceAll('_', ' ')}:`" :label-for="item.name">
           <b-form-select
             class="u-full-width"
-            :value="value.codec"
-            @input="update('codec', $event)"
+            v-bind:value="value[item.name]"
+            @input="update(item.name, $event)"
           >
             <option :value="null" disabled>-- Please select an option --</option>
             <option
-              v-for="o in filteredVideoCodecs"
+              v-for="o in filtered(item.name)"
               :key="o.id"
               :value="o.value">{{o.name}}</option>
-          </b-form-select>
-        </b-form-group>
-      </b-col>
-
-      <b-col>
-        <b-form-group label="Preset:" label-for="preset">
-          <b-form-select
-            class="u-full-width"
-            v-bind:value="value.preset"
-            @input="update('preset', $event)"
-          >
-            <option :value="null" disabled>-- Please select an option --</option>
-            <option
-              v-for="o in presets"
-              :key="o.id"
-              :value="o.value">{{o.name}}</option>
-          </b-form-select>
-        </b-form-group>
-      </b-col>
-
-      <b-col>
-        <b-form-group label="Hardware Acceleration:" label-for="hw-accel">
-          <b-form-select
-            class="u-full-width"
-            v-bind:value="value.hardware_acceleration_option"
-            @input="update('hardware_acceleration_option', $event)"
-          >
-            <option :value="null" disabled>-- Please select an option --</option>
-            <option
-              v-for="o in hardwareAccelerationOptions"
-              :key="o.id"
-              :value="o.value"
-            >{{o.name}}</option>
-          </b-form-select>
-        </b-form-group>
-      </b-col>
-
-      <b-col>
-        <b-form-group label="Pass:" label-for="pass">
-          <b-form-select
-            class="u-full-width mb-2"
-            v-bind:value="value.pass"
-            @input="update('pass', $event)"
-          >
-            <option :value="null" disabled>-- Please select an option --</option>
-            <option
-              v-for="o in passOptions"
-              :key="o.id"
-              :value="o.value"
-            >{{o.name}}</option>
           </b-form-select>
         </b-form-group>
       </b-col>
     </b-form-row>
 
+    <!-- CRF slider if CRF enabled -->
     <div v-if="value.pass == 'crf'">
       <b-form-group :label="'CRF:' + value.crf" label-for="crf">
         <b-form-input
@@ -77,162 +29,63 @@
           type="range" min="0" max="51"></b-form-input>
       </b-form-group>
     </div>
-
     <hr />
 
+    <!-- 2nd Row: Bit rate options -->
     <b-form-row>
-      <b-col>
-        <b-form-group label="Bitrate:" label-for="bitrate">
+      <b-col v-for="item in bitrateItems" :key="item.value">
+        <b-form-group :label="`${item.name}:`" :label-for="item.value">
           <b-form-input
-            v-bind:value="value.bitrate"
-            @input="update('bitrate', $event)"
-            placeholder="Bitrate"
-          ></b-form-input>
-        </b-form-group>
-      </b-col>
-
-      <b-col>
-        <b-form-group label="Min Rate:" label-for="minrate">
-          <b-form-input
-            v-bind:value="value.minrate"
-            @input="update('minrate', $event)"
-            placeholder="Bitrate"
-          ></b-form-input>
-        </b-form-group>
-      </b-col>
-
-      <b-col>
-        <b-form-group label="Max Rate:" label-for="maxrate">
-          <b-form-input
-            v-bind:value="value.maxrate"
-            @input="update('maxrate', $event)"
-            placeholder="Bitrate"
-          ></b-form-input>
-        </b-form-group>
-      </b-col>
-
-      <b-col>
-        <b-form-group label="Buffer Size:" label-for="bufsize">
-          <b-form-input
-            v-bind:value="value.bufsize"
-            @input="update('bufsize', $event)"
-            placeholder="Buffer Size"
+            v-bind:value="value[item.value]"
+            @input="update(item.value, $event)"
+            :placeholder="item.name"
           ></b-form-input>
         </b-form-group>
       </b-col>
     </b-form-row>
-
     <hr />
 
+    <!-- 3rd Row: Video editing options -->
     <b-form-row>
-      <b-col>
-        <b-form-group label="Pixel Format:" label-for="pixel_format">
+      <b-col v-for="item in videoEditItems" :key="item.name">
+        <b-form-group :label="`${item.name.replaceAll('_', ' ')}:`" :label-for="item.name">
           <b-form-select
             class="u-full-width"
-            v-bind:value="value.pixel_format"
-            @input="update('pixel_format', $event)"
+            v-bind:value="value[item.name]"
+            @input="update(item.name, $event)"
           >
             <option :value="null" disabled>-- Please select an option --</option>
-            <option v-for="o in pixelFormats" :key="o.id" :value="o.value">{{o.name}}</option>
+            <option
+              v-for="o in item.config"
+              :key="o.id"
+              :value="o.value">{{o.name}}</option>
           </b-form-select>
         </b-form-group>
       </b-col>
+    </b-form-row>
+    <hr />
 
-      <b-col>
-        <b-form-group label="Frame Rate:" label-for="frame_rate">
+    <!-- 4th Row: Video scaling options -->
+    <b-form-row>
+      <b-col v-for="item in videoSizeItems" :key="item.name">
+        <b-form-group :label="`${item.name.replaceAll('_', ' ')}:`" :label-for="item.name">
           <b-form-select
             class="u-full-width"
-            v-bind:value="value.frame_rate"
-            @input="update('frame_rate', $event)"
+            v-bind:value="value[item.name]"
+            @input="update(item.name, $event)"
           >
             <option :value="null" disabled>-- Please select an option --</option>
-            <option v-for="o in frameRates" :key="o.id" :value="o.value">{{o.name}}</option>
-          </b-form-select>
-        </b-form-group>
-      </b-col>
-
-      <b-col>
-        <b-form-group label="Speed:" label-for="speed">
-          <b-form-select
-            class="u-full-width"
-            v-bind:value="value.speed"
-            @input="update('speed', $event)"
-          >
-            <option :value="null" disabled>-- Please select an option --</option>
-            <option v-for="o in speeds" :key="o.id" :value="o.value">{{o.name}}</option>
-          </b-form-select>
-        </b-form-group>
-      </b-col>
-
-      <b-col>
-        <b-form-group label="Tune:" label-for="tune">
-          <b-form-select
-            class="u-full-width"
-            v-bind:value="value.tune"
-            @input="update('tune', $event)"
-          >
-            <option :value="null" disabled>-- Please select an option --</option>
-            <option v-for="o in tunes" :key="o.id" :value="o.value">{{o.name}}</option>
-          </b-form-select>
-        </b-form-group>
-      </b-col>
-
-      <b-col>
-        <b-form-group label="Profile:" label-for="profile">
-          <b-form-select
-            class="u-full-width"
-            v-bind:value="value.profile"
-            @input="update('profile', $event)"
-          >
-            <option :value="null" disabled>-- Please select an option --</option>
-            <option v-for="o in profiles" :key="o.id" :value="o.value">{{o.name}}</option>
-          </b-form-select>
-        </b-form-group>
-      </b-col>
-
-      <b-col>
-        <b-form-group label="Level:" label-for="level">
-          <b-form-select
-            class="u-full-width"
-            v-bind:value="value.level"
-            @input="update('level', $event)"
-          >
-            <option :value="null" disabled>-- Please select an option --</option>
-            <option v-for="o in levels" :key="o.id" :value="o.value">{{o.name}}</option>
+            <option
+              v-for="o in item.config"
+              :key="o.id"
+              :value="o.value">{{o.name}}</option>
           </b-form-select>
         </b-form-group>
       </b-col>
     </b-form-row>
 
-    <hr />
-
+    <!-- Width and Height inputs if Custom Size is enabled -->
     <b-form-row>
-      <b-col>
-        <b-form-group label="Optimize for Web:" label-for="optimize">
-          <b-form-select
-            class="u-full-width"
-            v-bind:value="value.optimize"
-            @input="update('optimize', $event)"
-          >
-            <option :value="null" disabled>-- Please select an option --</option>
-            <option v-for="o in optimize" :key="o.id" :value="o.value">{{o.name}}</option>
-          </b-form-select>
-        </b-form-group>
-      </b-col>
-
-      <b-col>
-        <b-form-group label="Size:" label-for="size">
-          <b-form-select
-            class="u-full-width"
-            v-bind:value="value.size"
-            @input="update('size', $event)"
-          >
-            <option :value="null" disabled>-- Please select an option --</option>
-            <option v-for="o in sizes" :key="o.id" :value="o.value">{{o.name}}</option>
-          </b-form-select>
-        </b-form-group>
-      </b-col>
-
       <b-col v-if="value.size == 'custom'">
         <b-form-group label="Width:" label-for="width">
           <b-form-input
@@ -250,45 +103,6 @@
             @input="update('height', $event)"
             placeholder="Height"
           ></b-form-input>
-        </b-form-group>
-      </b-col>
-
-      <b-col>
-        <b-form-group label="Format:" label-for="format">
-          <b-form-select
-            class="u-full-width"
-            v-bind:value="value.format"
-            @input="update('format', $event)"
-          >
-            <option :value="null" disabled>-- Please select an option --</option>
-            <option v-for="o in formats" :key="o.id" :value="o.value">{{o.name}}</option>
-          </b-form-select>
-        </b-form-group>
-      </b-col>
-
-      <b-col>
-        <b-form-group label="Aspect Ratio:" label-for="aspect-ratio">
-          <b-form-select
-            class="u-full-width"
-            v-bind:value="value.aspect"
-            @input="update('aspect', $event)"
-          >
-            <option :value="null" disabled>-- Please select an option --</option>
-            <option v-for="o in aspects" :key="o.id" :value="o.value">{{o.name}}</option>
-          </b-form-select>
-        </b-form-group>
-      </b-col>
-
-      <b-col>
-        <b-form-group label="Scaling:" label-for="scaling">
-          <b-form-select
-            class="u-full-width"
-            v-bind:value="value.scaling"
-            @input="update('scaling', $event)"
-          >
-            <option :value="null" disabled>-- Please select an option --</option>
-            <option v-for="o in scalings" :key="o.id" :value="o.value">{{o.name}}</option>
-          </b-form-select>
         </b-form-group>
       </b-col>
     </b-form-row>
@@ -309,7 +123,7 @@ const {
   tunes,
   profiles,
   levels,
-  optimize,
+  fastStart,
   sizes,
   formats,
   aspects,
@@ -321,31 +135,45 @@ export default {
   props: ['value', 'container'],
   data() {
     return {
+      items: [
+        { name: 'codec', config: codecs },
+        { name: 'preset', config: presets },
+        { name: 'hardware_acceleration_option', config: hardwareAccelerationOptions },
+        { name: 'pass', config: passOptions },
+      ],
+      bitrateItems: [
+        { name: 'Bit Rate', value: 'bitrate' },
+        { name: 'Min Rate', value: 'minrate' },
+        { name: 'Max Rate', value: 'maxrate' },
+        { name: 'Buffer Size', value: 'bufsize' },
+      ],
+      videoEditItems: [
+        { name: 'pixel_format', config: pixelFormats },
+        { name: 'frame_rate', config: frameRates },
+        { name: 'speed', config: speeds },
+        { name: 'tune', config: tunes },
+        { name: 'profile', config: profiles },
+        { name: 'level', config: levels },
+      ],
+      videoSizeItems: [
+        { name: 'faststart', config: fastStart },
+        { name: 'size', config: sizes },
+        { name: 'format', config: formats },
+        { name: 'aspect', config: aspects },
+        { name: 'scaling', config: scalings },
+      ],
       codecs,
-      presets,
-      hardwareAccelerationOptions,
-      passOptions,
-      pixelFormats,
-      frameRates,
-      speeds,
-      tunes,
-      profiles,
-      levels,
-      optimize,
-      sizes,
-      formats,
-      aspects,
-      scalings,
     };
   },
-  computed: {
-    filteredVideoCodecs() {
-      return this.codecs.video.filter(
-        o => !o.supported || o.supported.includes(this.container),
-      );
-    },
-  },
   methods: {
+    filtered(name) {
+      if (name === 'codec') {
+        return this.codecs.video.filter(
+          o => !o.supported || o.supported.includes(this.container),
+        );
+      }
+      return this.items.find(o => o.name === name).config;
+    },
     update(key, value) {
       this.$emit('input', { ...this.value, [key]: value });
     },

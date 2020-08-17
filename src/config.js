@@ -147,9 +147,9 @@ const config = {
     { name: '5.1', value: '5.1' },
     { name: '5.2', value: '5.2' },
   ],
-  optimize: [
-    { name: 'Web', value: 'web' },
-    { name: 'None', value: 'none' },
+  fastStart: [
+    { name: 'Enabled (faststart)', value: true },
+    { name: 'None', value: false },
   ],
   sizes: [
     { name: 'Source', value: 'source' },

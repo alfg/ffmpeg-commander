@@ -19,7 +19,7 @@
 
     <b-form-row>
       <b-col v-for="item in eq" :key="item.name">
-        <b-form-group :label="`${item.name}:`" :label-for="item.name">
+        <b-form-group :label="`${item.name}: ${value[item.name]}`" :label-for="item.name">
           <b-form-input
             :id="item.name"
             v-bind:value="value[item.name]"
