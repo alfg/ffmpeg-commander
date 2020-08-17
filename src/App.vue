@@ -45,6 +45,10 @@ export default {
   margin-top: 30px;
 }
 
+label {
+  text-transform: capitalize;
+}
+
 footer ul {
   display: inline-block;
   padding-left: 0;

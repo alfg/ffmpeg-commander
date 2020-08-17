@@ -277,6 +277,10 @@ const config = {
     { name: 'Frame Nospatial', value: 'frame_nospatial' },
     { name: 'Field Nospatial', value: 'field_nospatial' },
   ],
+  extraOptions: [
+    { text: 'Force output file format.', value: 'f' },
+    { text: 'Overwrite output files without asking.', value: 'y' },
+  ],
 };
 
 export default config;

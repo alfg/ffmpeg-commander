@@ -281,11 +281,22 @@ function build(opt) {
   }
 
   // Extra flags.
-  const extra = [
-    '-sn',
-    '-f', `${container}`,
-    output,
-  ];
+  const extra = [];
+
+  if (options.extra.includes('f')) {
+    const arg = ['-f', container];
+    extra.push(...arg);
+  }
+
+  if (options.extra.includes('y')) {
+    const arg = ['-y'];
+    extra.push(...arg);
+  }
+
+  // Set output.
+  extra.push(output);
+
+  // Push all flags and join them as a space separated string.
   flags.push(...extra);
   return flags.join(' ');
 }

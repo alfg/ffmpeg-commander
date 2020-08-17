@@ -39,7 +39,9 @@
       <b-tab title="Filters" class="mt-2">
         <Filters v-model="form.filters" />
       </b-tab>
-      <b-tab title="Options" class="mt-2" disabled></b-tab>
+      <b-tab title="Options" class="mt-2">
+        <Options v-model="form.options" />
+      </b-tab>
     </b-tabs>
 
     <hr />
@@ -78,6 +80,7 @@ import Format from './Format.vue';
 import Video from './Video.vue';
 import Audio from './Audio.vue';
 import Filters from './Filters.vue';
+import Options from './Options.vue';
 
 const {
   containers,
@@ -91,6 +94,7 @@ export default {
     Video,
     Audio,
     Filters,
+    Options,
   },
   props: {},
   data() {
@@ -120,7 +124,7 @@ export default {
           tune: 'none',
           profile: 'none',
           level: 'none',
-          optimize: 'web',
+          optimize: 'none',
           size: 'source',
           width: '1080',
           height: '1920',
@@ -146,6 +150,9 @@ export default {
           contrast: 0,
           saturation: 0,
           gamma: 0,
+        },
+        options: {
+          extra: [],
         },
       },
       containers,
@@ -187,10 +194,10 @@ export default {
     },
     generateCommand() {
       const {
-        input, output, format, video, audio, filters,
+        input, output, format, video, audio, filters, options,
       } = this.form;
 
-      const options = {
+      const opt = {
         input,
         output,
 
@@ -243,8 +250,11 @@ export default {
         contrast: filters.contrast,
         saturation: filters.saturation,
         gamma: filters.gamma,
+
+        // Options.
+        extra: options.extra,
       };
-      this.cmd = ffmpeg.build(options);
+      this.cmd = ffmpeg.build(opt);
     },
     updateOutput() {
       if (this.form.output) {
