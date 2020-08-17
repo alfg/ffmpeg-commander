@@ -165,6 +165,12 @@ function setAudioFilters(options) {
     const arg = [`volume=${options.volume / 100}`];
     af.push(...arg);
   }
+
+  if (options.acontrast && parseInt(options.acontrast, 10) !== 33) {
+    const arg = [`acontrast=${options.acontrast / 100}`];
+    af.push(...arg);
+  }
+
   return af.join(',');
 }
 
