@@ -1,10 +1,16 @@
 # ffmpeg-commander
 > `ffmpeg-commander` is a simple web UI for generating common FFmpeg commands.
 
+*Generated options may vary based on your FFmpeg version and build configuration. Tested on version 4.3.1*
+
 https://alfg.github.io/ffmpeg-commander/
 
+![github pages](https://github.com/alfg/ffmpeg-commander/workflows/github%20pages/badge.svg)
+
+Check out [docker-ffmpeg](https://github.com/alfg/docker-ffmpeg) for a customized Docker build of FFmpeg.
+
 ## Development
-`ffmpeg-commander` is built with [Vue.js](https://vuejs.org)
+`ffmpeg-commander` is built with [Vue.js](https://vuejs.org) and [Bootstrap Vue](https://bootstrap-vue.org/).
 
 ### Install
 ```
