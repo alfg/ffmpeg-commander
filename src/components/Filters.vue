@@ -29,8 +29,19 @@
       </b-col>
     </b-form-row>
 
-    <!-- <h4>Audio</h4>
-    <hr /> -->
+    <h4>Audio</h4>
+    <hr />
+    <b-form-row>
+      <b-col v-for="item in dynamics" :key="item.name">
+        <b-form-group :label="`${item.name}: ${value[item.name]}`" :label-for="item.name">
+          <b-form-input
+            :id="item.name"
+            v-bind:value="value[item.name]"
+            @input="update(item.name, $event)"
+            type="range" :min="item.min" :max="item.max"></b-form-input>
+        </b-form-group>
+      </b-col>
+    </b-form-row>
 
   </div>
 </template>
@@ -65,6 +76,9 @@ export default {
         { name: 'brightness', min: -100, max: 100 },
         { name: 'saturation', min: 0, max: 300 },
         { name: 'gamma', min: 1, max: 100 },
+      ],
+      dynamics: [
+        { name: 'acontrast', min: 0, max: 100 },
       ],
     };
   },

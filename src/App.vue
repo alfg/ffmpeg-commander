@@ -9,6 +9,8 @@
       </b-navbar-nav>
     </b-navbar>
 
+    <GitHubCorner />
+
     <div id="app" class="container">
       <Editor />
     </div>
@@ -28,11 +30,13 @@
 </template>
 
 <script>
+import GitHubCorner from './components/GitHubCorner.vue';
 import Editor from './components/Editor.vue';
 
 export default {
   name: 'app',
   components: {
+    GitHubCorner,
     Editor,
   },
 };

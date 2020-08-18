@@ -43,25 +43,32 @@
         <Options v-model="form.options" />
       </b-tab>
     </b-tabs>
-
     <hr />
 
-    <div class="code">
+    <!-- FFmpeg generated command output -->
+    <Command :cmd="cmd" />
+
+    <!-- Hidden textarea so we can use the copy function -->
+    <div class="hidden-cmd">
       <b-form-textarea
         ref="code"
         placeholder="FFmpeg command will be generated here!"
         v-model="cmd"
-        rows="3"
-        max-rows="6"
+        rows="0"
+        max-rows="0"
         plaintext
       ></b-form-textarea>
     </div>
 
     <div class="mt-4">
-      <b-button @click="copyToClipboard">Copy</b-button>
+      <b-button @click="copyToClipboard">{{ copied ? 'Copied!' : 'Copy' }}</b-button>
       <b-button
         class="ml-2"
         @click="toggleJSON">{{ this.showJSON ? 'Hide' : 'Show' }} JSON</b-button>
+      <b-button
+        class="ml-2 float-right"
+        variant="outline-danger"
+        @click="reset">Reset</b-button>
     </div>
 
     <b-card v-if="showJSON" no-body class="mt-3" header="JSON Format">
@@ -81,6 +88,7 @@ import Video from './Video.vue';
 import Audio from './Audio.vue';
 import Filters from './Filters.vue';
 import Options from './Options.vue';
+import Command from './Command.vue';
 
 const {
   containers,
@@ -95,10 +103,12 @@ export default {
     Audio,
     Filters,
     Options,
+    Command,
   },
   props: {},
   data() {
     return {
+      default: {},
       form: {
         input: 'input.mp4',
         output: 'output.mp4',
@@ -150,6 +160,8 @@ export default {
           contrast: 0,
           saturation: 0,
           gamma: 0,
+
+          acontrast: 33,
         },
         options: {
           extra: [],
@@ -159,6 +171,7 @@ export default {
       codecs,
       cmd: null,
       showJSON: false,
+      copied: false,
     };
   },
   computed: {
@@ -176,6 +189,7 @@ export default {
   },
   created() {
     this.generateCommand();
+    this.default = { ...this.form };
   },
   watch: {
     form: {
@@ -250,6 +264,7 @@ export default {
         contrast: filters.contrast,
         saturation: filters.saturation,
         gamma: filters.gamma,
+        acontrast: filters.acontrast,
 
         // Options.
         extra: options.extra,
@@ -267,6 +282,12 @@ export default {
       const copyText = this.$refs.code;
       copyText.select();
       document.execCommand('copy');
+
+      // Update copy button text.
+      this.copied = true;
+      setTimeout(() => {
+        this.copied = false;
+      }, 1000);
     },
     toggleJSON() {
       this.showJSON = !this.showJSON;
@@ -326,21 +347,24 @@ export default {
           contrast: filters.contrast,
           saturation: filters.saturation,
           gamma: filters.gamma,
+          acontrast: filters.acontrast,
         },
       };
       return json;
+    },
+    reset() {
+      this.form = { ...this.default };
     },
   },
 };
 </script>
 
 <style scoped>
-.code {
-  background-color: #f4f4f4;
-  border: 1px solid #aaa;
-  color: #000;
-  font-family: monospace;
-  margin-top: 10px;
-  padding: 5px;
+.hidden-cmd {
+  opacity: 0;
+  height: 0;
+}
+.hidden-cmd textarea {
+  height: 0;
 }
 </style>
