@@ -9,6 +9,9 @@ const tooltips = [
   { value: '-tune', tip: 'Use -tune to change settings based upon the specifics of your input.' },
   { value: '-profile:v', tip: 'The -profile:v option limits the output to a specific H.264 profile. Some devices (mostly very old or obsolete) only support the more limited Constrained Baseline or Main profiles. You can set these profiles with -profile:v baseline or -profile:v main.' },
   { value: '-level', tip: 'Set the -profile:v level for h.264.' },
+  { value: 'copy', tip: 'Skip the decoding and encoding step for the specified stream, so it does only demuxing and muxing.' },
+  { value: 'libx264', tip: 'H.264/AVC Encoder' },
+  { value: 'libx265', tip: 'H.265/HEVC Encoder.' },
 ];
 
 export default tooltips;

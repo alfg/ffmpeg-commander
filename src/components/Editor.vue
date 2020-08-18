@@ -43,18 +43,19 @@
         <Options v-model="form.options" />
       </b-tab>
     </b-tabs>
-
     <hr />
 
+    <!-- FFmpeg generated command output -->
     <Command :cmd="cmd" />
 
-    <div class="code">
+    <!-- Hidden textarea so we can use the copy function -->
+    <div class="hidden-cmd">
       <b-form-textarea
         ref="code"
         placeholder="FFmpeg command will be generated here!"
         v-model="cmd"
-        rows="3"
-        max-rows="6"
+        rows="0"
+        max-rows="0"
         plaintext
       ></b-form-textarea>
     </div>
@@ -359,12 +360,11 @@ export default {
 </script>
 
 <style scoped>
-.code {
-  background-color: #f4f4f4;
-  border: 1px solid #aaa;
-  color: #000;
-  font-family: monospace;
-  margin-top: 10px;
-  padding: 5px;
+.hidden-cmd {
+  opacity: 0;
+  height: 0;
+}
+.hidden-cmd textarea {
+  height: 0;
 }
 </style>
