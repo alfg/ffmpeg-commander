@@ -2,21 +2,21 @@
   <div>
     <code class="command">
       <span
-        :id="`popover-target-${i.value}`"
-        class="tip"
-        v-for="i in renderCmd"
-        :key="i.value">{{ i.value }}</span>
+        :id="`popover-target-${i}`"
+        class="fragment"
+        v-for="(o, i) in renderCmd"
+        :key="`popover-target-${i}`">{{ o.value }}&nbsp;</span>
       <b-popover
         class="tips"
-        :target="`popover-target-${i.value}`"
+        :target="`popover-target-${i}`"
         triggers="hover"
-        v-for="i in renderCmd"
-        :key="`popover-${i.value}`"
-        :disabled="!i.description"
+        v-for="(o, i) in renderCmd"
+        :key="`popover-${i}`"
+        :disabled="!o.description"
         placement="top"
         variant="warning">
-          <template v-slot:title>{{ i.value }}</template>
-          {{ i.description }}
+          <template v-slot:title>{{ o.value }}</template>
+          <span v-html="o.description"></span>
       </b-popover>
     </code>
   </div>
@@ -82,11 +82,12 @@ export default {
   display: inline-block;
 }
 
-span.tip {
-  padding-right: 10px;
+span.fragment {
+  display: inline-block;
+  padding: 0 5px;
 }
 
-span.tip:hover {
+span.fragment:hover {
   background: #444;
 }
 

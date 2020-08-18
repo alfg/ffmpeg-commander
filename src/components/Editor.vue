@@ -47,6 +47,9 @@
 
     <!-- FFmpeg generated command output -->
     <Command :cmd="cmd" />
+    <p class="disclaimer">
+      *Generated options may vary based on your FFmpeg version and build configuration.
+      Tested on version 4.3.1.</p>
 
     <!-- Hidden textarea so we can use the copy function -->
     <div class="hidden-cmd">
@@ -360,6 +363,11 @@ export default {
 </script>
 
 <style scoped>
+.disclaimer {
+  font-style: italic;
+  font-size: 0.8em;
+  padding-top: 6px;
+}
 .hidden-cmd {
   opacity: 0;
   height: 0;

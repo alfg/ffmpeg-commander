@@ -175,7 +175,7 @@ function setAudioFilters(options) {
 }
 
 function set2Pass(flags) {
-  const op = '/dev/null && \\ \n'; // For Windows use `NUL && \`
+  const op = '/dev/null &&'; // For Windows use `NUL && \`
   const copy = flags.slice(); // Array clone for pass 2.
 
   // Rewrite command with 1 and 2 pass flags and append to flags array.

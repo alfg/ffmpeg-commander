@@ -21,8 +21,6 @@
         <ul>
           <li><a href="https://github.com/alfg/ffmpeg-commander">GitHub</a></li>
           <li><a href="https://ffmpeg.org/ffmpeg.html">FFmpeg Docs</a></li>
-          <li>Generated options may vary based on your FFmpeg version and build configuration.
-            Tested on version 4.3.1.</li>
         </ul>
       </div>
     </footer>

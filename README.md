@@ -42,7 +42,6 @@ docker run -it -p 8080:80 --rm ffmpeg-commander
 * Local settings & preferences
 * Codec-specific options
 * Share-friendly URLs
-* Roll-over explain tooltips
 
 ## License
 MIT

@@ -11,7 +11,7 @@
             @input="update('extra', $event)"
             switch
           >
-            {{ option.text }}
+            <span class="desc">{{ option.text }}</span>
           </b-form-checkbox>
         </b-form-group>
       </b-col>
@@ -42,3 +42,9 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.desc {
+  text-transform: none !important;
+}
+</style>
