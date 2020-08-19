@@ -96,6 +96,8 @@
 
 <script>
 import path from 'path';
+import merge from 'lodash.merge';
+import clone from 'lodash.clonedeep';
 import form from '@/form';
 import presets from '@/presets';
 import codecMap from '@/codecs';
@@ -107,6 +109,7 @@ import Audio from './Audio.vue';
 import Filters from './Filters.vue';
 import Options from './Options.vue';
 import Command from './Command.vue';
+
 
 const {
   containers,
@@ -208,7 +211,7 @@ export default {
   },
   created() {
     this.generateCommand();
-    this.default = { ...this.form };
+    this.default = clone(this.form); // Make copy of initial form as defaults.
   },
   watch: {
     form: {
@@ -235,7 +238,7 @@ export default {
     setPreset(value) {
       this.reset();
       const preset = presets.getPreset(value);
-      this.form = { ...this.form, ...preset };
+      this.form = merge(this.form, preset);
       this.preset = value;
     },
     generateCommand() {
@@ -388,7 +391,8 @@ export default {
       this.$emit('input', { ...this.value, [key]: value });
     },
     reset() {
-      this.form = { ...this.default };
+      // Restore form from default copy.
+      this.form = merge(this.form, this.default);
       this.preset = 'custom';
     },
   },
