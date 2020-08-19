@@ -53,12 +53,12 @@
 </template>
 
 <script>
-import config from '@/config';
+import form from '@/form';
 
 const {
   containers,
   clip,
-} = config;
+} = form;
 
 export default {
   name: 'Format',

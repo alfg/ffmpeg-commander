@@ -1,4 +1,4 @@
-const config = {
+const form = {
   containers: {
     video: [
       { name: 'MP4', value: 'mp4' },
@@ -283,4 +283,4 @@ const config = {
   ],
 };
 
-export default config;
+export default form;

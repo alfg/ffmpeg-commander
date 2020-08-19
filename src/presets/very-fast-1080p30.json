@@ -1,0 +1,15 @@
+{
+    "format": {
+        "container": "mp4"
+    },
+    "video": {
+        "codec": "x264",
+        "preset": "veryfast",
+        "crf": 24,
+        "frame_rate": "30",
+        "size": "1080p"
+    },
+    "audio": {
+        "codec": "copy"
+    }
+}

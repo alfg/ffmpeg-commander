@@ -21,6 +21,20 @@
           ></b-form-input>
         </b-form-group>
       </b-col>
+
+      <b-col>
+        <b-form-group label="Preset: " label-for="preset">
+          <b-form-select
+            class="u-full-width"
+            v-model="preset"
+            @change="update('preset', $event)"
+          >
+            <optgroup v-for="(o, i) in presets" :label="i" v-bind:key="i">
+              <option v-for="item in o" :key="item.id" :value="item.value">{{item.name}}</option>
+            </optgroup>
+          </b-form-select>
+        </b-form-group>
+      </b-col>
     </b-form-row>
 
     <b-tabs class="mt-4">
@@ -82,7 +96,8 @@
 
 <script>
 import path from 'path';
-import config from '@/config';
+import form from '@/form';
+import presets from '@/presets';
 import codecMap from '@/codecs';
 import ffmpeg from '@/ffmpeg';
 
@@ -96,7 +111,7 @@ import Command from './Command.vue';
 const {
   containers,
   codecs,
-} = config;
+} = form;
 
 export default {
   name: 'Editor',
@@ -112,6 +127,8 @@ export default {
   data() {
     return {
       default: {},
+      preset: 'custom',
+      presets: presets.getPresetOptions(),
       form: {
         input: 'input.mp4',
         output: 'output.mp4',
@@ -179,8 +196,7 @@ export default {
   },
   computed: {
     formString() {
-      const { form } = this;
-      const json = this.transformToJSON(form);
+      const json = this.transformToJSON(this.form);
 
       // Only return non-null values in JSON string.
       const jsonStr = JSON.stringify(json, (k, v) => {
@@ -202,12 +218,25 @@ export default {
       },
       deep: true,
     },
+    preset: {
+      handler() {
+        if (this.preset !== 'custom') {
+          this.setPreset(this.preset);
+        }
+      },
+    },
   },
   methods: {
     updateFile(file) {
       this.form.input = file ? file.name : '';
       this.updateOutput();
       this.generateCommand();
+    },
+    setPreset(value) {
+      this.reset();
+      const preset = presets.getPreset(value);
+      this.form = { ...this.form, ...preset };
+      this.preset = value;
     },
     generateCommand() {
       const {
@@ -295,10 +324,10 @@ export default {
     toggleJSON() {
       this.showJSON = !this.showJSON;
     },
-    transformToJSON(form) {
+    transformToJSON(formData) {
       const {
         format, video, audio, filters,
-      } = form;
+      } = formData;
 
       const json = {
         format: {
@@ -355,8 +384,12 @@ export default {
       };
       return json;
     },
+    update(key, value) {
+      this.$emit('input', { ...this.value, [key]: value });
+    },
     reset() {
       this.form = { ...this.default };
+      this.preset = 'custom';
     },
   },
 };

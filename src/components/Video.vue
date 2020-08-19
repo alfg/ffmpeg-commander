@@ -110,7 +110,7 @@
 </template>
 
 <script>
-import config from '@/config';
+import form from '@/form';
 
 const {
   codecs,
@@ -128,7 +128,7 @@ const {
   formats,
   aspects,
   scalings,
-} = config;
+} = form;
 
 export default {
   name: 'Video',

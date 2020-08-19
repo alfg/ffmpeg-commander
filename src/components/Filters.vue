@@ -47,7 +47,7 @@
 </template>
 
 <script>
-import config from '@/config';
+import form from '@/form';
 
 const {
   deband,
@@ -56,7 +56,7 @@ const {
   dejudder,
   denoise,
   deinterlace,
-} = config;
+} = form;
 
 export default {
   name: 'Filters',

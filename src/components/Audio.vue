@@ -40,14 +40,14 @@
 </template>
 
 <script>
-import config from '@/config';
+import form from '@/form';
 
 const {
   codecs,
   audioChannels,
   audioQualities,
   sampleRates,
-} = config;
+} = form;
 
 export default {
   name: 'Audio',

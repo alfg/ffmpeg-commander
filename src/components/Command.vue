@@ -56,9 +56,6 @@ export default {
       });
       return output;
     },
-    update(key, value) {
-      this.$emit('input', { ...this.value, [key]: value });
-    },
   },
 };
 </script>

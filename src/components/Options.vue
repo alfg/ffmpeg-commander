@@ -20,11 +20,11 @@
 </template>
 
 <script>
-import config from '@/config';
+import form from '@/form';
 
 const {
   extraOptions,
-} = config;
+} = form;
 
 export default {
   name: 'Filters',
