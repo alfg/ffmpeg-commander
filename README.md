@@ -37,7 +37,6 @@ docker run -it -p 8080:80 --rm ffmpeg-commander
 ```
 
 ### TODO
-* Pre-configured presets
 * Expand on Filter options
 * Local settings & preferences
 * Codec-specific options

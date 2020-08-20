@@ -35,6 +35,7 @@ const tooltips = [
   { value: 'copy', tip: 'Skip the decoding and encoding step for the specified stream, so it does only demuxing and muxing.' },
   { value: 'libx264', tip: 'H.264/AVC Encoder' },
   { value: 'libx265', tip: 'H.265/HEVC Encoder.' },
+  { value: 'scale', tip: 'Scale (resize) the input video, using the libswscale library.' },
 ];
 
 export default tooltips;

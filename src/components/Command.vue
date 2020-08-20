@@ -2,10 +2,35 @@
   <div>
     <code class="command">
       <span
-        :id="`popover-target-${i}`"
-        class="fragment"
         v-for="(o, i) in renderCmd"
-        :key="`popover-target-${i}`">{{ o.value }}&nbsp;</span>
+        :key="`popover-target-${i}`">
+        <template v-if="o.value === '-vf'">
+          <span class="fragment" :id="`popover-target-${i}`">{{ o.value }}&nbsp;</span>
+          <span
+            :id="`popover-target-filter-${j}`"
+            v-for="(f, j) in o.filters"
+            :key="`popover-target-filter-${j}`"
+            class="fragment filter">
+            {{ f.value }}{{ j+1 === o.filters.length ? '' : ',' }}&nbsp;</span>
+        </template>
+        <template v-else>
+          <span class="fragment" :id="`popover-target-${i}`">{{ o.value }}&nbsp;</span>
+        </template>
+
+        <b-popover
+          class="tips"
+          :target="`popover-target-filter-${i}`"
+          triggers="hover"
+          v-for="(o, i) in o.filters"
+          :key="`popover-filter-${i}`"
+          :disabled="!o.description"
+          placement="top"
+          variant="secondary">
+            <template v-slot:title>{{ o.value }}</template>
+            <span v-html="o.description"></span>
+        </b-popover>
+      </span>
+
       <b-popover
         class="tips"
         :target="`popover-target-${i}`"
@@ -42,15 +67,36 @@ export default {
   methods: {
     getToolTips(commandsArr) {
       const output = [];
+      let skip;
 
       // Map tooltip descriptions for known options.
-      commandsArr.forEach((el) => {
+      commandsArr.forEach((el, i) => {
+        if (skip === i) return;
+
         const o = {
           value: el,
         };
         const desc = tooltips.find(t => t.value === el);
         if (desc) {
           o.description = desc.tip;
+        }
+
+        // Get filter fragments.
+        if (el === '-vf') {
+          const filtersOutput = [];
+          const filters = commandsArr[i + 1].split(',');
+          filters.forEach((filter) => {
+            const f = {
+              value: filter,
+            };
+            const filterDesc = tooltips.find(t => filter.includes(t.value));
+            if (filterDesc) {
+              f.description = filterDesc.tip;
+            }
+            filtersOutput.push(f);
+          });
+          o.filters = filtersOutput;
+          skip = i + 1;
         }
         output.push(o);
       });
@@ -62,6 +108,7 @@ export default {
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;700&display=swap');
+
 .command {
   background-color: #000;
   border: 1px solid #aaa;
@@ -86,6 +133,10 @@ span.fragment {
 
 span.fragment:hover {
   background: #444;
+}
+
+span.fragment.filter:hover {
+  background: #38863c;
 }
 
 .tooltip {
