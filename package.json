@@ -4,6 +4,7 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
+    "test:unit": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint",
     "deploy": "npm run build && gh-pages -d dist"
   },
@@ -20,8 +21,10 @@
   "devDependencies": {
     "@vue/cli-plugin-babel": "^4.1.1",
     "@vue/cli-plugin-eslint": "^4.1.1",
+    "@vue/cli-plugin-unit-jest": "^4.5.4",
     "@vue/cli-service": "^4.1.1",
     "@vue/eslint-config-airbnb": "^4.0.0",
+    "@vue/test-utils": "^1.0.3",
     "babel-eslint": "^10.0.1",
     "eslint": "^5.16.0",
     "eslint-plugin-vue": "^5.0.0",
