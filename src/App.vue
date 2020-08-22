@@ -19,6 +19,7 @@
       <hr />
       <div class="text-muted">
         <ul>
+          <li>{{ name }}-{{ version }}</li>
           <li><a href="https://github.com/alfg/ffmpeg-commander">GitHub</a></li>
           <li><a href="https://ffmpeg.org/ffmpeg.html">FFmpeg Docs</a></li>
         </ul>
@@ -28,6 +29,7 @@
 </template>
 
 <script>
+import { name, version } from '../package.json';
 import GitHubCorner from './components/GitHubCorner.vue';
 import Editor from './components/Editor.vue';
 
@@ -36,6 +38,12 @@ export default {
   components: {
     GitHubCorner,
     Editor,
+  },
+  data() {
+    return {
+      name,
+      version,
+    };
   },
 };
 </script>

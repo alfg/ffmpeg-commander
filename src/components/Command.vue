@@ -1,76 +1,54 @@
 <template>
-  <div>
-    <code class="command">
-      <span
+  <div class="command">
+    <!-- Render each command fragment with a popover -->
+    <code class="command-box">
+      <CommandFragment
         v-for="(o, i) in renderCmd"
-        :key="`popover-target-${i}`">
-        <template v-if="o.value === '-vf'">
-          <span class="fragment" :id="`popover-target-${i}`">{{ o.value }}&nbsp;</span>
-          <span
-            :id="`popover-target-filter-${j}`"
-            v-for="(f, j) in o.filters"
-            :key="`popover-target-filter-${j}`"
-            class="fragment filter">
-            {{ f.value }}{{ j+1 === o.filters.length ? '' : ',' }}&nbsp;</span>
-        </template>
-        <template v-else>
-          <span class="fragment" :id="`popover-target-${i}`">{{ o.value }}&nbsp;</span>
-        </template>
-
-        <b-popover
-          class="tips"
-          :target="`popover-target-filter-${i}`"
-          triggers="hover"
-          v-for="(o, i) in o.filters"
-          :key="`popover-filter-${i}`"
-          :disabled="!o.description"
-          placement="top"
-          variant="secondary">
-            <template v-slot:title>{{ o.value }}</template>
-            <span v-html="o.description"></span>
-        </b-popover>
-      </span>
-
-      <b-popover
-        class="tips"
-        :target="`popover-target-${i}`"
-        triggers="hover"
-        v-for="(o, i) in renderCmd"
-        :key="`popover-${i}`"
-        :disabled="!o.description"
-        placement="top"
-        variant="warning">
-          <template v-slot:title>{{ o.value }}</template>
-          <span v-html="o.description"></span>
-      </b-popover>
+        :key="`fragment-${i}`"
+        :index="i"
+        :value="o.value"
+        :filters="o.filters"
+      />
     </code>
+
+    <b-popover
+      class="tips"
+      :target="`popover-target-${i}`"
+      triggers="hover"
+      v-for="(o, i) in renderCmd"
+      :key="`popover-${i}`"
+      :disabled="!o.description"
+      placement="top"
+      variant="warning">
+        <template v-slot:title>{{ o.value }}</template>
+        <span v-html="o.description"></span>
+    </b-popover>
   </div>
 </template>
 
 <script>
 import tooltips from '@/tooltips';
+import CommandFragment from './CommandFragment.vue';
 
 export default {
   name: 'Command',
-  props: ['cmd'],
-  data() {
-    return {
-    };
+  components: {
+    CommandFragment,
   },
+  props: ['cmd'],
   computed: {
     renderCmd() {
-      const s = this.cmd.split(' ');
-      const t = this.getToolTips(s);
-      return t;
+      return this.getToolTips(this.cmd);
     },
   },
   methods: {
     getToolTips(commandsArr) {
+      const cmd = commandsArr.split(' ');
       const output = [];
       let skip;
 
       // Map tooltip descriptions for known options.
-      commandsArr.forEach((el, i) => {
+      cmd.forEach((el, i) => {
         if (skip === i) return;
 
         const o = {
@@ -82,10 +60,12 @@ export default {
         }
 
         // Get filter fragments.
-        if (el === '-vf') {
+        if (el === '-vf' || el === '-af') {
+          console.log('el');
           const filtersOutput = [];
-          const filters = commandsArr[i + 1].split(',');
+          const filters = cmd[i + 1].split(',');
           filters.forEach((filter) => {
+            console.log(filter);
             const f = {
               value: filter,
             };
@@ -100,6 +80,7 @@ export default {
         }
         output.push(o);
       });
+      console.log(output);
       return output;
     },
   },
@@ -109,7 +90,7 @@ export default {
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;700&display=swap');
 
-.command {
+.command-box {
   background-color: #000;
   border: 1px solid #aaa;
   color: #fff;
@@ -120,27 +101,6 @@ export default {
   margin-top: 10px;
   padding: 8px;
   overflow: visible;
-}
-
-.tips {
-  display: inline-block;
-}
-
-span.fragment {
-  display: inline-block;
-  padding: 0 5px;
-}
-
-span.fragment:hover {
-  background: #444;
-}
-
-span.fragment.filter:hover {
-  background: #38863c;
-}
-
-.tooltip {
-  top: -8px !important;
 }
 
 </style>

@@ -53,6 +53,7 @@
       <b-tab title="Filters" class="mt-2">
         <Filters v-model="form.filters" />
       </b-tab>
+
       <b-tab title="Options" class="mt-2">
         <Options v-model="form.options" />
       </b-tab>

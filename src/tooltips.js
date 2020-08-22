@@ -35,7 +35,18 @@ const tooltips = [
   { value: 'copy', tip: 'Skip the decoding and encoding step for the specified stream, so it does only demuxing and muxing.' },
   { value: 'libx264', tip: 'H.264/AVC Encoder' },
   { value: 'libx265', tip: 'H.265/HEVC Encoder.' },
+
+  // Filters.
   { value: 'scale', tip: 'Scale (resize) the input video, using the libswscale library.' },
+  { value: 'deband', tip: 'Remove banding artifacts from input video. It works by replacing banded pixels with average value of referenced pixels.' },
+  { value: 'deflicker', tip: 'Remove temporal frame luminance variations.' },
+  { value: 'deshake', tip: 'Attempt to fix small changes in horizontal and/or vertical shift. This filter helps remove camera shake from hand-holding a camera, bumping a tripod, moving on a vehicle, etc. ' },
+  { value: 'dejudder', tip: 'Remove judder produced by partially interlaced telecined content.' },
+  { value: 'removegrain', tip: 'The removegrain filter is a spatial denoiser for progressive video. ' },
+  { value: 'vaguedenoiser', tip: 'Apply a wavelet based denoiser. It transforms each frame from the video input into the wavelet domain, using Cohen-Daubechies-Feauveau 9/7. Then it applies some filtering to the obtained coefficients. It does an inverse wavelet transform after. Due to wavelet properties, it should give a nice smoothed result, and reduced noise, without blurring picture features.' },
+  { value: 'yadif', tip: 'Deinterlace the input video ("yadif" means "yet another deinterlacing filter"). ' },
+  { value: 'volume', tip: 'Set audio volume expression. <code>output_volume = volume * input_volume</code>' },
+  { value: 'acontrast', tip: 'Simple audio dynamic range compression/expansion filter.' },
 ];
 
 export default tooltips;

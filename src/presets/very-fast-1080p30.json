@@ -7,7 +7,7 @@
         "preset": "veryfast",
         "crf": 24,
         "frame_rate": "30",
-        "size": "1080p"
+        "size": "1920"
     },
     "audio": {
         "codec": "copy"
