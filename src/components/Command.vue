@@ -61,11 +61,9 @@ export default {
 
         // Get filter fragments.
         if (el === '-vf' || el === '-af') {
-          console.log('el');
           const filtersOutput = [];
           const filters = cmd[i + 1].split(',');
           filters.forEach((filter) => {
-            console.log(filter);
             const f = {
               value: filter,
             };
@@ -80,7 +78,6 @@ export default {
         }
         output.push(o);
       });
-      console.log(output);
       return output;
     },
   },
