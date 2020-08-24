@@ -42,8 +42,8 @@ export default {
     },
   },
   methods: {
-    getToolTips(commandsArr) {
-      const cmd = commandsArr.split(' ');
+    getToolTips(commandsStr) {
+      const cmd = commandsStr.split(' ');
       const output = [];
       let skip;
 
