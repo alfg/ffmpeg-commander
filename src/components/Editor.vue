@@ -1,28 +1,7 @@
 <template>
   <div class="editor">
     <b-form-row>
-      <b-col>
-        <b-form-group label="Input:" label-for="input">
-          <b-form-input
-            class="mb-2"
-            v-model="form.input"
-            :state="Boolean(form.input)"
-            placeholder="Example: input.mp4"
-          ></b-form-input>
-        </b-form-group>
-      </b-col>
-
-      <b-col>
-        <b-form-group label="Output:" label-for="output">
-          <b-form-input
-            v-model="form.output"
-            :state="Boolean(form.output)"
-            placeholder="Example: output.mp4"
-          ></b-form-input>
-        </b-form-group>
-      </b-col>
-
-      <b-col>
+      <b-col cols="6">
         <b-form-group label="Preset: " label-for="preset">
           <b-form-select
             class="u-full-width"
@@ -33,6 +12,48 @@
               <option v-for="item in o" :key="item.id" :value="item.value">{{item.name}}</option>
             </optgroup>
           </b-form-select>
+        </b-form-group>
+      </b-col>
+    </b-form-row>
+
+    <b-form-row>
+      <b-col>
+        <b-form-group label="Input:" label-for="input">
+          <b-input-group>
+            <b-form-select
+              class="protocol"
+              v-model="protocolInput"
+              @change="setProtocol('input', $event)"
+            >
+              <option v-for="o in protocols" :key="o.id" :value="o.value">{{o.name}}</option>
+            </b-form-select>
+
+            <b-form-input
+              v-model="form.input"
+              :state="Boolean(form.input)"
+              placeholder="Example: output.mp4"
+            ></b-form-input>
+          </b-input-group>
+        </b-form-group>
+      </b-col>
+
+      <b-col>
+        <b-form-group label="Output:" label-for="output">
+          <b-input-group>
+            <b-form-select
+              class="protocol"
+              v-model="protocolOutput"
+              @change="setProtocol('output', $event)"
+            >
+              <option v-for="o in protocols" :key="o.id" :value="o.value">{{o.name}}</option>
+            </b-form-select>
+
+            <b-form-input
+              v-model="form.output"
+              :state="Boolean(form.output)"
+              placeholder="Example: output.mp4"
+            ></b-form-input>
+          </b-input-group>
         </b-form-group>
       </b-col>
     </b-form-row>
@@ -113,6 +134,7 @@ import Command from './Command.vue';
 
 
 const {
+  protocols,
   containers,
   codecs,
 } = form;
@@ -133,6 +155,8 @@ export default {
       default: {},
       preset: 'custom',
       presets: presets.getPresetOptions(),
+      protocolInput: 'movie.mp4',
+      protocolOutput: 'movie.mp4',
       form: {
         input: 'input.mp4',
         output: 'output.mp4',
@@ -191,6 +215,7 @@ export default {
           extra: [],
         },
       },
+      protocols,
       containers,
       codecs,
       cmd: null,
@@ -231,10 +256,12 @@ export default {
     },
   },
   methods: {
-    updateFile(file) {
-      this.form.input = file ? file.name : '';
-      this.updateOutput();
-      this.generateCommand();
+    setProtocol(type, value) {
+      if (type === 'input') {
+        this.form.input = value;
+      } else if (type === 'output') {
+        this.form.output = value;
+      }
     },
     setPreset(value) {
       this.reset();
@@ -244,10 +271,11 @@ export default {
     },
     generateCommand() {
       const {
-        input, output, format, video, audio, filters, options,
+        protocol, input, output, format, video, audio, filters, options,
       } = this.form;
 
       const opt = {
+        protocol,
         input,
         output,
 
@@ -311,7 +339,9 @@ export default {
       if (this.form.output) {
         const { format, output } = this.form;
         const ext = path.extname(output);
-        this.form.output = `${output.replace(ext, `.${format.container}`)}`;
+        if (ext) {
+          this.form.output = `${output.replace(ext, `.${format.container}`)}`;
+        }
       }
     },
     copyToClipboard() {
@@ -401,10 +431,8 @@ export default {
 </script>
 
 <style scoped>
-.disclaimer {
-  font-style: italic;
-  font-size: 0.8em;
-  padding-top: 6px;
+.protocol {
+  flex: 0 0 20% !important;
 }
 .hidden-cmd {
   opacity: 0;

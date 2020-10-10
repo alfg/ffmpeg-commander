@@ -1,4 +1,14 @@
 const form = {
+  protocols: [
+    { name: 'File', value: 'movie.mp4' },
+    { name: 'FTP', value: 'ftp://[user[:password]@]server[:port]/path/to/remote/movie.mp4' },
+    { name: 'HTTP', value: 'http://server:port/movie.mp4' },
+    { name: 'HTTPS', value: 'https://server:port/movie.mp4' },
+    { name: 'RTMP', value: 'rtmp://[username:password@]server[:port][/app][/instance][/playpath]' },
+    { name: 'SRT', value: 'srt://hostname:port[?options]' },
+    { name: 'TCP', value: 'tcp://hostname:port[?options]' },
+    { name: 'UDP', value: 'udp://hostname:port[?options]' },
+  ],
   containers: {
     video: [
       { name: 'MP4', value: 'mp4' },
