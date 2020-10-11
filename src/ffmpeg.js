@@ -299,6 +299,31 @@ function build(opt) {
     extra.push(...arg);
   }
 
+  if (options.extra.includes('n')) {
+    const arg = ['-n'];
+    extra.push(...arg);
+  }
+
+  if (options.extra.includes('progress')) {
+    const arg = ['-progress pipe:1'];
+    extra.push(...arg);
+  }
+
+  if (options.extra.includes('hide_banner')) {
+    const arg = ['-hide_banner'];
+    extra.push(...arg);
+  }
+
+  if (options.extra.includes('report')) {
+    const arg = ['-report'];
+    extra.push(...arg);
+  }
+
+  if (options.loglevel !== 'none') {
+    const arg = ['-loglevel', options.loglevel];
+    extra.push(...arg);
+  }
+
   // Set output.
   extra.push(output);
 

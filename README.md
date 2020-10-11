@@ -38,7 +38,6 @@ docker run -it -p 8080:80 --rm ffmpeg-commander
 
 ### TODO
 * Expand on Filter options
-* Local settings & preferences
 * Codec-specific options
 * Share-friendly URLs
 

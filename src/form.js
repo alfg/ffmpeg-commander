@@ -290,6 +290,22 @@ const form = {
   extraOptions: [
     { text: 'Force output file format.', value: 'f' },
     { text: 'Overwrite output files without asking.', value: 'y' },
+    { text: 'Do not overwrite output files, and exit immediately if a specified output file already exists.', value: 'n' },
+    { text: 'Send program-friendly progress information to stdout.', value: 'progress' },
+    { text: 'Suppress printing banner.', value: 'hide_banner' },
+    { text: 'Dump full command line and log output to a file named program-YYYYMMDD-HHMMSS.log in the current directory.', value: 'report' },
+  ],
+  logLevels: [
+    { name: 'None', value: 'none' },
+    { name: 'Quiet', value: 'quiet' },
+    { name: 'Panic', value: 'panic' },
+    { name: 'Fatal', value: 'fatal' },
+    { name: 'Error', value: 'error' },
+    { name: 'Warning', value: 'warning' },
+    { name: 'Info', value: 'info' },
+    { name: 'Verbose', value: 'verbose' },
+    { name: 'Debug', value: 'debug' },
+    { name: 'Trace', value: 'trace' },
   ],
 };
 
