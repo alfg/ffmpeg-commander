@@ -213,6 +213,7 @@ export default {
         },
         options: {
           extra: [],
+          loglevel: 'none',
         },
       },
       protocols,
@@ -332,6 +333,7 @@ export default {
 
         // Options.
         extra: options.extra,
+        loglevel: options.loglevel,
       };
       this.cmd = ffmpeg.build(opt);
     },
