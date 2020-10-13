@@ -1,0 +1,15 @@
+{
+    "format": {
+        "container": "webm"
+    },
+    "video": {
+        "codec": "vp9",
+        "profile": 0,
+        "gopsize": 72,
+        "size": "1920",
+        "bitrate": "3000k"
+    },
+    "audio": {
+        "codec": "opus"
+    }
+}
