@@ -33,7 +33,7 @@
 
     <!-- 2nd Row: Bit rate options -->
     <b-form-row>
-      <b-col v-for="item in bitrateItems" :key="item.value">
+      <b-col v-for="item in filteredBitrateItems" :key="item.value">
         <b-form-group :label="`${item.name}:`" :label-for="item.value">
           <b-form-input
             v-bind:value="value[item.value]"
@@ -106,6 +106,21 @@
         </b-form-group>
       </b-col>
     </b-form-row>
+    <hr />
+
+    <!-- Optional Codec Params -->
+    <b-form-group
+      v-if="['x264', 'x265'].includes(value.codec)"
+      label="Codec Options:"
+      label-for="codec-options">
+      <b-form-textarea
+        id="codec-options"
+        @input="update('codec_options', $event)"
+        :placeholder="'Set optional -' + value.codec + '-params here to overwrite encoder options.'"
+        rows="1"
+        max-rows="6"
+      ></b-form-textarea>
+    </b-form-group>
   </div>
 </template>
 
@@ -146,6 +161,7 @@ export default {
         { name: 'Min Rate', value: 'minrate' },
         { name: 'Max Rate', value: 'maxrate' },
         { name: 'Buffer Size', value: 'bufsize' },
+        { name: 'GOP Size', value: 'gopsize', supported: ['x264'] },
       ],
       videoEditItems: [
         { name: 'pixel_format', config: pixelFormats },
@@ -164,6 +180,13 @@ export default {
       ],
       codecs,
     };
+  },
+  computed: {
+    filteredBitrateItems() {
+      return this.bitrateItems.filter(
+        o => !o.supported || (o.supported && o.supported.includes(this.value.codec)),
+      );
+    },
   },
   methods: {
     filtered(name) {

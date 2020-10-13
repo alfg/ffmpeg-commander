@@ -176,6 +176,7 @@ export default {
           minrate: null,
           maxrate: null,
           bufsize: null,
+          gopsize: null,
           pixel_format: 'auto',
           frame_rate: 'auto',
           speed: 'auto',
@@ -189,6 +190,7 @@ export default {
           format: 'widescreen',
           aspect: 'auto',
           scaling: 'auto',
+          codec_options: '',
         },
         audio: {
           codec: 'copy',
@@ -296,6 +298,7 @@ export default {
         minrate: video.minrate,
         maxrate: video.maxrate,
         bufsize: video.bufsize,
+        gopsize: video.gopsize,
         pixelFormat: video.pixel_format,
         frameRate: video.frame_rate,
         speed: video.speed,
@@ -309,6 +312,7 @@ export default {
         format: video.format,
         aspect: video.aspect,
         scaling: video.scaling,
+        codecOptions: video.codec_options,
 
         // Audio.
         acodec: codecMap[audio.codec],
@@ -382,6 +386,7 @@ export default {
           minrate: video.minrate,
           maxrate: video.maxrate,
           bufsize: video.bufsize,
+          gopsize: video.gopsize,
           pixel_format: video.pixel_format,
           frame_rate: video.frame_rate,
           speed: video.speed,
@@ -395,6 +400,7 @@ export default {
           format: video.format,
           aspect: video.aspect,
           scaling: video.scaling,
+          codec_options: video.codec_options,
         },
         audio: {
           codec: codecMap[audio.codec],
@@ -433,6 +439,11 @@ export default {
 </script>
 
 <style scoped>
+.disclaimer {
+  font-style: italic;
+  font-size: 0.8em;
+  padding-top: 6px;
+}
 .protocol {
   flex: 0 0 20% !important;
 }
