@@ -10,6 +10,7 @@ const videoOptionsMap = {
   minrate: '-minrate',
   maxrate: '-maxrate',
   bufsize: '-bufsize',
+  gopsize: '-g',
   pixelFormat: '-pix_fmt',
   frameRate: '-r',
   tune: '-tune',
@@ -218,6 +219,12 @@ function setVideoFlags(options) {
     const arg = ['-movflags', 'faststart'];
     flags.push(...arg);
   }
+
+  if (options.codecOptions && ['libx264', 'libx265'].includes(options.vcodec)) {
+    const arg = [`-${options.vcodec.replace('lib', '')}-params`, options.codecOptions];
+    flags.push(...arg);
+  }
+
   return flags;
 }
 

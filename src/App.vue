@@ -1,12 +1,14 @@
 <template>
   <div>
     <b-navbar type="dark" variant="dark">
-      <b-navbar-nav>
-        <b-nav-item href="#">
-          <img src="../public/ffmpeg.svg" height="25" width="25" alt="FFmpeg Commander" />
-          FFmpeg Commander
-        </b-nav-item>
-      </b-navbar-nav>
+      <div class="container">
+        <b-navbar-nav>
+          <b-nav-item href="#">
+            <img src="../public/ffmpeg.svg" height="25" width="25" alt="FFmpeg Commander" />
+            FFmpeg Commander
+          </b-nav-item>
+        </b-navbar-nav>
+      </div>
     </b-navbar>
 
     <GitHubCorner />

@@ -16,6 +16,7 @@ const tooltips = [
   { value: '-minrate', tip: 'Specifies a minimum tollerance to be used.' },
   { value: '-maxrate', tip: 'Specifies a maximum tolerance. This is only used in conjuction with -bufsize.' },
   { value: '-bufsize', tip: 'Specifies the decoder buffer size, which determines the variability of the output bitrate.' },
+  { value: '-g', tip: 'Specifies the GOP (Group of Pictures) size. This option is currently only supported by the x264 encoder.' },
   { value: '-pix_fmt', tip: 'Set pixel format. Use -pix_fmts to show all the supported pixel formats.' },
   { value: '-r', tip: 'Set frame rate (Hz value, fraction or abbreviation).' },
   { value: '-tune', tip: 'Use -tune to change settings based upon the specifics of your input.' },
@@ -23,6 +24,8 @@ const tooltips = [
   { value: '-level', tip: 'Set the -profile:v level for h.264.' },
   { value: '-movflags faststart', tip: 'Move the index (moov atom) to the beginning of the file. This operation can take a while, and will not work in various situations such as fragmented output, thus it is not enabled by default.' },
   { value: '-aspect', tip: 'Set the video display aspect ratio specified by aspect.' },
+  { value: '-x264-params', tip: 'Set optional x264 parameters to the encoder.' },
+  { value: '-x265-params', tip: 'Set optional x265 parameters to the encoder.' },
   { value: '-vf', tip: 'Create the filtergraph specified by <em>filtergraph</em> and use it to filter the stream. This is an alias for <code>-filter:v</code>, see the <a href="https://ffmpeg.org/ffmpeg.html#filter_005foption">-filter option.</a>' },
   { value: '-af', tip: 'Create the filtergraph specified by <em>filtergraph</em> and use it to filter the stream. This is an alias for <code>-filter:a</code>, see the <a href="https://ffmpeg.org/ffmpeg.html#filter_005foption">-filter option.</a>' },
   { value: '-rematrix_maxval', tip: 'Set maximum output value for rematrixing. This can be used to prevent clipping vs. preventing volume reduction. A value of 1.0 prevents clipping.' },
@@ -30,6 +33,11 @@ const tooltips = [
   { value: '-ar', tip: 'Set the audio sampling frequency. For output streams it is set by default to the frequency of the corresponding input stream. For input streams this option only makes sense for audio grabbing devices and raw demuxers and is mapped to the corresponding demuxer options.' },
   { value: '-f', tip: 'Force output file format.' },
   { value: '-y', tip: 'Overwrite output files without asking.' },
+  { value: '-n', tip: 'Do not overwrite output files, and exit immediately if a specified output file already exists.' },
+  { value: '-progress', tip: 'Send program-friendly progress information.' },
+  { value: '-hide_banner', tip: 'Suppress printing banner.' },
+  { value: '-report', tip: 'Dump full command line and log output to a file named program-YYYYMMDD-HHMMSS.log in the current directory.' },
+  { value: '-loglevel', tip: 'Set logging level and flags used by the library.' },
 
   // Values.
   { value: 'copy', tip: 'Skip the decoding and encoding step for the specified stream, so it does only demuxing and muxing.' },
