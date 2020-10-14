@@ -14,7 +14,8 @@ const codecs = {
   alac: 'alac',
   dts: 'dca',
   ac3: 'ac3',
-  vorbis: 'libvorbias',
+  vorbis: 'libvorbis',
+  opus: 'libopus',
 
   // Copy codec.
   copy: 'copy',

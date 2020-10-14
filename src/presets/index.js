@@ -1,6 +1,8 @@
 /* eslint-disable import/no-dynamic-require */
 /* eslint-disable global-require */
 
+const LOCALSTORAGE_PRESETS_KEY = 'presets';
+
 const presetOptions = {
   general: [
     { name: 'H264 Very Fast 1080p30', value: 'h264-very-fast-1080p30' },
@@ -23,7 +25,7 @@ const presetOptions = {
 };
 
 function getPresetOptions() {
-  presetOptions.saved = JSON.parse(window.localStorage.getItem('presets'));
+  presetOptions.saved = JSON.parse(window.localStorage.getItem(LOCALSTORAGE_PRESETS_KEY));
   return presetOptions;
 }
 
@@ -34,10 +36,33 @@ function getPreset(preset) {
 }
 
 function getPresetFromLocalStorage(preset) {
-  const data = JSON.parse(window.localStorage.getItem('presets'));
-  const item = data.find(o => o.name === preset).data;
-  console.log(item);
-  return item;
+  const data = JSON.parse(window.localStorage.getItem(LOCALSTORAGE_PRESETS_KEY));
+  return data.find(o => o.value === preset);
+}
+
+function savePresetToLocalStorage(preset, savedPresetName, formData) {
+  const saved = JSON.parse(window.localStorage.getItem(LOCALSTORAGE_PRESETS_KEY)) || [];
+
+  // If a savedPresetName is provided, then we update the loaded preset, otherwise
+  // create a new entry the stored presets array.
+  let presetName;
+  if (savedPresetName) {
+    presetName = preset;
+    const p = saved.find(o => o.value === presetName);
+    p.name = savedPresetName || preset;
+    p.data = formData;
+  } else {
+    const date = new Date();
+    presetName = `preset-${date.toISOString()}`;
+    saved.push({ name: presetName, value: presetName, data: formData });
+  }
+
+  window.localStorage.setItem(LOCALSTORAGE_PRESETS_KEY, JSON.stringify(saved));
+  return presetName;
+}
+
+function deleteAllPresets() {
+  window.localStorage.removeItem(LOCALSTORAGE_PRESETS_KEY);
 }
 
 
@@ -45,4 +70,6 @@ export default {
   getPresetOptions,
   getPreset,
   getPresetFromLocalStorage,
+  savePresetToLocalStorage,
+  deleteAllPresets,
 };
