@@ -8,8 +8,11 @@
             v-model="preset"
             @change="update('preset', $event)"
           >
-            <optgroup v-for="(o, i) in presets" :label="i" v-bind:key="i">
-              <option v-for="item in o" :key="item.id" :value="item.value">{{item.name}}</option>
+            <optgroup v-for="(o, i) in presets" :label="o.name" v-bind:key="i">
+              <option
+                v-for="item in o.data"
+                :key="item.id"
+                :value="item.value">{{item.name}}</option>
             </optgroup>
           </b-form-select>
         </b-form-group>
@@ -137,13 +140,34 @@
           <b-dropdown-item @click="save(true)">
             Save New
           </b-dropdown-item>
+          <b-dropdown-item v-if="presetName" @click="deletePreset">
+            Delete Preset
+          </b-dropdown-item>
+          <b-dropdown-divider></b-dropdown-divider>
+          <b-dropdown-item @click="deleteAllPresetsPrompt">
+            Delete All Saved Presets
+          </b-dropdown-item>
         </b-dropdown>
       </b-button-group>
     </div>
 
+    <!-- JSON config -->
     <b-card v-if="showJSON" no-body class="mt-3" header="JSON Format">
       <pre class="m-0" v-highlightjs="formString"><code></code></pre>
     </b-card>
+
+    <!-- Overlay prompt when deleting all saved presets. -->
+    <b-overlay :show="showDeletePrompt" no-wrap @shown="onShown">
+      <template v-slot:overlay>
+      <div ref="dialog" class="text-center p-3">
+       <p>Are you sure you want to delete all saved presets?</p>
+        <div>
+          <b-button class="mr-3" @click="onCancel">Cancel</b-button>
+          <b-button variant="outline-danger" @click="onOK">Delete All Saved Presets</b-button>
+        </div>
+      </div>
+      </template>
+    </b-overlay>
   </div>
 </template>
 
@@ -257,6 +281,7 @@ export default {
       showJSON: false,
       copied: false,
       saving: false,
+      showDeletePrompt: false,
     };
   },
   computed: {
@@ -487,6 +512,28 @@ export default {
       setTimeout(() => {
         this.saving = false;
       }, 1000);
+    },
+    deletePreset() {
+      presets.deletePreset(this.preset);
+      this.reset();
+    },
+    deleteAllPresetsPrompt() {
+      this.showDeletePrompt = true;
+    },
+    deleteAllPresets() {
+      presets.deleteAllPresets();
+      this.reset();
+    },
+    onShown() {
+      this.$refs.dialog.focus();
+    },
+    onCancel() {
+      this.showDeletePrompt = false;
+    },
+    onOK() {
+      this.deleteAllPresets();
+      this.presets = presets.getPresetOptions();
+      this.showDeletePrompt = false;
     },
   },
 };
