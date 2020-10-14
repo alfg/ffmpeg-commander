@@ -8,10 +8,25 @@
             v-model="preset"
             @change="update('preset', $event)"
           >
-            <optgroup v-for="(o, i) in presets" :label="i" v-bind:key="i">
-              <option v-for="item in o" :key="item.id" :value="item.value">{{item.name}}</option>
+            <optgroup v-for="(o, i) in presets" :label="o.name" v-bind:key="i">
+              <option
+                v-for="item in o.data"
+                :key="item.id"
+                :value="item.value">{{item.name}}</option>
             </optgroup>
           </b-form-select>
+        </b-form-group>
+      </b-col>
+
+      <b-col>
+        <b-form-group
+          label="Preset Name:"
+          label-for="preset-name"
+          v-if="presetName"
+          >
+          <b-form-input
+            v-model="presetName"
+          ></b-form-input>
         </b-form-group>
       </b-col>
     </b-form-row>
@@ -99,20 +114,60 @@
       ></b-form-textarea>
     </div>
 
+    <!-- Button control group -->
     <div class="mt-4">
-      <b-button @click="copyToClipboard">{{ copied ? 'Copied!' : 'Copy' }}</b-button>
-      <b-button
-        class="ml-2"
-        @click="toggleJSON">{{ this.showJSON ? 'Hide' : 'Show' }} JSON</b-button>
-      <b-button
-        class="ml-2 float-right"
-        variant="outline-danger"
-        @click="reset">Reset</b-button>
+      <b-button-group>
+        <b-dropdown
+          variant="primary"
+          split
+          :text="copied ? 'Copied' : 'Copy'"
+          @click="copyToClipboard">
+          <b-dropdown-item @click="toggleJSON">
+            {{ this.showJSON ? 'Hide' : 'Show' }} JSON
+          </b-dropdown-item>
+        </b-dropdown>
+      </b-button-group>
+
+      <b-button-group class="float-right">
+        <b-button
+          class="ml-2 float-right"
+          variant="outline-danger"
+          @click="reset">Reset</b-button>
+        <b-dropdown
+          variant="outline-primary"
+          split
+          :text="saving ? 'Saving...' : 'Save'" @click="save(false)">
+          <b-dropdown-item @click="save(true)">
+            Save New
+          </b-dropdown-item>
+          <b-dropdown-item v-if="presetName" @click="deletePreset">
+            Delete Preset
+          </b-dropdown-item>
+          <b-dropdown-divider></b-dropdown-divider>
+          <b-dropdown-item @click="deleteAllPresetsPrompt">
+            Delete All Saved Presets
+          </b-dropdown-item>
+        </b-dropdown>
+      </b-button-group>
     </div>
 
+    <!-- JSON config -->
     <b-card v-if="showJSON" no-body class="mt-3" header="JSON Format">
       <pre class="m-0" v-highlightjs="formString"><code></code></pre>
     </b-card>
+
+    <!-- Overlay prompt when deleting all saved presets. -->
+    <b-overlay :show="showDeletePrompt" no-wrap @shown="onShown">
+      <template v-slot:overlay>
+      <div ref="dialog" class="text-center p-3">
+       <p>Are you sure you want to delete all saved presets?</p>
+        <div>
+          <b-button class="mr-3" @click="onCancel">Cancel</b-button>
+          <b-button variant="outline-danger" @click="onOK">Delete All Saved Presets</b-button>
+        </div>
+      </div>
+      </template>
+    </b-overlay>
   </div>
 </template>
 
@@ -154,6 +209,7 @@ export default {
     return {
       default: {},
       preset: 'custom',
+      presetName: null,
       presets: presets.getPresetOptions(),
       protocolInput: 'movie.mp4',
       protocolOutput: 'movie.mp4',
@@ -224,6 +280,8 @@ export default {
       cmd: null,
       showJSON: false,
       copied: false,
+      saving: false,
+      showDeletePrompt: false,
     };
   },
   computed: {
@@ -252,8 +310,13 @@ export default {
     },
     preset: {
       handler() {
-        if (this.preset !== 'custom') {
+        if (this.preset.startsWith('preset-')) {
+          const preset = presets.getPresetFromLocalStorage(this.preset);
+          this.form = merge(this.form, preset.data);
+          this.presetName = preset.name;
+        } else if (this.preset !== 'custom' && !this.preset.startsWith('preset-')) {
           this.setPreset(this.preset);
+          this.presetName = null;
         }
       },
     },
@@ -433,6 +496,44 @@ export default {
       // Restore form from default copy.
       this.form = merge(this.form, this.default);
       this.preset = 'custom';
+      this.presetName = null;
+    },
+    save(saveNew = false) {
+      if (saveNew) {
+        this.presetName = null;
+      }
+
+      // Save the preset name and reload the presets list.
+      this.saving = true;
+      const presetName = presets.savePresetToLocalStorage(this.preset, this.presetName, this.form);
+      this.presets = presets.getPresetOptions();
+      this.preset = presetName;
+
+      setTimeout(() => {
+        this.saving = false;
+      }, 1000);
+    },
+    deletePreset() {
+      presets.deletePreset(this.preset);
+      this.reset();
+    },
+    deleteAllPresetsPrompt() {
+      this.showDeletePrompt = true;
+    },
+    deleteAllPresets() {
+      presets.deleteAllPresets();
+      this.reset();
+    },
+    onShown() {
+      this.$refs.dialog.focus();
+    },
+    onCancel() {
+      this.showDeletePrompt = false;
+    },
+    onOK() {
+      this.deleteAllPresets();
+      this.presets = presets.getPresetOptions();
+      this.showDeletePrompt = false;
     },
   },
 };

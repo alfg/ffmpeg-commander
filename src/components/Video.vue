@@ -115,6 +115,7 @@
       label-for="codec-options">
       <b-form-textarea
         id="codec-options"
+        v-bind:value="value.codec_options"
         @input="update('codec_options', $event)"
         :placeholder="'Set optional -' + value.codec + '-params here to overwrite encoder options.'"
         rows="1"
@@ -161,7 +162,7 @@ export default {
         { name: 'Min Rate', value: 'minrate' },
         { name: 'Max Rate', value: 'maxrate' },
         { name: 'Buffer Size', value: 'bufsize' },
-        { name: 'GOP Size', value: 'gopsize', supported: ['x264'] },
+        { name: 'GOP Size', value: 'gopsize', supported: ['x264', 'vp9'] },
       ],
       videoEditItems: [
         { name: 'pixel_format', config: pixelFormats },

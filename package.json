@@ -1,6 +1,6 @@
 {
   "name": "ffmpeg-commander",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
@@ -10,8 +10,8 @@
     "deploy": "npm run build && gh-pages -d dist"
   },
   "dependencies": {
-    "bootstrap": "^4.3.1",
-    "bootstrap-vue": "^2.0.2",
+    "bootstrap": "^4.5.0",
+    "bootstrap-vue": "^2.17.3",
     "core-js": "^3.4.3",
     "gh-pages": "^2.1.1",
     "lodash.clonedeep": "^4.5.0",
