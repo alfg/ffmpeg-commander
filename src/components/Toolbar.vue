@@ -6,6 +6,7 @@
         variant="primary"
         split
         :text="copied ? 'Copied' : 'Copy'"
+        v-b-tooltip.hover.bottom title="Copy to your Clipboard"
         @click="copyToClipboard">
         <b-dropdown-item @click="toggleJSON">
           {{ value.showJSON ? 'Hide' : 'Show' }} JSON
@@ -21,6 +22,7 @@
       <b-dropdown
         variant="outline-primary"
         split
+        v-b-tooltip.hover.bottomright title="Save to Local Storage"
         :text="saving ? 'Saving...' : 'Save'" @click="$emit('save', false)">
         <b-dropdown-item @click="$emit('save', true)">
           Save New
