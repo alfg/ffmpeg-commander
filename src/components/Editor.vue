@@ -1,7 +1,11 @@
 <template>
   <div class="editor">
+
+    <!-- User can load pre-defined presets and can also access their
+    custom saved presets here. -->
     <Presets v-model="preset" />
 
+    <!-- Input and Output protocol and filenames. -->
     <b-form-row>
       <b-col>
         <b-form-group label="Input:" label-for="input">
@@ -44,6 +48,8 @@
       </b-col>
     </b-form-row>
 
+    <!-- Tabs for each command building component.
+    Format, Video, Audio, Filters and Options -->
     <b-tabs class="mt-4">
       <b-tab title="Format" class="mt-2">
         <Format v-model="form.format" />
@@ -67,17 +73,16 @@
     </b-tabs>
     <hr />
 
-    <!-- FFmpeg generated command output -->
+    <!-- FFmpeg generated command output with tooltips. -->
     <Command :cmd="cmd" />
     <p class="disclaimer">
       *Generated options may vary based on your FFmpeg version and build configuration.
       Tested on version 4.3.1.</p>
 
-    <!-- Hidden textarea so we can use the copy function -->
+    <!-- Hidden textarea so we can use the browser copy function. -->
     <div class="hidden-cmd">
       <b-form-textarea
         ref="code"
-        placeholder="FFmpeg command will be generated here!"
         v-model="cmd"
         rows="0"
         max-rows="0"
@@ -85,60 +90,18 @@
       ></b-form-textarea>
     </div>
 
-    <!-- Button control group -->
-    <div class="mt-4">
-      <b-button-group>
-        <b-dropdown
-          variant="primary"
-          split
-          :text="copied ? 'Copied' : 'Copy'"
-          @click="copyToClipboard">
-          <b-dropdown-item @click="toggleJSON">
-            {{ this.showJSON ? 'Hide' : 'Show' }} JSON
-          </b-dropdown-item>
-        </b-dropdown>
-      </b-button-group>
+    <!-- Toolbar is the set of controls for copying the command output,
+    saving and deleting presets. -->
+    <Toolbar
+      :preset="preset"
+      v-model="controls"
+      v-on:reset="reset"
+      v-on:save="save"
+    />
 
-      <b-button-group class="float-right">
-        <b-button
-          class="ml-2 float-right"
-          variant="outline-danger"
-          @click="reset">Reset</b-button>
-        <b-dropdown
-          variant="outline-primary"
-          split
-          :text="saving ? 'Saving...' : 'Save'" @click="save(false)">
-          <b-dropdown-item @click="save(true)">
-            Save New
-          </b-dropdown-item>
-          <b-dropdown-item v-if="preset.presetName" @click="deletePreset">
-            Delete Preset
-          </b-dropdown-item>
-          <b-dropdown-divider></b-dropdown-divider>
-          <b-dropdown-item @click="deleteAllPresetsPrompt">
-            Delete All Saved Presets
-          </b-dropdown-item>
-        </b-dropdown>
-      </b-button-group>
-    </div>
-
-    <!-- JSON config -->
-    <b-card v-if="showJSON" no-body class="mt-3" header="JSON Format">
-      <pre class="m-0" v-highlightjs="formString"><code></code></pre>
-    </b-card>
-
-    <!-- Overlay prompt when deleting all saved presets. -->
-    <b-overlay :show="showDeletePrompt" no-wrap @shown="onShown">
-      <template v-slot:overlay>
-      <div ref="dialog" class="text-center p-3">
-       <p>Are you sure you want to delete all saved presets?</p>
-        <div>
-          <b-button class="mr-3" @click="onCancel">Cancel</b-button>
-          <b-button variant="outline-danger" @click="onOK">Delete All Saved Presets</b-button>
-        </div>
-      </div>
-      </template>
-    </b-overlay>
+    <!-- JSON formatted viewer so the user can view or copy the configured
+    JSON output for their generated commands. -->
+    <JsonViewer :show="controls.showJSON" :form="form" />
   </div>
 </template>
 
@@ -158,6 +121,8 @@ import Audio from './Audio.vue';
 import Filters from './Filters.vue';
 import Options from './Options.vue';
 import Command from './Command.vue';
+import Toolbar from './Toolbar.vue';
+import JsonViewer from './JsonViewer.vue';
 
 
 const {
@@ -176,6 +141,8 @@ export default {
     Filters,
     Options,
     Command,
+    Toolbar,
+    JsonViewer,
   },
   props: {},
   data() {
@@ -252,23 +219,12 @@ export default {
       containers,
       codecs,
       cmd: null,
-      showJSON: false,
-      copied: false,
-      saving: false,
-      showDeletePrompt: false,
+      controls: {
+        showJSON: false,
+        copied: false,
+        saving: false,
+      },
     };
-  },
-  computed: {
-    formString() {
-      const json = this.transformToJSON(this.form);
-
-      // Only return non-null values in JSON string.
-      const jsonStr = JSON.stringify(json, (k, v) => {
-        if (v === null) return undefined;
-        return v;
-      }, 2);
-      return jsonStr;
-    },
   },
   created() {
     this.generateCommand();
@@ -322,24 +278,6 @@ export default {
         }
       }
     },
-    copyToClipboard() {
-      const copyText = this.$refs.code;
-      copyText.select();
-      document.execCommand('copy');
-
-      // Update copy button text.
-      this.copied = true;
-      setTimeout(() => {
-        this.copied = false;
-      }, 1000);
-    },
-    toggleJSON() {
-      this.showJSON = !this.showJSON;
-    },
-    transformToJSON(formData) {
-      const json = util.transformToJSON(formData);
-      return json;
-    },
     update(key, value) {
       this.$emit('input', { ...this.value, [key]: value });
     },
@@ -361,32 +299,11 @@ export default {
       );
       this.presets = presets.getPresetOptions();
       this.preset.id = presetName;
+      this.preset.name = this.preset.name || this.preset.id;
 
       setTimeout(() => {
         this.saving = false;
       }, 1000);
-    },
-    deletePreset() {
-      presets.deletePreset(this.preset.id);
-      this.reset();
-    },
-    deleteAllPresetsPrompt() {
-      this.showDeletePrompt = true;
-    },
-    deleteAllPresets() {
-      presets.deleteAllPresets();
-      this.reset();
-    },
-    onShown() {
-      this.$refs.dialog.focus();
-    },
-    onCancel() {
-      this.showDeletePrompt = false;
-    },
-    onOK() {
-      this.deleteAllPresets();
-      this.presets = presets.getPresetOptions();
-      this.showDeletePrompt = false;
     },
   },
 };
