@@ -1,7 +1,7 @@
 <template>
 <div class="json-viewer">
   <b-card v-if="show" no-body class="mt-3" header="JSON Format">
-    <pre class="m-0" v-highlightjs="formString"><code></code></pre>
+    <pre><code>{{ formString }}</code></pre>
   </b-card>
 </div>
 </template>
@@ -26,3 +26,15 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+pre {
+  background: #343a40;
+  color: #fff;
+  color: #fff;
+  display: block;
+  font-family: "Source Code Pro", monospace;
+  margin: 0;
+  padding: 20px;
+}
+</style>
