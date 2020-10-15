@@ -1,36 +1,11 @@
 <template>
   <div class="editor">
-    <b-form-row>
-      <b-col cols="6">
-        <b-form-group label="Preset: " label-for="preset">
-          <b-form-select
-            class="u-full-width"
-            v-model="preset"
-            @change="update('preset', $event)"
-          >
-            <optgroup v-for="(o, i) in presets" :label="o.name" v-bind:key="i">
-              <option
-                v-for="item in o.data"
-                :key="item.id"
-                :value="item.value">{{item.name}}</option>
-            </optgroup>
-          </b-form-select>
-        </b-form-group>
-      </b-col>
 
-      <b-col>
-        <b-form-group
-          label="Preset Name:"
-          label-for="preset-name"
-          v-if="presetName"
-          >
-          <b-form-input
-            v-model="presetName"
-          ></b-form-input>
-        </b-form-group>
-      </b-col>
-    </b-form-row>
+    <!-- User can load pre-defined presets and can also access their
+    custom saved presets here. -->
+    <Presets v-model="preset" />
 
+    <!-- Input and Output protocol and filenames. -->
     <b-form-row>
       <b-col>
         <b-form-group label="Input:" label-for="input">
@@ -73,6 +48,8 @@
       </b-col>
     </b-form-row>
 
+    <!-- Tabs for each command building component.
+    Format, Video, Audio, Filters and Options -->
     <b-tabs class="mt-4">
       <b-tab title="Format" class="mt-2">
         <Format v-model="form.format" />
@@ -96,17 +73,16 @@
     </b-tabs>
     <hr />
 
-    <!-- FFmpeg generated command output -->
+    <!-- FFmpeg generated command output with tooltips. -->
     <Command :cmd="cmd" />
     <p class="disclaimer">
       *Generated options may vary based on your FFmpeg version and build configuration.
       Tested on version 4.3.1.</p>
 
-    <!-- Hidden textarea so we can use the copy function -->
+    <!-- Hidden textarea so we can use the browser copy function. -->
     <div class="hidden-cmd">
       <b-form-textarea
         ref="code"
-        placeholder="FFmpeg command will be generated here!"
         v-model="cmd"
         rows="0"
         max-rows="0"
@@ -114,60 +90,18 @@
       ></b-form-textarea>
     </div>
 
-    <!-- Button control group -->
-    <div class="mt-4">
-      <b-button-group>
-        <b-dropdown
-          variant="primary"
-          split
-          :text="copied ? 'Copied' : 'Copy'"
-          @click="copyToClipboard">
-          <b-dropdown-item @click="toggleJSON">
-            {{ this.showJSON ? 'Hide' : 'Show' }} JSON
-          </b-dropdown-item>
-        </b-dropdown>
-      </b-button-group>
+    <!-- Toolbar is the set of controls for copying the command output,
+    saving and deleting presets. -->
+    <Toolbar
+      :preset="preset"
+      v-model="controls"
+      v-on:reset="reset"
+      v-on:save="save"
+    />
 
-      <b-button-group class="float-right">
-        <b-button
-          class="ml-2 float-right"
-          variant="outline-danger"
-          @click="reset">Reset</b-button>
-        <b-dropdown
-          variant="outline-primary"
-          split
-          :text="saving ? 'Saving...' : 'Save'" @click="save(false)">
-          <b-dropdown-item @click="save(true)">
-            Save New
-          </b-dropdown-item>
-          <b-dropdown-item v-if="presetName" @click="deletePreset">
-            Delete Preset
-          </b-dropdown-item>
-          <b-dropdown-divider></b-dropdown-divider>
-          <b-dropdown-item @click="deleteAllPresetsPrompt">
-            Delete All Saved Presets
-          </b-dropdown-item>
-        </b-dropdown>
-      </b-button-group>
-    </div>
-
-    <!-- JSON config -->
-    <b-card v-if="showJSON" no-body class="mt-3" header="JSON Format">
-      <pre class="m-0" v-highlightjs="formString"><code></code></pre>
-    </b-card>
-
-    <!-- Overlay prompt when deleting all saved presets. -->
-    <b-overlay :show="showDeletePrompt" no-wrap @shown="onShown">
-      <template v-slot:overlay>
-      <div ref="dialog" class="text-center p-3">
-       <p>Are you sure you want to delete all saved presets?</p>
-        <div>
-          <b-button class="mr-3" @click="onCancel">Cancel</b-button>
-          <b-button variant="outline-danger" @click="onOK">Delete All Saved Presets</b-button>
-        </div>
-      </div>
-      </template>
-    </b-overlay>
+    <!-- JSON formatted viewer so the user can view or copy the configured
+    JSON output for their generated commands. -->
+    <JsonViewer :show="controls.showJSON" :form="form" />
   </div>
 </template>
 
@@ -177,15 +111,18 @@ import merge from 'lodash.merge';
 import clone from 'lodash.clonedeep';
 import form from '@/form';
 import presets from '@/presets';
-import codecMap from '@/codecs';
 import ffmpeg from '@/ffmpeg';
+import util from '@/util';
 
+import Presets from './Presets.vue';
 import Format from './Format.vue';
 import Video from './Video.vue';
 import Audio from './Audio.vue';
 import Filters from './Filters.vue';
 import Options from './Options.vue';
 import Command from './Command.vue';
+import Toolbar from './Toolbar.vue';
+import JsonViewer from './JsonViewer.vue';
 
 
 const {
@@ -197,20 +134,24 @@ const {
 export default {
   name: 'Editor',
   components: {
+    Presets,
     Format,
     Video,
     Audio,
     Filters,
     Options,
     Command,
+    Toolbar,
+    JsonViewer,
   },
   props: {},
   data() {
     return {
       default: {},
-      preset: 'custom',
-      presetName: null,
-      presets: presets.getPresetOptions(),
+      preset: {
+        id: 'custom',
+        name: null,
+      },
       protocolInput: 'movie.mp4',
       protocolOutput: 'movie.mp4',
       form: {
@@ -278,23 +219,12 @@ export default {
       containers,
       codecs,
       cmd: null,
-      showJSON: false,
-      copied: false,
-      saving: false,
-      showDeletePrompt: false,
+      controls: {
+        showJSON: false,
+        copied: false,
+        saving: false,
+      },
     };
-  },
-  computed: {
-    formString() {
-      const json = this.transformToJSON(this.form);
-
-      // Only return non-null values in JSON string.
-      const jsonStr = JSON.stringify(json, (k, v) => {
-        if (v === null) return undefined;
-        return v;
-      }, 2);
-      return jsonStr;
-    },
   },
   created() {
     this.generateCommand();
@@ -310,13 +240,13 @@ export default {
     },
     preset: {
       handler() {
-        if (this.preset.startsWith('preset-')) {
-          const preset = presets.getPresetFromLocalStorage(this.preset);
+        if (this.preset.id.startsWith('preset-')) {
+          const preset = presets.getPresetFromLocalStorage(this.preset.id);
           this.form = merge(this.form, preset.data);
-          this.presetName = preset.name;
-        } else if (this.preset !== 'custom' && !this.preset.startsWith('preset-')) {
-          this.setPreset(this.preset);
-          this.presetName = null;
+          this.preset.name = preset.name;
+        } else if (this.preset.id !== 'custom' && !this.preset.id.startsWith('preset-')) {
+          this.setPreset(this.preset.id);
+          this.preset.name = null;
         }
       },
     },
@@ -333,75 +263,10 @@ export default {
       this.reset();
       const preset = presets.getPreset(value);
       this.form = merge(this.form, preset);
-      this.preset = value;
+      this.preset.id = value;
     },
     generateCommand() {
-      const {
-        protocol, input, output, format, video, audio, filters, options,
-      } = this.form;
-
-      const opt = {
-        protocol,
-        input,
-        output,
-
-        // Format.
-        container: format.container,
-        clip: format.clip,
-        startTime: format.startTime,
-        stopTime: format.stopTime,
-
-        // Video.
-        vcodec: codecMap[video.codec],
-        preset: video.preset,
-        hardwareAccelerationOption: video.hardware_acceleration_option,
-        pass: video.pass,
-        crf: video.crf,
-        bitrate: video.bitrate,
-        minrate: video.minrate,
-        maxrate: video.maxrate,
-        bufsize: video.bufsize,
-        gopsize: video.gopsize,
-        pixelFormat: video.pixel_format,
-        frameRate: video.frame_rate,
-        speed: video.speed,
-        tune: video.tune,
-        profile: video.profile,
-        level: video.level,
-        faststart: video.faststart,
-        size: video.size,
-        width: video.width,
-        height: video.height,
-        format: video.format,
-        aspect: video.aspect,
-        scaling: video.scaling,
-        codecOptions: video.codec_options,
-
-        // Audio.
-        acodec: codecMap[audio.codec],
-        channel: audio.channel,
-        quality: audio.quality,
-        audioBitrate: audio.bitrate,
-        sampleRate: audio.sampleRate,
-        volume: audio.volume,
-
-        // Filters.
-        deband: filters.deband,
-        deshake: filters.deshake,
-        deflicker: filters.deflicker,
-        dejudder: filters.dejudder,
-        denoise: filters.denoise,
-        deinterlace: filters.deinterlace,
-        brightness: filters.brightness,
-        contrast: filters.contrast,
-        saturation: filters.saturation,
-        gamma: filters.gamma,
-        acontrast: filters.acontrast,
-
-        // Options.
-        extra: options.extra,
-        loglevel: options.loglevel,
-      };
+      const opt = util.transform(this.form);
       this.cmd = ffmpeg.build(opt);
     },
     updateOutput() {
@@ -413,127 +278,32 @@ export default {
         }
       }
     },
-    copyToClipboard() {
-      const copyText = this.$refs.code;
-      copyText.select();
-      document.execCommand('copy');
-
-      // Update copy button text.
-      this.copied = true;
-      setTimeout(() => {
-        this.copied = false;
-      }, 1000);
-    },
-    toggleJSON() {
-      this.showJSON = !this.showJSON;
-    },
-    transformToJSON(formData) {
-      const {
-        format, video, audio, filters,
-      } = formData;
-
-      const json = {
-        format: {
-          container: format.container,
-          clip: format.clip,
-          startTime: format.startTime,
-          stopTime: format.stopTime,
-        },
-        video: {
-          codec: codecMap[video.codec],
-          preset: video.preset,
-          hardware_acceleration_option: video.hardware_acceleration_option,
-          pass: video.pass,
-          crf: video.crf,
-          bitrate: video.bitrate,
-          minrate: video.minrate,
-          maxrate: video.maxrate,
-          bufsize: video.bufsize,
-          gopsize: video.gopsize,
-          pixel_format: video.pixel_format,
-          frame_rate: video.frame_rate,
-          speed: video.speed,
-          tune: video.tune,
-          profile: video.profile,
-          level: video.level,
-          faststart: video.faststart,
-          size: video.size,
-          width: video.width,
-          height: video.height,
-          format: video.format,
-          aspect: video.aspect,
-          scaling: video.scaling,
-          codec_options: video.codec_options,
-        },
-        audio: {
-          codec: codecMap[audio.codec],
-          channel: audio.channel,
-          quality: audio.quality,
-          bitrate: audio.bitrate,
-          sampleRate: audio.sampleRate,
-          volume: audio.volume,
-        },
-        filter: {
-          deband: filters.deband,
-          deshake: filters.deshake,
-          deflicker: filters.deflicker,
-          dejudder: filters.dejudder,
-          denoise: filters.denoise,
-          deinterlace: filters.deinterlace,
-          brightness: filters.brightness,
-          contrast: filters.contrast,
-          saturation: filters.saturation,
-          gamma: filters.gamma,
-          acontrast: filters.acontrast,
-        },
-      };
-      return json;
-    },
     update(key, value) {
       this.$emit('input', { ...this.value, [key]: value });
     },
     reset() {
       // Restore form from default copy.
       this.form = merge(this.form, this.default);
-      this.preset = 'custom';
-      this.presetName = null;
+      this.preset.id = 'custom';
+      this.preset.name = null;
     },
     save(saveNew = false) {
       if (saveNew) {
-        this.presetName = null;
+        this.preset.name = null;
       }
 
       // Save the preset name and reload the presets list.
       this.saving = true;
-      const presetName = presets.savePresetToLocalStorage(this.preset, this.presetName, this.form);
+      const presetName = presets.savePresetToLocalStorage(
+        this.preset.id, this.preset.name, this.form,
+      );
       this.presets = presets.getPresetOptions();
-      this.preset = presetName;
+      this.preset.id = presetName;
+      this.preset.name = this.preset.name || this.preset.id;
 
       setTimeout(() => {
         this.saving = false;
       }, 1000);
-    },
-    deletePreset() {
-      presets.deletePreset(this.preset);
-      this.reset();
-    },
-    deleteAllPresetsPrompt() {
-      this.showDeletePrompt = true;
-    },
-    deleteAllPresets() {
-      presets.deleteAllPresets();
-      this.reset();
-    },
-    onShown() {
-      this.$refs.dialog.focus();
-    },
-    onCancel() {
-      this.showDeletePrompt = false;
-    },
-    onOK() {
-      this.deleteAllPresets();
-      this.presets = presets.getPresetOptions();
-      this.showDeletePrompt = false;
     },
   },
 };

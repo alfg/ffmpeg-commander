@@ -1,3 +1,20 @@
+<!--
+Component Layout:
+
+App
+  GithubCorner          Github Badge and link to repository.
+  Editor                Container component.
+    Presets             Pre-defined and user-saved presets.
+    Format              FFmpeg Format Options
+    Video               FFmpeg Video Options
+    Audio               FFmpeg Audio Options
+    Filters             FFmpeg Filter Options
+    Options             FFmpeg General Options and Logging. Saves to localstorage.
+    Command             Command building and rendering logic.
+      CommandFragment   Builds command fragments with tooltips.
+    Toolbar             User controls for copying command output and managing presets.
+    JsonViewer          View JSON formatted options.
+-->
 <template>
   <div>
     <b-navbar type="dark" variant="dark">
@@ -22,8 +39,9 @@
       <div class="text-muted">
         <ul>
           <li>{{ name }}-{{ version }}</li>
-          <li><a href="https://github.com/alfg/ffmpeg-commander">GitHub</a></li>
-          <li><a href="https://ffmpeg.org/ffmpeg.html">FFmpeg Docs</a></li>
+          <li><a href="https://github.com/alfg/ffmpeg-commander/issues">Report a Bug</a></li>
+          <li><a href="https://ffmpeg.org/ffmpeg.html">FFmpeg Documentation</a></li>
+          <li class="float-right">Built with ❤ by <a href="https://github.com/alfg">alfg</a></li>
         </ul>
       </div>
     </footer>
