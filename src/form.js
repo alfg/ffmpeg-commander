@@ -1,3 +1,4 @@
+// https://en.wikipedia.org/wiki/Comparison_of_video_container_formats
 const form = {
   protocols: [
     { name: 'File', value: 'movie.mp4' },
@@ -17,6 +18,7 @@ const form = {
       { name: 'MPG', value: 'mpg' },
       { name: 'AVI', value: 'avi' },
       { name: 'OGV', value: 'ogv' },
+      { name: 'FLV', value: 'flv' },
     ],
     audio: [
       { name: 'MP3', value: 'mp3' },
@@ -32,22 +34,22 @@ const form = {
   ],
   codecs: {
     video: [
-      { name: 'x264', value: 'x264', supported: ['mp4', 'mkv'] },
-      { name: 'x265', value: 'x265', supported: ['mp4', 'mkv'] },
+      { name: 'x264', value: 'x264', supported: ['mp4', 'mkv', 'avi'] },
+      { name: 'x265', value: 'x265', supported: ['mp4', 'mkv', 'avi'] },
       { name: 'AV1', value: 'av1', supported: ['mp4', 'mkv'] },
-      { name: 'VP8', value: 'vp8', supported: ['webm', 'mkv'] },
-      { name: 'VP9', value: 'vp9', supported: ['webm', 'mkv'] },
+      { name: 'VP8', value: 'vp8', supported: ['mp4', 'webm', 'mkv', 'avi'] },
+      { name: 'VP9', value: 'vp9', supported: ['mp4', 'webm', 'mkv', 'avi'] },
       { name: 'copy', value: 'copy', supported: null },
     ],
     audio: [
-      { name: 'AAC', value: 'aac', supported: ['mp4', 'm4a', 'mkv'] },
-      { name: 'AC3', value: 'ac3', supported: ['mp4', 'mkv'] },
-      { name: 'DTS', value: 'dts', supported: ['mp4', 'mkv'] },
+      { name: 'AAC', value: 'aac', supported: ['mp4', 'mp3', 'm4a', 'mkv', 'avi', 'flv'] },
+      { name: 'AC3', value: 'ac3', supported: ['mp4', 'mkv', 'avi'] },
+      { name: 'DTS', value: 'dts', supported: ['mp4', 'mkv', 'avi'] },
       { name: 'Vorbis', value: 'vorbis', supported: ['mp4', 'mkv', 'ogg', 'webm'] },
       { name: 'Opus', value: 'opus', supported: ['mp4', 'mkv', 'ogg', 'webm'] },
       { name: 'LAME', value: 'lame', supported: ['mp3', 'mkv'] },
-      { name: 'ALAC', value: 'alac', supported: ['m4a'] },
-      { name: 'FLAC', value: 'flac', supported: ['flac', 'mkv'] },
+      { name: 'ALAC', value: 'alac', supported: ['mp4', 'mkv', 'm4a', 'avi'] },
+      { name: 'FLAC', value: 'flac', supported: ['flac', 'mkv', 'avi'] },
       { name: 'PCM', value: 'pcm', supported: ['mkv'] },
       { name: 'Copy', value: 'copy', supported: null },
       { name: 'None', value: 'none', supported: null },
