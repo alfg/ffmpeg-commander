@@ -6,6 +6,7 @@
 https://alfg.github.io/ffmpeg-commander/
 
 ![github pages](https://github.com/alfg/ffmpeg-commander/workflows/github%20pages/badge.svg)
+[![Build Status](https://travis-ci.org/alfg/ffmpeg-commander.svg?branch=master)](https://travis-ci.org/alfg/ffmpeg-commander)
 
 Check out [docker-ffmpeg](https://github.com/alfg/docker-ffmpeg) for a customized Docker build of FFmpeg.
 
