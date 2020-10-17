@@ -16,11 +16,13 @@
     "gh-pages": "^2.1.1",
     "lodash.clonedeep": "^4.5.0",
     "lodash.merge": "^4.6.2",
-    "vue": "^2.6.10"
+    "vue": "^2.6.10",
+    "vue-router": "^3.2.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^4.1.1",
     "@vue/cli-plugin-eslint": "^4.1.1",
+    "@vue/cli-plugin-router": "^4.5.0",
     "@vue/cli-plugin-unit-jest": "^4.5.4",
     "@vue/cli-service": "^4.1.1",
     "@vue/eslint-config-airbnb": "^4.0.0",

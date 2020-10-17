@@ -229,12 +229,15 @@ export default {
   created() {
     this.generateCommand();
     this.default = clone(this.form); // Make copy of initial form as defaults.
+
+    this.setDataFromQueryParams();
   },
   watch: {
     form: {
       handler() {
         this.updateOutput();
         this.generateCommand();
+        this.updateParams();
       },
       deep: true,
     },
@@ -277,6 +280,15 @@ export default {
           this.form.output = `${output.replace(ext, `.${format.container}`)}`;
         }
       }
+    },
+    setDataFromQueryParams() {
+      const { query } = this.$route;
+      util.transformFromQueryParams(this.form, query);
+    },
+    updateParams() {
+      const params = util.transformToQueryParams(this.form);
+
+      this.$router.push({ query: params }).catch(() => {});
     },
     update(key, value) {
       this.$emit('input', { ...this.value, [key]: value });

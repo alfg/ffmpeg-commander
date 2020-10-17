@@ -134,7 +134,104 @@ function transformToJSON(formData) {
   return json;
 }
 
+function transformFromQueryParams(form, query) {
+  const {
+    format, video, audio, filters,
+  } = form;
+  format.container = query['format.container'] || format.container;
+  format.startTime = query['format.startTime'] || format.startTime;
+  format.stopTime = query['format.stopTime'] || format.stopTime;
+
+  video.codec = query['video.codec'] || video.codec;
+  video.preset = query['video.preset'] || video.preset;
+  video.hardware_acceleration_option = query['video.hw'] || video.hardware_acceleration_option;
+  video.pass = query['video.pass'] || video.pass;
+  video.crf = query['video.crf'] || video.crf;
+  video.bitrate = query['video.bitrate'] || video.bitrate;
+  video.minrate = query['video.bitrate'] || video.minrate;
+  video.maxrate = query['video.maxrate'] || video.maxrate;
+  video.bufsize = query['video.bufsize'] || video.bufsize;
+  video.gopsize = query['video.gopsize'] || video.gopsize;
+  video.pixel_format = query['video.pixel_format'] || video.pixel_format;
+  video.frame_rate = query['video.frame_rate'] || video.frame_rate;
+  video.speed = query['video.speed'] || video.speed;
+  video.tune = query['video.tune'] || video.tune;
+  video.profile = query['video.profile'] || video.profile;
+  video.level = query['video.level'] || video.level;
+  video.faststart = query['video.faststart'] || video.faststart;
+  video.size = query['video.size'] || video.size;
+  video.width = query['video.width'] || video.width;
+  video.height = query['video.height'] || video.height;
+  video.format = query['video.format'] || video.format;
+  video.aspect = query['video.aspect'] || video.aspect;
+  video.scaling = query['video.scaling'] || video.scaling;
+
+  audio.codec = query['audio.codec'] || audio.codec;
+  audio.channel = query['audio.channel'] || audio.channel;
+  audio.quality = query['audio.quality'] || audio.quality;
+  audio.sampleRate = query['audio.sample_rate'] || audio.sampleRate;
+  audio.volume = query['audio.volume'] || audio.volume;
+
+  filters.deband = query['filters.deband'] || filters.deband;
+  filters.deflicker = query['filters.deflicker'] || filters.deflicker;
+  filters.deshake = query['filters.deshake'] || filters.deshake;
+  filters.dejudder = query['filters.dejudder'] || filters.dejudder;
+  filters.denoise = query['filters.denoise'] || filters.denoise;
+  filters.deinterlace = query['filters.deinterlace'] || filters.deinterlace;
+}
+
+function transformToQueryParams(form) {
+  const {
+    format, video, audio, filters,
+  } = form;
+  const params = {
+    ...(format.container !== 'mp4' && { 'format.container': format.container }),
+    ...(format.startTime && { 'format.startTime': format.startTime }),
+    ...(format.stopTime && { 'format.stopTime': format.stopTime }),
+
+    ...(video.codec !== 'x264' && { 'video.codec': video.codec }),
+    ...(video.preset !== 'none' && { 'video.preset': video.preset }),
+    ...(video.hardware_acceleration_option !== 'off' && { 'video.hw': video.hardware_acceleration_option }),
+    ...(video.pass !== '1' && { 'video.pass': video.pass }),
+    ...(video.crf !== '0' && video.pass === 'crf' && { 'video.crf': video.crf }),
+    ...(video.bitrate && { 'video.bitrate': video.bitrate }),
+    ...(video.minrate && { 'video.minrate': video.minrate }),
+    ...(video.maxrate && { 'video.maxrate': video.maxrate }),
+    ...(video.bufsize && { 'video.bufsize': video.bufsize }),
+    ...(video.gopsize && { 'video.gopsize': video.gopsize }),
+    ...(video.pixel_format !== 'auto' && { 'video.pixel_format': video.pixel_format }),
+    ...(video.frame_rate !== 'auto' && { 'video.frame_rate': video.frame_rate }),
+    ...(video.speed !== 'auto' && { 'video.speed': video.speed }),
+    ...(video.tune !== 'none' && { 'video.tune': video.tune }),
+    ...(video.profile !== 'none' && { 'video.profile': video.profile }),
+    ...(video.level !== 'none' && { 'video.level': video.level }),
+    ...(video.faststart && { 'video.faststart': video.faststart }),
+    ...(video.size !== 'source' && { 'video.size': video.size }),
+    ...(video.width !== '0' && video.size === 'custom' && { 'video.width': video.width }),
+    ...(video.height !== '0' && video.size === 'custom' && { 'video.height': video.height }),
+    ...(video.format !== 'widescreen' && { 'video.format': video.format }),
+    ...(video.aspect !== 'auto' && { 'video.aspect': video.aspect }),
+    ...(video.scaling !== 'auto' && { 'video.scaling': video.scaling }),
+
+    ...(audio.codec !== 'copy' && { 'audio.codec': audio.codec }),
+    ...(audio.channel !== 'source' && { 'audio.channel': audio.channel }),
+    ...(audio.quality !== 'auto' && { 'audio.quality': audio.quality }),
+    ...(audio.sampleRate !== 'auto' && { 'audio.sample_rate': audio.sampleRate }),
+    ...(audio.volume !== 100 && { 'audio.volume': audio.volume }),
+
+    ...(filters.deband && { 'filters.deband': filters.deband }),
+    ...(filters.deflicker && { 'filters.deflicker': filters.deflicker }),
+    ...(filters.deshake && { 'filters.deshake': filters.deshake }),
+    ...(filters.dejudder && { 'filters.dejudder': filters.dejudder }),
+    ...(filters.denoise !== 'none' && { 'filters.denoise': filters.denoise }),
+    ...(filters.deinterlace !== 'none' && { 'filters.deinterlace': filters.deinterlace }),
+  };
+  return params;
+}
+
 export default {
   transform,
   transformToJSON,
+  transformFromQueryParams,
+  transformToQueryParams,
 };
