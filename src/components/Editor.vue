@@ -124,7 +124,6 @@ import Command from './Command.vue';
 import Toolbar from './Toolbar.vue';
 import JsonViewer from './JsonViewer.vue';
 
-
 const {
   protocols,
   containers,
@@ -229,12 +228,20 @@ export default {
   created() {
     this.generateCommand();
     this.default = clone(this.form); // Make copy of initial form as defaults.
+
+    this.setDataFromQueryParams();
   },
   watch: {
     form: {
       handler() {
+        // Update the output filename.
         this.updateOutput();
+
+        // Generates the FFmpeg command.
         this.generateCommand();
+
+        // Update all non-default form options to query parameters.
+        this.updateQueryParams();
       },
       deep: true,
     },
@@ -277,6 +284,14 @@ export default {
           this.form.output = `${output.replace(ext, `.${format.container}`)}`;
         }
       }
+    },
+    setDataFromQueryParams() {
+      const { query } = this.$route;
+      util.transformFromQueryParams(this.form, query);
+    },
+    updateQueryParams() {
+      const params = util.transformToQueryParams(this.form);
+      this.$router.push({ query: params }).catch(() => {});
     },
     update(key, value) {
       this.$emit('input', { ...this.value, [key]: value });

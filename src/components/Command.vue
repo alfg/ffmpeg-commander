@@ -54,7 +54,7 @@ export default {
         const o = {
           value: el,
         };
-        const desc = tooltips.find(t => t.value === el);
+        const desc = tooltips.find((t) => t.value === el);
         if (desc) {
           o.description = desc.tip;
         }
@@ -67,7 +67,7 @@ export default {
             const f = {
               value: filter,
             };
-            const filterDesc = tooltips.find(t => filter.includes(t.value));
+            const filterDesc = tooltips.find((t) => filter.includes(t.value));
             if (filterDesc) {
               f.description = filterDesc.tip;
             }
