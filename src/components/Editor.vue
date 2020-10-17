@@ -124,7 +124,6 @@ import Command from './Command.vue';
 import Toolbar from './Toolbar.vue';
 import JsonViewer from './JsonViewer.vue';
 
-
 const {
   protocols,
   containers,

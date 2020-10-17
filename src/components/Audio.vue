@@ -67,10 +67,10 @@ export default {
     filtered(name) {
       if (name === 'codec') {
         return this.codecs.audio.filter(
-          o => !o.supported || o.supported.includes(this.container),
+          (o) => !o.supported || o.supported.includes(this.container),
         );
       }
-      return this.items.find(o => o.name === name).config;
+      return this.items.find((o) => o.name === name).config;
     },
     update(key, value) {
       this.$emit('input', { ...this.value, [key]: value });

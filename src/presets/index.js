@@ -37,7 +37,7 @@ const presetOptions = [
 ];
 
 function getPresetOptions() {
-  presetOptions.find(o => o.id === 'saved').data = JSON.parse(window.localStorage.getItem(LOCALSTORAGE_PRESETS_KEY));
+  presetOptions.find((o) => o.id === 'saved').data = JSON.parse(window.localStorage.getItem(LOCALSTORAGE_PRESETS_KEY));
   return presetOptions;
 }
 
@@ -49,7 +49,7 @@ function getPreset(preset) {
 
 function getPresetFromLocalStorage(preset) {
   const data = JSON.parse(window.localStorage.getItem(LOCALSTORAGE_PRESETS_KEY));
-  return data.find(o => o.value === preset);
+  return data.find((o) => o.value === preset);
 }
 
 function savePresetToLocalStorage(preset, savedPresetName, formData) {
@@ -60,7 +60,7 @@ function savePresetToLocalStorage(preset, savedPresetName, formData) {
   let presetName;
   if (savedPresetName) {
     presetName = preset;
-    const p = saved.find(o => o.value === presetName);
+    const p = saved.find((o) => o.value === presetName);
     p.name = savedPresetName || preset;
     p.data = formData;
   } else {
@@ -75,14 +75,13 @@ function savePresetToLocalStorage(preset, savedPresetName, formData) {
 
 function deletePreset(preset) {
   const data = JSON.parse(window.localStorage.getItem(LOCALSTORAGE_PRESETS_KEY));
-  const newData = data.filter(o => o.value !== preset);
+  const newData = data.filter((o) => o.value !== preset);
   window.localStorage.setItem(LOCALSTORAGE_PRESETS_KEY, JSON.stringify(newData));
 }
 
 function deleteAllPresets() {
   window.localStorage.removeItem(LOCALSTORAGE_PRESETS_KEY);
 }
-
 
 export default {
   getPresetOptions,

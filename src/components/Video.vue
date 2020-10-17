@@ -185,7 +185,7 @@ export default {
   computed: {
     filteredBitrateItems() {
       return this.bitrateItems.filter(
-        o => !o.supported || (o.supported && o.supported.includes(this.value.codec)),
+        (o) => !o.supported || (o.supported && o.supported.includes(this.value.codec)),
       );
     },
   },
@@ -193,10 +193,10 @@ export default {
     filtered(name) {
       if (name === 'codec') {
         return this.codecs.video.filter(
-          o => !o.supported || o.supported.includes(this.container),
+          (o) => !o.supported || o.supported.includes(this.container),
         );
       }
-      return this.items.find(o => o.name === name).config;
+      return this.items.find((o) => o.name === name).config;
     },
     update(key, value) {
       this.$emit('input', { ...this.value, [key]: value });
