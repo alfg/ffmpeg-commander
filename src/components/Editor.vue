@@ -235,9 +235,14 @@ export default {
   watch: {
     form: {
       handler() {
+        // Update the output filename.
         this.updateOutput();
+
+        // Generates the FFmpeg command.
         this.generateCommand();
-        this.updateParams();
+
+        // Update all non-default form options to query parameters.
+        this.updateQueryParams();
       },
       deep: true,
     },
@@ -285,9 +290,8 @@ export default {
       const { query } = this.$route;
       util.transformFromQueryParams(this.form, query);
     },
-    updateParams() {
+    updateQueryParams() {
       const params = util.transformToQueryParams(this.form);
-
       this.$router.push({ query: params }).catch(() => {});
     },
     update(key, value) {

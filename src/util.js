@@ -178,6 +178,11 @@ function transformFromQueryParams(form, query) {
   filters.dejudder = query['filters.dejudder'] || filters.dejudder;
   filters.denoise = query['filters.denoise'] || filters.denoise;
   filters.deinterlace = query['filters.deinterlace'] || filters.deinterlace;
+  filters.contrast = query['filters.contrast'] || filters.contrast;
+  filters.brightness = query['filters.brightness'] || filters.brightness;
+  filters.saturation = query['filters.saturation'] || filters.saturation;
+  filters.gamma = query['filters.gamma'] || filters.gamma;
+  filters.acontrast = query['filters.acontrast'] || filters.acontrast;
 }
 
 function transformToQueryParams(form) {
@@ -225,6 +230,11 @@ function transformToQueryParams(form) {
     ...(filters.dejudder && { 'filters.dejudder': filters.dejudder }),
     ...(filters.denoise !== 'none' && { 'filters.denoise': filters.denoise }),
     ...(filters.deinterlace !== 'none' && { 'filters.deinterlace': filters.deinterlace }),
+    ...(parseInt(filters.contrast, 10) !== 0 && { 'filters.contrast': filters.contrast }),
+    ...(parseInt(filters.brightness, 10) !== 0 && { 'filters.brightness': filters.brightness }),
+    ...(parseInt(filters.saturation, 10) !== 0 && { 'filters.saturation': filters.saturation }),
+    ...(parseInt(filters.gamma, 10) !== 0 && { 'filters.gamma': filters.gamma }),
+    ...(parseInt(filters.acontrast, 10) !== 33 && { 'filters.acontrast': filters.acontrast }),
   };
   return params;
 }

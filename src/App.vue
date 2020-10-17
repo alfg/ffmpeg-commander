@@ -31,7 +31,6 @@ App
     <GitHubCorner />
 
     <div id="app" class="container">
-      <!-- <Editor /> -->
       <router-view />
     </div>
 
@@ -52,13 +51,11 @@ App
 <script>
 import { name, version } from '../package.json';
 import GitHubCorner from './components/GitHubCorner.vue';
-// import Editor from './components/Editor.vue';
 
 export default {
   name: 'app',
   components: {
     GitHubCorner,
-    // Editor,
   },
   data() {
     return {

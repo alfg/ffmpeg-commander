@@ -31,6 +31,7 @@
         </b-form-group>
       </b-col>
     </b-form-row>
+    <p>⚠️ Options will be saved to Local Storage for convenience.</p>
   </div>
 </template>
 
