@@ -39,7 +39,6 @@ docker run -it -p 8080:80 --rm ffmpeg-commander
 
 ### TODO
 * Expand on Filter options
-* Share-friendly URLs
 
 ## License
 MIT
