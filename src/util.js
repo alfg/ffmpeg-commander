@@ -165,7 +165,7 @@ function transformFromQueryParams(form, query) {
   video.format = query['video.format'] || video.format;
   video.aspect = query['video.aspect'] || video.aspect;
   video.scaling = query['video.scaling'] || video.scaling;
-  video.codec_options = atob(query['video.codec_options']) || video.codec_options;
+  video.codec_options = query['video.codec_options'] ? atob(query['video.codec_options']) : video.codec_options;
 
   audio.codec = query['audio.codec'] || audio.codec;
   audio.channel = query['audio.channel'] || audio.channel;

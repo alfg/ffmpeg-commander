@@ -38,6 +38,7 @@ docker run -it -p 8080:80 --rm ffmpeg-commander
 ```
 
 ### TODO
+* Support multiple inputs and map option
 * Expand on Filter options
 
 ## License
