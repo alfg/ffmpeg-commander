@@ -7,5 +7,3 @@ node_js:
   - 10
   - 9
   - 8
-before_install:
-  - npm install -g npm@latest
