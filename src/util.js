@@ -139,6 +139,7 @@ function transformFromQueryParams(form, query) {
     format, video, audio, filters,
   } = form;
   format.container = query['format.container'] || format.container;
+  format.clip = query['format.clip'] || format.clip;
   format.startTime = query['format.startTime'] || format.startTime;
   format.stopTime = query['format.stopTime'] || format.stopTime;
 
@@ -192,6 +193,7 @@ function transformToQueryParams(form) {
   } = form;
   const params = {
     ...(format.container !== 'mp4' && { 'format.container': format.container }),
+    ...(format.clip && { 'format.clip': format.clip }),
     ...(format.startTime && { 'format.startTime': format.startTime }),
     ...(format.stopTime && { 'format.stopTime': format.stopTime }),
 
