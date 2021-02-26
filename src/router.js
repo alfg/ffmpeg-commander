@@ -12,5 +12,10 @@ export default new Router({
       name: 'home',
       component: () => import('./views/Home.vue'),
     },
+    {
+      path: '/queue',
+      name: 'queue',
+      component: () => import('./views/Queue.vue'),
+    },
   ],
 });

@@ -97,6 +97,7 @@
       v-model="controls"
       v-on:reset="reset"
       v-on:save="save"
+      v-on:encode="encode"
     />
 
     <!-- JSON formatted viewer so the user can view or copy the configured
@@ -319,6 +320,12 @@ export default {
       setTimeout(() => {
         this.saving = false;
       }, 1000);
+    },
+    encode() {
+      console.log('onEncode');
+      const json = util.transformToJSON(this.form);
+      this.$ws.send(JSON.stringify({ type: 'encode', payload: JSON.stringify(json) }));
+      this.$router.push({ name: 'queue' });
     },
   },
 };

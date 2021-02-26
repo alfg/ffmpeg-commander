@@ -6,6 +6,10 @@ import router from './router';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 
+const wsUri = 'ws://localhost:8080/ws';
+const ws = new WebSocket(wsUri);
+Vue.prototype.$ws = ws;
+
 Vue.use(BootstrapVue);
 
 Vue.config.productionTip = false;

@@ -2,8 +2,12 @@
 <div class="toolbar">
   <div class="mt-4">
     <b-button-group>
+      <b-button
+        class="ml-2 float-right"
+        variant="outline-primary"
+        @click="$emit('encode')">Encode</b-button>
       <b-dropdown
-        variant="primary"
+        variant="outline-primary"
         split
         :text="copied ? 'Copied' : 'Copy'"
         v-b-tooltip.hover.bottom title="Copy to your Clipboard"

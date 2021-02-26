@@ -31,6 +31,12 @@ App
     <GitHubCorner />
 
     <div id="app" class="container">
+      <b-nav tabs align="right" class="mb-4">
+        <b-nav-item href="#"><code>✅ ffmpegd connected</code></b-nav-item>
+        <b-nav-item to="/">Command</b-nav-item>
+        <b-nav-item to="/queue">Queue</b-nav-item>
+      </b-nav>
+
       <router-view />
     </div>
 
@@ -73,6 +79,12 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
   margin-top: 30px;
+}
+
+#app a.router-link-exact-active {
+  color: #495057;
+  background-color: #fff;
+  border-color: #dee2e6 #dee2e6 #fff;
 }
 
 label {
