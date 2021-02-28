@@ -114,6 +114,7 @@ import form from '@/form';
 import presets from '@/presets';
 import ffmpeg from '@/ffmpeg';
 import util from '@/util';
+import storage from '@/storage';
 
 import Presets from './Presets.vue';
 import Format from './Format.vue';
@@ -324,8 +325,14 @@ export default {
     encode() {
       console.log('onEncode');
       const json = util.transformToJSON(this.form);
-      this.$ws.send(JSON.stringify({ type: 'encode', payload: JSON.stringify(json) }));
-      this.$router.push({ name: 'queue' });
+      storage.add({
+        id: Date.now(),
+        type: 'encode',
+        payload: json,
+        status: 'queued',
+        input: 'input.mp4',
+        output: 'output.mp4',
+      });
     },
   },
 };

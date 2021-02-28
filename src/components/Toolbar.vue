@@ -3,6 +3,7 @@
   <div class="mt-4">
     <b-button-group>
       <b-button
+        v-if="wsReady"
         class="ml-2 float-right"
         variant="outline-primary"
         @click="$emit('encode')">Encode</b-button>
@@ -63,6 +64,11 @@ import presets from '@/presets';
 export default {
   name: 'Toolbar',
   props: ['value', 'preset'],
+  computed: {
+    wsReady() {
+      return this.$store.state.wsConnected;
+    },
+  },
   data() {
     return {
       copied: false,

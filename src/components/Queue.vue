@@ -1,14 +1,69 @@
 <template>
   <div class="queue">
-    <b-card bg-variant="white" header="Encode">
-           <b-row class="mb-2">
-            <b-col sm="2" class="text-sm-right"><b>Source:</b></b-col>
-            <b-col>input.mp4</b-col>
+    <b-table striped hover dark
+      :fields="fields"
+      :items="items"
+    >
+      <template v-slot:cell(status)="data">
+        <b-badge
+          :variant="['error', 'cancelled'].includes(data.item.status) ? 'danger' : 'primary'"
+        >{{ data.item.status }}</b-badge>
+      </template>
+      <template v-slot:cell(progress)="data">
+        <b-progress
+          v-if="data.item.status === 'encoding'"
+          :value="percent"
+          :animated="percent !== 100"
+          :variant="percent === 100 ? 'success' : 'primary'"
+          show-progress></b-progress>
+        <p
+          class="text-monospace text-center"
+          style="font-size: 0.7em; margin: 0;"
+          v-if="(speed && fps) && data.item.status === 'encoding'"
+        >{{ speed }} @ {{ fps }} FPS</p>
+      </template>
+
+      <template v-slot:cell(details)="row">
+        <b-button size="sm" @click="row.toggleDetails" class="mr-2">
+          {{ row.detailsShowing ? 'Hide' : 'Show'}}
+        </b-button>
+      </template>
+
+      <template v-slot:cell(action)="data">
+        <b-button-group size="sm">
+          <b-button
+            variant="light"
+            v-if="!['error', 'cancelled', 'completed'].includes(data.item.status)"
+            @click="onClickCancel(data.item.id)">❌</b-button>
+          <b-button
+            variant="light"
+            v-if="['error', 'cancelled'].includes(data.item.status)"
+            @click="onClickRestart(data.item.id)">&#10227;</b-button>
+        </b-button-group>
+      </template>
+
+      <template v-slot:row-details="row">
+          <b-row class="mb-2">
+            <b-col sm="2" class="text-sm-right"><b>Input:</b></b-col>
+            <b-col>{{ row.item.input }}</b-col>
           </b-row>
 
           <b-row class="mb-2">
-            <b-col sm="2" class="text-sm-right"><b>Destination:</b></b-col>
-            <b-col>output.mp4</b-col>
+            <b-col sm="2" class="text-sm-right"><b>Output:</b></b-col>
+            <b-col>{{ row.item.output }}</b-col>
+          </b-row>
+
+          <b-row class="mb-2">
+            <b-col sm="2" class="text-sm-right"><b>Probe Data:</b></b-col>
+            <b-col>
+              <div class="code">
+                <b-form-textarea
+                  rows="3"
+                  max-rows="6"
+                  :value="row.item.probe"
+                ></b-form-textarea>
+              </div>
+            </b-col>
           </b-row>
 
           <b-row class="mb-2">
@@ -18,7 +73,7 @@
                 <b-form-textarea
                   rows="3"
                   max-rows="6"
-                  :value="'{}'"
+                  :value="JSON.stringify(row.item.payload)"
                 ></b-form-textarea>
               </div>
             </b-col>
@@ -35,46 +90,86 @@
           style="font-size: 1em; margin: 0;"
           v-if="speed && fps"
           >{{ speed }} @ {{ fps }} FPS</p>
-    </b-card>
-
-    <b-table striped hover dark>
+      </template>
     </b-table>
     <h2 class="text-center" v-if="items.length === 0">No Jobs Found</h2>
   </div>
 </template>
 
 <script>
+import storage from '@/storage';
+
 export default {
   name: 'Queue',
   components: {
   },
   created() {
-    this.$ws.onopen = (event) => {
-      console.log(event);
-    };
-
-    this.$ws.onclose = (event) => {
-      console.log(event);
-    };
-
     this.$ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
+      console.log(data);
       this.percent = data.percent;
       this.speed = data.speed;
       this.fps = data.fps;
+
+      if (this.percent === 100) {
+        this.setJobStatus('completed');
+      }
     };
 
-    this.$ws.onerror = (event) => {
-      console.log(event);
-    };
+    this.startQueue();
   },
   data() {
     return {
       percent: 0,
       speed: null,
       fps: 0,
+      job: {},
       items: [],
+      fields: ['id', 'type', 'input', 'output', 'status', 'progress', 'details', 'action'],
     };
+  },
+  methods: {
+    startQueue() {
+      this.getQueue();
+
+      setInterval(() => {
+        this.getQueue();
+
+        if (this.job.status && this.job.status === 'encoding') {
+          return;
+        }
+
+        const job = this.getNextJob();
+        if (!job.id) {
+          return;
+        }
+        this.job = job;
+        this.sendEncode();
+
+        // eslint-disable-next-line no-underscore-dangle
+        // this.job._showDetails = true;
+      }, 5000);
+    },
+    getQueue() {
+      this.items = storage.getAll();
+    },
+    getNextJob() {
+      const filtered = this.items.filter((item) => item.status === 'queued');
+      console.log(filtered);
+      return filtered[0] || {};
+    },
+    sendEncode() {
+      console.log('sending job to ws');
+      this.$ws.send(JSON.stringify({
+        type: 'encode',
+        payload: JSON.stringify(this.job.payload),
+      }));
+      this.setJobStatus('encoding');
+    },
+    setJobStatus(status) {
+      this.job.status = status;
+      storage.updateStatus(this.job.id, status);
+    },
   },
 };
 </script>

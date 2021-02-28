@@ -31,13 +31,18 @@ App
     <GitHubCorner />
 
     <div id="app" class="container">
-      <b-nav tabs align="right" class="mb-4">
-        <b-nav-item href="#"><code>✅ ffmpegd connected</code></b-nav-item>
-        <b-nav-item to="/">Command</b-nav-item>
-        <b-nav-item to="/queue">Queue</b-nav-item>
-      </b-nav>
+      <b-tabs align="right" content-class="mt-4">
+        <b-tab title="Builder">
+          <router-view />
+        </b-tab>
+        <b-tab title="Queue" v-if="wsReady">
+          <template #title>
+            <b-spinner small></b-spinner> Queue
+          </template>
+          <Queue />
+        </b-tab>
+      </b-tabs>
 
-      <router-view />
     </div>
 
     <footer class="container mt-4 text-center">
@@ -57,11 +62,18 @@ App
 <script>
 import { name, version } from '../package.json';
 import GitHubCorner from './components/GitHubCorner.vue';
+import Queue from './components/Queue.vue';
 
 export default {
   name: 'app',
   components: {
     GitHubCorner,
+    Queue,
+  },
+  computed: {
+    wsReady() {
+      return this.$store.state.wsConnected;
+    },
   },
   data() {
     return {
