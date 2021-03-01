@@ -37,12 +37,16 @@ App
         </b-tab>
         <b-tab title="Queue" v-if="wsReady">
           <template #title>
-            <b-spinner small></b-spinner> Queue
+            <b-spinner small v-if="isEncoding"></b-spinner> Queue
           </template>
           <Queue />
         </b-tab>
+        <b-tab v-if="wsReady" disabled>
+          <template #title>
+            <code>✅ ffmpegd connected</code>
+          </template>
+        </b-tab>
       </b-tabs>
-
     </div>
 
     <footer class="container mt-4 text-center">
@@ -73,6 +77,9 @@ export default {
   computed: {
     wsReady() {
       return this.$store.state.wsConnected;
+    },
+    isEncoding() {
+      return this.$store.state.isEncoding;
     },
   },
   data() {

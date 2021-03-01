@@ -26,6 +26,10 @@ const storage = {
     console.log(item);
     return item;
   },
+
+  deleteAll() {
+    window.localStorage.removeItem('queue');
+  },
 };
 
 export default storage;

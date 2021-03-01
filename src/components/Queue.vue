@@ -1,8 +1,14 @@
 <template>
   <div class="queue">
+    <b-button-group class="float-right mb-2">
+      <b-button @click="clearJobs">Clear All</b-button>
+    </b-button-group>
+
     <b-table striped hover dark
       :fields="fields"
       :items="items"
+      :sort-by.sync="sortBy"
+      :sort-desc.sync="sortDesc"
     >
       <template v-slot:cell(status)="data">
         <b-badge
@@ -78,18 +84,6 @@
               </div>
             </b-col>
           </b-row>
-
-          <b-progress
-          :value="percent"
-          :animated="percent !== 100"
-          :variant="percent === 100 ? 'success' : 'primary'"
-          show-progress></b-progress>
-
-          <p
-          class="text-monospace text-center"
-          style="font-size: 1em; margin: 0;"
-          v-if="speed && fps"
-          >{{ speed }} @ {{ fps }} FPS</p>
       </template>
     </b-table>
     <h2 class="text-center" v-if="items.length === 0">No Jobs Found</h2>
@@ -98,6 +92,7 @@
 
 <script>
 import storage from '@/storage';
+import store from '@/store';
 
 export default {
   name: 'Queue',
@@ -113,6 +108,7 @@ export default {
 
       if (this.percent === 100) {
         this.setJobStatus('completed');
+        store.setIsEncoding(false);
       }
     };
 
@@ -125,7 +121,18 @@ export default {
       fps: 0,
       job: {},
       items: [],
-      fields: ['id', 'type', 'input', 'output', 'status', 'progress', 'details', 'action'],
+      fields: [
+        { key: 'id', sortable: true },
+        { key: 'type' },
+        { key: 'input' },
+        { key: 'output' },
+        { key: 'status' },
+        { key: 'progress' },
+        { key: 'details' },
+        { key: 'action' },
+      ],
+      sortBy: 'id',
+      sortDesc: true,
     };
   },
   methods: {
@@ -136,6 +143,8 @@ export default {
         this.getQueue();
 
         if (this.job.status && this.job.status === 'encoding') {
+          console.log('encoding...');
+          store.setIsEncoding(true);
           return;
         }
 
@@ -144,17 +153,21 @@ export default {
           return;
         }
         this.job = job;
-        this.sendEncode();
 
-        // eslint-disable-next-line no-underscore-dangle
-        // this.job._showDetails = true;
+        this.sendEncode();
       }, 5000);
     },
     getQueue() {
       this.items = storage.getAll();
+      this.items.forEach((o) => {
+        if (o.status === 'encoding') {
+          // eslint-disable-next-line no-param-reassign
+          o._showDetails = true; // eslint-disable-line no-underscore-dangle
+        }
+      });
     },
     getNextJob() {
-      const filtered = this.items.filter((item) => item.status === 'queued');
+      const filtered = this.items.filter((item) => item.status === 'queued' || item.status === 'encoding');
       console.log(filtered);
       return filtered[0] || {};
     },
@@ -169,6 +182,10 @@ export default {
     setJobStatus(status) {
       this.job.status = status;
       storage.updateStatus(this.job.id, status);
+    },
+    clearJobs() {
+      storage.deleteAll();
+      this.getQueue();
     },
   },
 };
