@@ -167,7 +167,6 @@ export default {
         video: {
           codec: 'x264',
           preset: 'none',
-          hardware_acceleration_option: 'off',
           pass: '1',
           crf: 23,
           bitrate: null,

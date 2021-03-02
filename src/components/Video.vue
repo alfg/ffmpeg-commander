@@ -131,7 +131,6 @@ import form from '@/form';
 const {
   codecs,
   presets,
-  hardwareAccelerationOptions,
   passOptions,
   pixelFormats,
   frameRates,
@@ -154,7 +153,6 @@ export default {
       items: [
         { name: 'codec', config: codecs },
         { name: 'preset', config: presets },
-        { name: 'hardware_acceleration_option', config: hardwareAccelerationOptions },
         { name: 'pass', config: passOptions },
       ],
       bitrateItems: [
@@ -180,6 +178,7 @@ export default {
         { name: 'scaling', config: scalings },
       ],
       codecs,
+      presets,
     };
   },
   computed: {
@@ -194,6 +193,11 @@ export default {
       if (name === 'codec') {
         return this.codecs.video.filter(
           (o) => !o.supported || o.supported.includes(this.container),
+        );
+      }
+      if (name === 'preset') {
+        return this.presets.filter(
+          (o) => !o.supported || o.supported.includes(this.value.codec),
         );
       }
       return this.items.find((o) => o.name === name).config;
