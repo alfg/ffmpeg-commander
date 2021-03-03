@@ -60,19 +60,6 @@
           </b-row>
 
           <b-row class="mb-2">
-            <b-col sm="2" class="text-sm-right"><b>Probe Data:</b></b-col>
-            <b-col>
-              <div class="code">
-                <b-form-textarea
-                  rows="3"
-                  max-rows="6"
-                  :value="row.item.probe"
-                ></b-form-textarea>
-              </div>
-            </b-col>
-          </b-row>
-
-          <b-row class="mb-2">
             <b-col sm="2" class="text-sm-right"><b>Encode Options:</b></b-col>
             <b-col>
               <div class="code">
@@ -99,20 +86,24 @@ export default {
   components: {
   },
   created() {
-    this.$ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      console.log(data);
-      this.percent = data.percent;
-      this.speed = data.speed;
-      this.fps = data.fps;
+    this.getQueue();
 
-      if (this.percent === 100) {
-        this.setJobStatus('completed');
-        store.setIsEncoding(false);
+    setInterval(() => {
+      if (this.$ws.ws.readyState === WebSocket.OPEN) {
+        this.$ws.ws.onmessage = (event) => {
+          const data = JSON.parse(event.data);
+          this.percent = data.percent;
+          this.speed = data.speed;
+          this.fps = data.fps;
+
+          if (this.percent === 100) {
+            this.setJobStatus('completed');
+            store.setIsEncoding(false);
+          }
+        };
+        this.startQueue();
       }
-    };
-
-    this.startQueue();
+    }, 1000);
   },
   data() {
     return {
@@ -123,7 +114,6 @@ export default {
       items: [],
       fields: [
         { key: 'id', sortable: true },
-        { key: 'type' },
         { key: 'input' },
         { key: 'output' },
         { key: 'status' },
@@ -133,6 +123,7 @@ export default {
       ],
       sortBy: 'id',
       sortDesc: true,
+      ws: null,
     };
   },
   methods: {
@@ -143,7 +134,6 @@ export default {
         this.getQueue();
 
         if (this.job.status && this.job.status === 'encoding') {
-          console.log('encoding...');
           store.setIsEncoding(true);
           return;
         }
@@ -168,13 +158,13 @@ export default {
     },
     getNextJob() {
       const filtered = this.items.filter((item) => item.status === 'queued' || item.status === 'encoding');
-      console.log(filtered);
       return filtered[0] || {};
     },
     sendEncode() {
-      console.log('sending job to ws');
-      this.$ws.send(JSON.stringify({
+      this.$ws.ws.send(JSON.stringify({
         type: 'encode',
+        input: this.job.input,
+        output: this.job.output,
         payload: JSON.stringify(this.job.payload),
       }));
       this.setJobStatus('encoding');

@@ -4,6 +4,7 @@ export default {
   state: Vue.observable({
     wsConnected: false,
     isEncoding: false,
+    ffmpegdEnabled: false,
   }),
 
   setWSAction(newValue) {
@@ -12,5 +13,9 @@ export default {
 
   setIsEncoding(newValue) {
     this.state.isEncoding = newValue;
+  },
+
+  setFfmpegdEnabled(newValue) {
+    this.state.ffmpegdEnabled = newValue;
   },
 };

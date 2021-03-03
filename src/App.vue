@@ -31,19 +31,20 @@ App
     <GitHubCorner />
 
     <div id="app" class="container">
-      <b-tabs align="right" content-class="mt-4">
+      <b-tabs align="right" content-class="mt-4" v-model="tabIndex">
         <b-tab title="Builder">
-          <router-view />
+          <router-view @onEncode="onEncode" />
         </b-tab>
-        <b-tab title="Queue" v-if="wsReady">
+        <b-tab title="Queue" v-if="ffmpegdEnabled">
           <template #title>
             <b-spinner small v-if="isEncoding"></b-spinner> Queue
           </template>
           <Queue />
         </b-tab>
-        <b-tab v-if="wsReady" disabled>
+        <b-tab v-if="ffmpegdEnabled" disabled>
           <template #title>
-            <code>✅ ffmpegd connected</code>
+            <code v-if="wsReady">✅ ffmpegd connected</code>
+            <code v-else>❌ ffmpegd not connected</code>
           </template>
         </b-tab>
       </b-tabs>
@@ -81,12 +82,22 @@ export default {
     isEncoding() {
       return this.$store.state.isEncoding;
     },
+    ffmpegdEnabled() {
+      return this.$store.state.ffmpegdEnabled;
+    },
   },
   data() {
     return {
       name,
       version,
+      tabIndex: 0,
     };
+  },
+  methods: {
+    onEncode() {
+      // eslint-disable-next-line no-plusplus
+      this.tabIndex++;
+    },
   },
 };
 </script>
@@ -106,7 +117,7 @@ export default {
   border-color: #dee2e6 #dee2e6 #fff;
 }
 
-label {
+.label {
   text-transform: capitalize;
 }
 

@@ -3,7 +3,11 @@
     <!-- 1st Row: Codec and Preset options -->
     <b-form-row>
       <b-col v-for="item in items" :key="item.name">
-        <b-form-group :label="`${item.name.replaceAll('_', ' ')}:`" :label-for="item.name">
+        <b-form-group
+          class="label"
+          :label="`${item.name.replaceAll('_', ' ')}:`"
+          :label-for="item.name"
+        >
           <b-form-select
             class="u-full-width"
             v-bind:value="value[item.name]"
@@ -21,7 +25,7 @@
 
     <!-- CRF slider if CRF enabled -->
     <div v-if="value.pass == 'crf'">
-      <b-form-group :label="'CRF:' + value.crf" label-for="crf">
+      <b-form-group class="label" :label="'CRF:' + value.crf" label-for="crf">
         <b-form-input
           id="crf"
           v-bind:value="value.crf"
@@ -34,7 +38,7 @@
     <!-- 2nd Row: Bit rate options -->
     <b-form-row>
       <b-col v-for="item in filteredBitrateItems" :key="item.value">
-        <b-form-group :label="`${item.name}:`" :label-for="item.value">
+        <b-form-group class="label" :label="`${item.name}:`" :label-for="item.value">
           <b-form-input
             v-bind:value="value[item.value]"
             @input="update(item.value, $event)"
@@ -48,7 +52,11 @@
     <!-- 3rd Row: Video editing options -->
     <b-form-row>
       <b-col v-for="item in videoEditItems" :key="item.name">
-        <b-form-group :label="`${item.name.replaceAll('_', ' ')}:`" :label-for="item.name">
+        <b-form-group
+          class="label"
+          :label="`${item.name.replaceAll('_', ' ')}:`"
+          :label-for="item.name"
+        >
           <b-form-select
             class="u-full-width"
             v-bind:value="value[item.name]"
@@ -68,7 +76,11 @@
     <!-- 4th Row: Video scaling options -->
     <b-form-row>
       <b-col v-for="item in videoSizeItems" :key="item.name">
-        <b-form-group :label="`${item.name.replaceAll('_', ' ')}:`" :label-for="item.name">
+        <b-form-group
+          class="label"
+          :label="`${item.name.replaceAll('_', ' ')}:`"
+          :label-for="item.name"
+        >
           <b-form-select
             class="u-full-width"
             v-bind:value="value[item.name]"

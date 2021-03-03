@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <Editor  />
+    <Editor @onEncode="onEncode" />
   </div>
 </template>
 
@@ -11,6 +11,11 @@ export default {
   name: 'Home',
   components: {
     Editor,
+  },
+  methods: {
+    onEncode() {
+      this.$emit('onEncode');
+    },
   },
 };
 </script>

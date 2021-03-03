@@ -6,7 +6,9 @@
         v-if="wsReady"
         class="ml-2 float-right"
         variant="outline-primary"
-        @click="$emit('encode')">Encode</b-button>
+        @click="encode">{{ encoding ? 'Encoding...' : 'Encode' }}
+      </b-button>
+
       <b-dropdown
         variant="outline-primary"
         split
@@ -23,12 +25,15 @@
       <b-button
         class="ml-2 float-right"
         variant="outline-danger"
-        @click="$emit('reset')">Reset</b-button>
+        @click="$emit('reset')">Reset
+      </b-button>
+
       <b-dropdown
         variant="outline-primary"
         split
         v-b-tooltip.hover.bottomright title="Save to Local Storage"
-        :text="saving ? 'Saving...' : 'Save'" @click="$emit('save', false)">
+        :text="saving ? 'Saving...' : 'Save'" @click="save"
+      >
         <b-dropdown-item @click="$emit('save', true)">
           Save New
         </b-dropdown-item>
@@ -71,12 +76,20 @@ export default {
   },
   data() {
     return {
+      encoding: false,
       copied: false,
       saving: false,
       showDeletePrompt: false,
     };
   },
   methods: {
+    encode() {
+      this.encoding = true;
+      setTimeout(() => {
+        this.encoding = false;
+        this.$emit('encode');
+      }, 500);
+    },
     copyToClipboard() {
       const copyText = this.$parent.$refs.code;
       copyText.select();
@@ -102,6 +115,13 @@ export default {
     deleteAllPresets() {
       presets.deleteAllPresets();
       this.$emit('reset');
+    },
+    save() {
+      this.saving = true;
+      this.$emit('save', false);
+      setTimeout(() => {
+        this.saving = false;
+      }, 1000);
     },
     onShown() {
       this.$refs.dialog.focus();

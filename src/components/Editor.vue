@@ -18,13 +18,21 @@
               <option v-for="o in protocols" :key="o.id" :value="o.value">{{o.name}}</option>
             </b-form-select>
 
-            <b-form-input
+            <!-- <b-form-input
               v-model="form.input"
               :state="Boolean(form.input)"
               placeholder="Example: output.mp4"
-            ></b-form-input>
+            ></b-form-input> -->
+            <b-form-file
+              v-model="form.inputFile"
+              :state="Boolean(form.inputFile)"
+              placeholder="Choose a file or drop it here..."
+              drop-placeholder="Drop file here..."
+            ></b-form-file>
           </b-input-group>
         </b-form-group>
+
+        {{ form.inputFile && form.inputFile.name }}
       </b-col>
 
       <b-col>
@@ -157,6 +165,7 @@ export default {
       protocolOutput: 'movie.mp4',
       form: {
         input: 'input.mp4',
+        inputFile: null,
         output: 'output.mp4',
         format: {
           container: 'mp4',
@@ -221,8 +230,6 @@ export default {
       cmd: null,
       controls: {
         showJSON: false,
-        copied: false,
-        saving: false,
       },
     };
   },
@@ -309,20 +316,14 @@ export default {
       }
 
       // Save the preset name and reload the presets list.
-      this.saving = true;
       const presetName = presets.savePresetToLocalStorage(
         this.preset.id, this.preset.name, this.form,
       );
       this.presets = presets.getPresetOptions();
       this.preset.id = presetName;
       this.preset.name = this.preset.name || this.preset.id;
-
-      setTimeout(() => {
-        this.saving = false;
-      }, 1000);
     },
     encode() {
-      console.log('onEncode');
       const json = util.transformToJSON(this.form);
       storage.add({
         id: Date.now(),
@@ -332,6 +333,7 @@ export default {
         input: 'input.mp4',
         output: 'output.mp4',
       });
+      this.$emit('onEncode');
     },
   },
 };

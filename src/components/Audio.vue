@@ -2,7 +2,7 @@
   <div>
     <b-form-row>
       <b-col v-for="item in items" :key="item.name">
-        <b-form-group :label="`${item.name}:`" :label-for="item.name">
+        <b-form-group class="label" :label="`${item.name}:`" :label-for="item.name">
           <b-form-select
             class="u-full-width"
             v-bind:value="value[item.name]"
@@ -18,7 +18,7 @@
       </b-col>
 
       <b-col v-if="value.quality == 'custom'">
-        <b-form-group label="Bitrate:" label-for="bitrate">
+        <b-form-group class="label" label="Bitrate:" label-for="bitrate">
           <b-form-input
             v-bind:value="value.bitrate"
             @input="update('bitrate', $event)"
