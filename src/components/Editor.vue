@@ -11,6 +11,7 @@
         <b-form-group label="Input:" label-for="input">
           <b-input-group>
             <b-form-select
+              v-if="!$store.state.ffmpegdEnabled"
               class="protocol"
               v-model="protocolInput"
               @change="setProtocol('input', $event)"
@@ -18,12 +19,15 @@
               <option v-for="o in protocols" :key="o.id" :value="o.value">{{o.name}}</option>
             </b-form-select>
 
-            <!-- <b-form-input
+            <b-form-input
+              v-if="!$store.state.ffmpegdEnabled"
               v-model="form.input"
               :state="Boolean(form.input)"
               placeholder="Example: output.mp4"
-            ></b-form-input> -->
+            ></b-form-input>
+
             <b-form-file
+              v-else
               v-model="form.inputFile"
               :state="Boolean(form.inputFile)"
               placeholder="Choose a file or drop it here..."
@@ -31,14 +35,13 @@
             ></b-form-file>
           </b-input-group>
         </b-form-group>
-
-        {{ form.inputFile && form.inputFile.name }}
       </b-col>
 
       <b-col>
         <b-form-group label="Output:" label-for="output">
           <b-input-group>
             <b-form-select
+              v-if="!$store.state.ffmpegdEnabled"
               class="protocol"
               v-model="protocolOutput"
               @change="setProtocol('output', $event)"
@@ -324,14 +327,15 @@ export default {
       this.preset.name = this.preset.name || this.preset.id;
     },
     encode() {
+      const { input, inputFile, output } = this.form;
       const json = util.transformToJSON(this.form);
       storage.add({
         id: Date.now(),
         type: 'encode',
         payload: json,
         status: 'queued',
-        input: 'input.mp4',
-        output: 'output.mp4',
+        input: inputFile ? inputFile.name : input,
+        output,
       });
       this.$emit('onEncode');
     },

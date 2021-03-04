@@ -20,7 +20,6 @@ const storage = {
     const item = items.find((o) => o.id === id);
     item.status = value;
     window.localStorage.setItem('queue', JSON.stringify(items));
-    console.log(item);
     return item;
   },
 

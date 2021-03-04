@@ -35,7 +35,7 @@ function connect() {
 }
 
 setInterval(() => {
-  if (!conn.ws) {
+  if (!conn.ws && store.state.ffmpegdEnabled) {
     conn.ws = connect();
   }
 }, 1000);

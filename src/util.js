@@ -3,12 +3,12 @@ import codecMap from '@/codecs';
 // Transforms the form options to ffmpeg build options.
 function transform(formData) {
   const {
-    protocol, input, output, format, video, audio, filters, options,
+    protocol, input, inputFile, output, format, video, audio, filters, options,
   } = formData;
 
   const opt = {
     protocol,
-    input,
+    input: inputFile ? inputFile.name : input,
     output,
 
     // Format.

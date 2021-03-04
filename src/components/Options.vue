@@ -42,7 +42,8 @@
             switch
           >
             <span class="desc">
-              Enable sending encode jobs to <code>ffmpegd</code>. (experimental)
+              Enable sending encode jobs to <code>ffmpegd</code> (experimental).
+              <p class="small text-muted">*<strong>ffmpegd</strong> must be running to connect.</p>
             </span>
           </b-form-checkbox>
         </b-form-group>

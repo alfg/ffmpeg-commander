@@ -3,7 +3,7 @@
   <div class="mt-4">
     <b-button-group>
       <b-button
-        v-if="wsReady"
+        v-if="$store.state.ffmpegdEnabled && wsReady"
         class="ml-2 float-right"
         variant="outline-primary"
         @click="encode">{{ encoding ? 'Encoding...' : 'Encode' }}

@@ -2,18 +2,20 @@
 Component Layout:
 
 App
-  GithubCorner          Github Badge and link to repository.
-  Editor                Container component.
-    Presets             Pre-defined and user-saved presets.
-    Format              FFmpeg Format Options
-    Video               FFmpeg Video Options
-    Audio               FFmpeg Audio Options
-    Filters             FFmpeg Filter Options
-    Options             FFmpeg General Options and Logging. Saves to localstorage.
-    Command             Command building and rendering logic.
-      CommandFragment   Builds command fragments with tooltips.
-    Toolbar             User controls for copying command output and managing presets.
-    JsonViewer          View JSON formatted options.
+  GithubCorner            Github Badge and link to repository.
+  router-view
+    Editor                Container component.
+      Presets             Pre-defined and user-saved presets.
+      Format              FFmpeg Format Options
+      Video               FFmpeg Video Options
+      Audio               FFmpeg Audio Options
+      Filters             FFmpeg Filter Options
+      Options             FFmpeg General Options and Logging. Saves to localstorage.
+      Command             Command building and rendering logic.
+        CommandFragment   Builds command fragments with tooltips.
+      Toolbar             User controls for copying command output and managing presets.
+      JsonViewer          View JSON formatted options.
+  Queue                   Queue manager for ffmpegd encodes.
 -->
 <template>
   <div>

@@ -81,29 +81,14 @@
 import storage from '@/storage';
 import store from '@/store';
 
+const WS_INTERVAL = 5000;
+
 export default {
   name: 'Queue',
-  components: {
-  },
   created() {
     this.getQueue();
 
-    setInterval(() => {
-      if (this.$ws.ws.readyState === WebSocket.OPEN) {
-        this.$ws.ws.onmessage = (event) => {
-          const data = JSON.parse(event.data);
-          this.percent = data.percent;
-          this.speed = data.speed;
-          this.fps = data.fps;
-
-          if (this.percent === 100) {
-            this.setJobStatus('completed');
-            store.setIsEncoding(false);
-          }
-        };
-        this.startQueue();
-      }
-    }, 1000);
+    this.onMessage();
   },
   data() {
     return {
@@ -127,6 +112,24 @@ export default {
     };
   },
   methods: {
+    onMessage() {
+      setInterval(() => {
+        if (this.$ws.ws.readyState === WebSocket.OPEN) {
+          this.$ws.ws.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            this.percent = data.percent;
+            this.speed = data.speed;
+            this.fps = data.fps;
+
+            if (this.percent === 100) {
+              this.setJobStatus('completed');
+              store.setIsEncoding(false);
+            }
+          };
+          this.startQueue();
+        }
+      }, WS_INTERVAL);
+    },
     startQueue() {
       this.getQueue();
 
