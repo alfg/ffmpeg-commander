@@ -80,6 +80,11 @@ export default {
     await this.update('extra', this.extra);
     await this.update('loglevel', this.loglevel);
     await this.update('ffmpegd', this.ffmpegd);
+
+    // Start ffmpegd if option enabled and no ws connection.
+    if (this.ffmpegd && !this.$ws.conn) {
+      this.$ws.start();
+    }
   },
   methods: {
     setSettingsStorage() {
@@ -91,6 +96,15 @@ export default {
     update(key, value) {
       this.setSettingsStorage();
       this.$emit('input', { ...this.value, [key]: value });
+
+      // Toggle ffmpegd.
+      if (key === 'ffmpegd') {
+        if (this.ffmpegd && !this.$ws.conn) {
+          this.$ws.start();
+        } else if (!this.ffmpegd && this.$ws.conn) {
+          this.$ws.stop();
+        }
+      }
     },
   },
 };

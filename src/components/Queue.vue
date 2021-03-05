@@ -87,7 +87,6 @@ export default {
   name: 'Queue',
   created() {
     this.getQueue();
-
     this.onMessage();
   },
   data() {
@@ -114,8 +113,8 @@ export default {
   methods: {
     onMessage() {
       setInterval(() => {
-        if (this.$ws.ws.readyState === WebSocket.OPEN) {
-          this.$ws.ws.onmessage = (event) => {
+        if (this.$ws.conn && this.$ws.conn.readyState === WebSocket.OPEN) {
+          this.$ws.conn.onmessage = (event) => {
             const data = JSON.parse(event.data);
             this.percent = data.percent;
             this.speed = data.speed;
@@ -125,6 +124,10 @@ export default {
               this.setJobStatus('completed');
               store.setIsEncoding(false);
             }
+          };
+          this.$ws.conn.onerror = () => {
+            this.setJobStatus('error');
+            store.setIsEncoding(false);
           };
           this.startQueue();
         }
@@ -151,7 +154,7 @@ export default {
       }, 5000);
     },
     getQueue() {
-      this.items = storage.getAll();
+      this.items = storage.getAll('queue');
       this.items.forEach((o) => {
         if (o.status === 'encoding') {
           // eslint-disable-next-line no-param-reassign
@@ -164,7 +167,7 @@ export default {
       return filtered[0] || {};
     },
     sendEncode() {
-      this.$ws.ws.send(JSON.stringify({
+      this.$ws.conn.send(JSON.stringify({
         type: 'encode',
         input: this.job.input,
         output: this.job.output,
@@ -174,10 +177,20 @@ export default {
     },
     setJobStatus(status) {
       this.job.status = status;
-      storage.updateStatus(this.job.id, status);
+      storage.updateStatus('queue', this.job.id, status);
     },
     clearJobs() {
-      storage.deleteAll();
+      storage.deleteAll('queue');
+      this.getQueue();
+    },
+    onClickCancel(id) {
+      this.job.status = 'cancelled';
+      storage.updateStatus('queue', id, 'cancelled');
+      this.getQueue();
+    },
+    onClickRestart(id) {
+      this.job.status = 'queued';
+      storage.updateStatus('queue', id, 'queued');
       this.getQueue();
     },
   },
@@ -192,8 +205,5 @@ export default {
   font-family: monospace;
   margin-top: 10px;
   padding: 5px;
-}
-#jobs-table .table td {
-  vertical-align: middle;
 }
 </style>

@@ -329,7 +329,7 @@ export default {
     encode() {
       const { input, inputFile, output } = this.form;
       const json = util.transformToJSON(this.form);
-      storage.add({
+      storage.add('queue', {
         id: Date.now(),
         type: 'encode',
         payload: json,
