@@ -41,8 +41,10 @@ const tooltips = [
 
   // Values.
   { value: 'copy', tip: 'Skip the decoding and encoding step for the specified stream, so it does only demuxing and muxing.' },
-  { value: 'libx264', tip: 'H.264/AVC Encoder' },
+  { value: 'libx264', tip: 'H.264/AVC Encoder.' },
   { value: 'libx265', tip: 'H.265/HEVC Encoder.' },
+  { value: 'h264_nvenc', tip: 'NVIDIA NVENC H.264 encoder.' },
+  { value: 'hevc_nvenc', tip: 'NVIDIA NVENC hevc encoder.' },
 
   // Filters.
   { value: 'scale', tip: 'Scale (resize) the input video, using the libswscale library.' },

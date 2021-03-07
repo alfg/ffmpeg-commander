@@ -4,7 +4,7 @@
     <hr />
     <b-form-row>
       <b-col v-for="item in items" :key="item.name">
-        <b-form-group :label="`${item.name}:`" :label-for="item.name">
+        <b-form-group class="label" :label="`${item.name}:`" :label-for="item.name">
           <b-form-select
             class="u-full-width"
             v-bind:value="value[item.name]"
@@ -19,7 +19,11 @@
 
     <b-form-row>
       <b-col v-for="item in eq" :key="item.name">
-        <b-form-group :label="`${item.name}: ${value[item.name]}`" :label-for="item.name">
+        <b-form-group
+          class="label"
+          :label="`${item.name}: ${value[item.name]}`"
+          :label-for="item.name"
+        >
           <b-form-input
             :id="item.name"
             v-bind:value="value[item.name]"
@@ -33,7 +37,11 @@
     <hr />
     <b-form-row>
       <b-col v-for="item in dynamics" :key="item.name">
-        <b-form-group :label="`${item.name}: ${value[item.name]}`" :label-for="item.name">
+        <b-form-group
+          class="label"
+          :label="`${item.name}: ${value[item.name]}`"
+          :label-for="item.name"
+        >
           <b-form-input
             :id="item.name"
             v-bind:value="value[item.name]"

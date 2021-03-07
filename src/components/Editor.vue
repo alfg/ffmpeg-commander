@@ -11,6 +11,7 @@
         <b-form-group label="Input:" label-for="input">
           <b-input-group>
             <b-form-select
+              v-if="!$store.state.ffmpegdEnabled"
               class="protocol"
               v-model="protocolInput"
               @change="setProtocol('input', $event)"
@@ -19,10 +20,19 @@
             </b-form-select>
 
             <b-form-input
+              v-if="!$store.state.ffmpegdEnabled"
               v-model="form.input"
               :state="Boolean(form.input)"
               placeholder="Example: output.mp4"
             ></b-form-input>
+
+            <b-form-file
+              v-else
+              v-model="form.inputFile"
+              :state="Boolean(form.inputFile)"
+              placeholder="Choose a file or drop it here..."
+              drop-placeholder="Drop file here..."
+            ></b-form-file>
           </b-input-group>
         </b-form-group>
       </b-col>
@@ -31,6 +41,7 @@
         <b-form-group label="Output:" label-for="output">
           <b-input-group>
             <b-form-select
+              v-if="!$store.state.ffmpegdEnabled"
               class="protocol"
               v-model="protocolOutput"
               @change="setProtocol('output', $event)"
@@ -97,6 +108,7 @@
       v-model="controls"
       v-on:reset="reset"
       v-on:save="save"
+      v-on:encode="encode"
     />
 
     <!-- JSON formatted viewer so the user can view or copy the configured
@@ -113,6 +125,7 @@ import form from '@/form';
 import presets from '@/presets';
 import ffmpeg from '@/ffmpeg';
 import util from '@/util';
+import storage from '@/storage';
 
 import Presets from './Presets.vue';
 import Format from './Format.vue';
@@ -155,6 +168,7 @@ export default {
       protocolOutput: 'movie.mp4',
       form: {
         input: 'input.mp4',
+        inputFile: null,
         output: 'output.mp4',
         format: {
           container: 'mp4',
@@ -165,7 +179,6 @@ export default {
         video: {
           codec: 'x264',
           preset: 'none',
-          hardware_acceleration_option: 'off',
           pass: '1',
           crf: 23,
           bitrate: null,
@@ -220,8 +233,6 @@ export default {
       cmd: null,
       controls: {
         showJSON: false,
-        copied: false,
-        saving: false,
       },
     };
   },
@@ -308,17 +319,25 @@ export default {
       }
 
       // Save the preset name and reload the presets list.
-      this.saving = true;
       const presetName = presets.savePresetToLocalStorage(
         this.preset.id, this.preset.name, this.form,
       );
       this.presets = presets.getPresetOptions();
       this.preset.id = presetName;
       this.preset.name = this.preset.name || this.preset.id;
-
-      setTimeout(() => {
-        this.saving = false;
-      }, 1000);
+    },
+    encode() {
+      const { input, inputFile, output } = this.form;
+      const json = util.transformToJSON(this.form);
+      storage.add('queue', {
+        id: Date.now(),
+        type: 'encode',
+        payload: json,
+        status: 'queued',
+        input: inputFile ? inputFile.name : input,
+        output,
+      });
+      this.$emit('onEncode');
     },
   },
 };

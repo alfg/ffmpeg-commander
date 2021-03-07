@@ -3,12 +3,12 @@ import codecMap from '@/codecs';
 // Transforms the form options to ffmpeg build options.
 function transform(formData) {
   const {
-    protocol, input, output, format, video, audio, filters, options,
+    protocol, input, inputFile, output, format, video, audio, filters, options,
   } = formData;
 
   const opt = {
     protocol,
-    input,
+    input: inputFile ? inputFile.name : input,
     output,
 
     // Format.
@@ -20,7 +20,6 @@ function transform(formData) {
     // Video.
     vcodec: codecMap[video.codec],
     preset: video.preset,
-    hardwareAccelerationOption: video.hardware_acceleration_option,
     pass: video.pass,
     crf: video.crf,
     bitrate: video.bitrate,
@@ -86,7 +85,6 @@ function transformToJSON(formData) {
     video: {
       codec: codecMap[video.codec],
       preset: video.preset,
-      hardware_acceleration_option: video.hardware_acceleration_option,
       pass: video.pass,
       crf: video.crf,
       bitrate: video.bitrate,
@@ -145,7 +143,6 @@ function transformFromQueryParams(form, query) {
 
   video.codec = query['video.codec'] || video.codec;
   video.preset = query['video.preset'] || video.preset;
-  video.hardware_acceleration_option = query['video.hw'] || video.hardware_acceleration_option;
   video.pass = query['video.pass'] || video.pass;
   video.crf = query['video.crf'] || video.crf;
   video.bitrate = query['video.bitrate'] || video.bitrate;
@@ -199,7 +196,6 @@ function transformToQueryParams(form) {
 
     ...(video.codec !== 'x264' && { 'video.codec': video.codec }),
     ...(video.preset !== 'none' && { 'video.preset': video.preset }),
-    ...(video.hardware_acceleration_option !== 'off' && { 'video.hw': video.hardware_acceleration_option }),
     ...(video.pass !== '1' && { 'video.pass': video.pass }),
     ...(video.crf !== '0' && video.pass === 'crf' && { 'video.crf': video.crf }),
     ...(video.bitrate && { 'video.bitrate': video.bitrate }),

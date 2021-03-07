@@ -195,21 +195,6 @@ function setVideoFlags(options) {
   //
   // Set more complex options that can't be set from the videoOptionsMap.
   //
-  if (options.hardwareAccelerationOption === 'nvenc') {
-    // Replace encoder with NVidia hardware accelerated encoder.
-    // eslint-disable-next-line array-callback-return
-    flags.map((item, i) => {
-      if (item === 'libx264') {
-        flags[i] = 'h264_nvenc';
-      } else if (item === 'libx265') {
-        flags[i] = 'hevc_nvenc';
-      }
-    });
-  } else if (options.hardwareAccelerationOption !== 'off') {
-    const arg = ['-hwaccel', options.hardwareAccelerationOption];
-    flags.push(...arg);
-  }
-
   if (options.crf !== '0' && options.pass === 'crf') {
     const arg = ['-crf', options.crf];
     flags.push(...arg);

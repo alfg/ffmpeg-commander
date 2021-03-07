@@ -2,8 +2,15 @@
 <div class="toolbar">
   <div class="mt-4">
     <b-button-group>
+      <b-button
+        v-if="$store.state.ffmpegdEnabled && wsReady"
+        class="ml-2 float-right"
+        variant="outline-primary"
+        @click="encode">{{ encoding ? 'Encoding...' : 'Encode' }}
+      </b-button>
+
       <b-dropdown
-        variant="primary"
+        variant="outline-primary"
         split
         :text="copied ? 'Copied' : 'Copy'"
         v-b-tooltip.hover.bottom title="Copy to your Clipboard"
@@ -18,12 +25,15 @@
       <b-button
         class="ml-2 float-right"
         variant="outline-danger"
-        @click="$emit('reset')">Reset</b-button>
+        @click="$emit('reset')">Reset
+      </b-button>
+
       <b-dropdown
         variant="outline-primary"
         split
         v-b-tooltip.hover.bottomright title="Save to Local Storage"
-        :text="saving ? 'Saving...' : 'Save'" @click="$emit('save', false)">
+        :text="saving ? 'Saving...' : 'Save'" @click="save"
+      >
         <b-dropdown-item @click="$emit('save', true)">
           Save New
         </b-dropdown-item>
@@ -59,14 +69,27 @@ import presets from '@/presets';
 export default {
   name: 'Toolbar',
   props: ['value', 'preset'],
+  computed: {
+    wsReady() {
+      return this.$store.state.wsConnected;
+    },
+  },
   data() {
     return {
+      encoding: false,
       copied: false,
       saving: false,
       showDeletePrompt: false,
     };
   },
   methods: {
+    encode() {
+      this.encoding = true;
+      setTimeout(() => {
+        this.encoding = false;
+        this.$emit('encode');
+      }, 500);
+    },
     copyToClipboard() {
       const copyText = this.$parent.$refs.code;
       copyText.select();
@@ -92,6 +115,13 @@ export default {
     deleteAllPresets() {
       presets.deleteAllPresets();
       this.$emit('reset');
+    },
+    save() {
+      this.saving = true;
+      this.$emit('save', false);
+      setTimeout(() => {
+        this.saving = false;
+      }, 1000);
     },
     onShown() {
       this.$refs.dialog.focus();

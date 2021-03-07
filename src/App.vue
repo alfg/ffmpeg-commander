@@ -2,18 +2,20 @@
 Component Layout:
 
 App
-  GithubCorner          Github Badge and link to repository.
-  Editor                Container component.
-    Presets             Pre-defined and user-saved presets.
-    Format              FFmpeg Format Options
-    Video               FFmpeg Video Options
-    Audio               FFmpeg Audio Options
-    Filters             FFmpeg Filter Options
-    Options             FFmpeg General Options and Logging. Saves to localstorage.
-    Command             Command building and rendering logic.
-      CommandFragment   Builds command fragments with tooltips.
-    Toolbar             User controls for copying command output and managing presets.
-    JsonViewer          View JSON formatted options.
+  GithubCorner            Github Badge and link to repository.
+  router-view
+    Editor                Container component.
+      Presets             Pre-defined and user-saved presets.
+      Format              FFmpeg Format Options
+      Video               FFmpeg Video Options
+      Audio               FFmpeg Audio Options
+      Filters             FFmpeg Filter Options
+      Options             FFmpeg General Options and Logging. Saves to localstorage.
+      Command             Command building and rendering logic.
+        CommandFragment   Builds command fragments with tooltips.
+      Toolbar             User controls for copying command output and managing presets.
+      JsonViewer          View JSON formatted options.
+  Queue                   Queue manager for ffmpegd encodes.
 -->
 <template>
   <div>
@@ -31,7 +33,23 @@ App
     <GitHubCorner />
 
     <div id="app" class="container">
-      <router-view />
+      <b-tabs align="right" content-class="mt-4" v-model="tabIndex">
+        <b-tab title="Builder">
+          <router-view @onEncode="onEncode" />
+        </b-tab>
+        <b-tab title="Queue" v-if="ffmpegdEnabled">
+          <template #title>
+            <b-spinner small v-if="isEncoding"></b-spinner> Queue
+          </template>
+          <Queue />
+        </b-tab>
+        <b-tab v-if="ffmpegdEnabled" disabled>
+          <template #title>
+            <code v-if="wsReady"><span class="small">🟢</span> ffmpegd online</code>
+            <code v-else><span class="small">🔴</span> ffmpegd offline</code>
+          </template>
+        </b-tab>
+      </b-tabs>
     </div>
 
     <footer class="container mt-4 text-center">
@@ -51,17 +69,37 @@ App
 <script>
 import { name, version } from '../package.json';
 import GitHubCorner from './components/GitHubCorner.vue';
+import Queue from './components/Queue.vue';
 
 export default {
   name: 'app',
   components: {
     GitHubCorner,
+    Queue,
+  },
+  computed: {
+    wsReady() {
+      return this.$store.state.wsConnected;
+    },
+    isEncoding() {
+      return this.$store.state.isEncoding;
+    },
+    ffmpegdEnabled() {
+      return this.$store.state.ffmpegdEnabled;
+    },
   },
   data() {
     return {
       name,
       version,
+      tabIndex: 0,
     };
+  },
+  methods: {
+    onEncode() {
+      // eslint-disable-next-line no-plusplus
+      this.tabIndex++;
+    },
   },
 };
 </script>
@@ -75,7 +113,13 @@ export default {
   margin-top: 30px;
 }
 
-label {
+#app a.router-link-exact-active {
+  color: #495057;
+  background-color: #fff;
+  border-color: #dee2e6 #dee2e6 #fff;
+}
+
+.label {
   text-transform: capitalize;
 }
 
