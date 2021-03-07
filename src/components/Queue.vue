@@ -82,6 +82,13 @@ import storage from '@/storage';
 import store from '@/store';
 
 const WS_INTERVAL = 5000;
+const Status = {
+  QUEUED: 'queued',
+  ENCODING: 'encoding',
+  COMPLETED: 'completed',
+  CANCELLED: 'cancelled',
+  ERROR: 'error',
+};
 
 export default {
   name: 'Queue',
@@ -121,12 +128,14 @@ export default {
             this.fps = data.fps;
 
             if (this.percent === 100) {
-              this.setJobStatus('completed');
+              this.setJobStatus(this.job.id, Status.COMPLETED);
               store.setIsEncoding(false);
             }
           };
           this.$ws.conn.onerror = () => {
-            this.setJobStatus('error');
+            if (this.job.status !== Status.COMPLETED) {
+              this.setJobStatus(this.job.id, Status.ERROR);
+            }
             store.setIsEncoding(false);
           };
           this.startQueue();
@@ -139,7 +148,7 @@ export default {
       setInterval(() => {
         this.getQueue();
 
-        if (this.job.status && this.job.status === 'encoding') {
+        if (this.job.status && this.job.status === Status.ENCODING) {
           store.setIsEncoding(true);
           return;
         }
@@ -156,14 +165,16 @@ export default {
     getQueue() {
       this.items = storage.getAll('queue');
       this.items.forEach((o) => {
-        if (o.status === 'encoding') {
+        if (o.status === Status.ENCODING) {
           // eslint-disable-next-line no-param-reassign
           o._showDetails = true; // eslint-disable-line no-underscore-dangle
         }
       });
     },
     getNextJob() {
-      const filtered = this.items.filter((item) => item.status === 'queued' || item.status === 'encoding');
+      const filtered = this.items.filter(
+        (item) => item.status === Status.QUEUED || item.status === Status.ENCODING,
+      );
       return filtered[0] || {};
     },
     sendEncode() {
@@ -173,24 +184,24 @@ export default {
         output: this.job.output,
         payload: JSON.stringify(this.job.payload),
       }));
-      this.setJobStatus('encoding');
+      this.setJobStatus(this.job.id, Status.ENCODING);
     },
-    setJobStatus(status) {
+    setJobStatus(id, status) {
       this.job.status = status;
-      storage.updateStatus('queue', this.job.id, status);
+      storage.updateStatus('queue', id, status);
     },
     clearJobs() {
       storage.deleteAll('queue');
       this.getQueue();
     },
     onClickCancel(id) {
-      this.job.status = 'cancelled';
-      storage.updateStatus('queue', id, 'cancelled');
+      this.job.status = Status.CANCELLED;
+      this.setJobStatus(id, Status.CANCELLED);
       this.getQueue();
     },
     onClickRestart(id) {
-      this.job.status = 'queued';
-      storage.updateStatus('queue', id, 'queued');
+      this.job.status = Status.QUEUED;
+      this.setJobStatus(id, Status.QUEUED);
       this.getQueue();
     },
   },

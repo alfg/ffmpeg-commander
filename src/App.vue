@@ -45,8 +45,8 @@ App
         </b-tab>
         <b-tab v-if="ffmpegdEnabled" disabled>
           <template #title>
-            <code v-if="wsReady">✅ ffmpegd connected</code>
-            <code v-else>❌ ffmpegd not connected</code>
+            <code v-if="wsReady"><span class="small">🟢</span> ffmpegd online</code>
+            <code v-else><span class="small">🔴</span> ffmpegd offline</code>
           </template>
         </b-tab>
       </b-tabs>
