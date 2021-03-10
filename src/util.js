@@ -113,7 +113,7 @@ function transformToJSON(formData) {
       quality: audio.quality,
       bitrate: audio.bitrate,
       sampleRate: audio.sampleRate,
-      volume: audio.volume,
+      volume: audio.volume.toString(),
     },
     filter: {
       deband: filters.deband,
@@ -122,11 +122,11 @@ function transformToJSON(formData) {
       dejudder: filters.dejudder,
       denoise: filters.denoise,
       deinterlace: filters.deinterlace,
-      brightness: filters.brightness,
-      contrast: filters.contrast,
-      saturation: filters.saturation,
-      gamma: filters.gamma,
-      acontrast: filters.acontrast,
+      brightness: (filters.brightness / 100).toString(),
+      contrast: ((filters.contrast / 100) + 1).toString(),
+      saturation: filters.saturation.toString(),
+      gamma: (filters.gamma / 10).toString(),
+      acontrast: filters.acontrast.toString(),
     },
   };
   return json;

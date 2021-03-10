@@ -205,7 +205,7 @@ const form = {
     { name: 'Auto', value: 'auto' },
     { name: 'Neighbor', value: 'neighbor' },
     { name: 'Area', value: 'area' },
-    { name: 'Fast Bilinear', value: 'fastbilinear' },
+    { name: 'Fast Bilinear', value: 'fast_bilinear' },
     { name: 'Bilinear', value: 'bilinear' },
     { name: 'Bicubic', value: 'bicubic' },
     { name: 'Experimental', value: 'experimental' },

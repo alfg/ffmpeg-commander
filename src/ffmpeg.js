@@ -131,7 +131,7 @@ function setVideoFilters(options) {
   // EQ Filters.
   const eq = [];
   if (parseInt(options.contrast, 10) !== 0) {
-    const arg = [`contrast=${options.contrast}`];
+    const arg = [`contrast=${(options.contrast / 100) + 1}`];
     eq.push(...arg);
   }
 

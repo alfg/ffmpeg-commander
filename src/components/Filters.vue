@@ -80,10 +80,10 @@ export default {
         { name: 'deinterlace', config: deinterlace },
       ],
       eq: [
-        { name: 'contrast', min: -1000, max: 1000 },
+        { name: 'contrast', min: -100, max: 100 },
         { name: 'brightness', min: -100, max: 100 },
         { name: 'saturation', min: 0, max: 300 },
-        { name: 'gamma', min: 1, max: 100 },
+        { name: 'gamma', min: 0, max: 100 },
       ],
       dynamics: [
         { name: 'acontrast', min: 0, max: 100 },
