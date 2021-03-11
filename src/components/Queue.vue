@@ -30,7 +30,7 @@
       </template>
 
       <template v-slot:cell(details)="row">
-        <b-button size="sm" @click="row.toggleDetails" class="mr-2">
+        <b-button size="sm" @click="toggleDetails(row.item.id, row.item._showDetails)" class="mr-2">
           {{ row.detailsShowing ? 'Hide' : 'Show'}}
         </b-button>
       </template>
@@ -71,6 +71,21 @@
               </div>
             </b-col>
           </b-row>
+
+          <!-- Display error if recieved from message -->
+          <b-row class="mb-2" v-if="row.item.error">
+            <b-col sm="2" class="text-sm-right"><b>Error:</b></b-col>
+            <b-col>
+              <div class="code">
+                <b-form-textarea
+                  rows="3"
+                  max-rows="3"
+                  :value="JSON.stringify(row.item.error)"
+                ></b-form-textarea>
+              </div>
+            </b-col>
+          </b-row>
+
       </template>
     </b-table>
     <h2 class="text-center" v-if="items.length === 0">No Jobs Found</h2>
@@ -126,10 +141,17 @@ export default {
             this.percent = data.percent;
             this.speed = data.speed;
             this.fps = data.fps;
+            this.err = data.err;
 
             if (this.percent === 100) {
               this.setJobStatus(this.job.id, Status.COMPLETED);
               store.setIsEncoding(false);
+            }
+
+            if (this.err) {
+              this.setJobStatus(this.job.id, Status.ERROR);
+              store.setIsEncoding(false);
+              storage.set('queue', this.job.id, 'error', this.err);
             }
           };
           this.$ws.conn.onerror = () => {
@@ -164,12 +186,6 @@ export default {
     },
     getQueue() {
       this.items = storage.getAll('queue');
-      this.items.forEach((o) => {
-        if (o.status === Status.ENCODING) {
-          // eslint-disable-next-line no-param-reassign
-          o._showDetails = true; // eslint-disable-line no-underscore-dangle
-        }
-      });
     },
     getNextJob() {
       const filtered = this.items.filter(
@@ -202,6 +218,11 @@ export default {
     onClickRestart(id) {
       this.job.status = Status.QUEUED;
       this.setJobStatus(id, Status.QUEUED);
+      this.getQueue();
+    },
+    toggleDetails(id, enabled) {
+      // eslint-disable-next-line no-underscore-dangle
+      storage.toggleDetails('queue', id, !enabled);
       this.getQueue();
     },
   },

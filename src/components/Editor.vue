@@ -336,6 +336,7 @@ export default {
         status: 'queued',
         input: inputFile ? inputFile.name : input,
         output,
+        _showDetails: false,
       });
       this.$emit('onEncode');
     },

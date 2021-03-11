@@ -1,14 +1,20 @@
-# ffmpeg-commander
-> `ffmpeg-commander` is a simple web UI for generating common FFmpeg commands.
-
-*Generated options may vary based on your FFmpeg version and build configuration. Tested on version 4.3.1*
+# `ffmpeg-commander`
+A simple web UI for generating common FFmpeg encoding operations.
 
 https://alfg.github.io/ffmpeg-commander/
+
+Check out [docker-ffmpeg](https://github.com/alfg/docker-ffmpeg) for a customized Docker build of FFmpeg.
 
 ![github pages](https://github.com/alfg/ffmpeg-commander/workflows/github%20pages/badge.svg)
 [![Build Status](https://travis-ci.org/alfg/ffmpeg-commander.svg?branch=master)](https://travis-ci.org/alfg/ffmpeg-commander)
 
-Check out [docker-ffmpeg](https://github.com/alfg/docker-ffmpeg) for a customized Docker build of FFmpeg.
+
+## Why?
+`FFmpeg` has many simple and complex options, which can be intimidating at first. I wanted to create a simple interface for generating common encoding operations for video and audio, inspired by [HandBrake](https://handbrake.fr/).
+
+This tool does NOT cover all options of FFmpeg and some assumptions are made when generating the output. So adjustments may be necessary. Generated options may also vary based on your FFmpeg version and build configuration.
+
+If you feel some options can be improved, feel free to open an issue or pull request.
 
 ## Development
 `ffmpeg-commander` is built with [Vue.js](https://vuejs.org) and [Bootstrap Vue](https://bootstrap-vue.org/).

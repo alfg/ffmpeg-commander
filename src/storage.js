@@ -15,10 +15,26 @@ const storage = {
     return q.find((item) => item.id === id);
   },
 
+  set(key, id, k, v) {
+    const items = storage.getAll(key);
+    const item = items.find((o) => o.id === id);
+    item[k] = v;
+    window.localStorage.setItem(key, JSON.stringify(items));
+    return item;
+  },
+
   updateStatus(key, id, value) {
     const items = storage.getAll(key);
     const item = items.find((o) => o.id === id);
     item.status = value;
+    window.localStorage.setItem(key, JSON.stringify(items));
+    return item;
+  },
+
+  toggleDetails(key, id, value) {
+    const items = storage.getAll(key);
+    const item = items.find((o) => o.id === id);
+    item._showDetails = value; // eslint-disable-line no-underscore-dangle
     window.localStorage.setItem(key, JSON.stringify(items));
     return item;
   },
