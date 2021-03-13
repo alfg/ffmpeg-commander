@@ -11,7 +11,7 @@
         <b-form-group label="Input:" label-for="input">
           <b-input-group>
             <b-form-select
-              v-if="!$store.state.ffmpegdEnabled"
+              v-if="!$store.state.ffmpegdEnabled || !$store.state.wsConnected"
               class="protocol"
               v-model="protocolInput"
               @change="setProtocol('input', $event)"
@@ -20,19 +20,30 @@
             </b-form-select>
 
             <b-form-input
-              v-if="!$store.state.ffmpegdEnabled"
+              v-if="!$store.state.ffmpegdEnabled || !$store.state.wsConnected"
               v-model="form.input"
               :state="Boolean(form.input)"
               placeholder="Example: output.mp4"
             ></b-form-input>
 
-            <b-form-file
+            <b-form-input
+              v-else
+              v-model="form.input"
+              placeholder=""
+              @focus="onFileFocus"
+            ></b-form-input>
+
+            <div v-if="showFileBrowser">
+              <FileBrowser v-on:file="onFileSelect" v-on:close="onClose" />
+            </div>
+
+            <!-- <b-form-file
               v-else
               v-model="form.inputFile"
               :state="Boolean(form.inputFile)"
               placeholder="Choose a file or drop it here..."
               drop-placeholder="Drop file here..."
-            ></b-form-file>
+            ></b-form-file> -->
           </b-input-group>
         </b-form-group>
       </b-col>
@@ -136,6 +147,7 @@ import Options from './Options.vue';
 import Command from './Command.vue';
 import Toolbar from './Toolbar.vue';
 import JsonViewer from './JsonViewer.vue';
+import FileBrowser from './FileBrowser.vue';
 
 const {
   protocols,
@@ -155,6 +167,7 @@ export default {
     Command,
     Toolbar,
     JsonViewer,
+    FileBrowser,
   },
   props: {},
   data() {
@@ -234,6 +247,7 @@ export default {
       controls: {
         showJSON: false,
       },
+      showFileBrowser: false,
     };
   },
   created() {
@@ -339,6 +353,16 @@ export default {
         _showDetails: false,
       });
       this.$emit('onEncode');
+    },
+    onFileSelect(file) {
+      this.form.input = file;
+      this.showFileBrowser = false;
+    },
+    onFileFocus() {
+      this.showFileBrowser = true;
+    },
+    onClose() {
+      this.showFileBrowser = false;
     },
   },
 };
