@@ -31,7 +31,6 @@ export default {
 pre {
   background: #343a40;
   color: #fff;
-  color: #fff;
   display: block;
   font-family: "Source Code Pro", monospace;
   margin: 0;

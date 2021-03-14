@@ -56,19 +56,28 @@
 
           <b-row class="mb-2">
             <b-col sm="2" class="text-sm-right"><b>Output:</b></b-col>
-            <b-col>{{ row.item.output }}</b-col>
+            <b-col>
+              <a :href="videoUrl(row.item.output)" target="_blank">{{ row.item.output }}</a>
+            </b-col>
           </b-row>
 
           <b-row class="mb-2">
-            <b-col sm="2" class="text-sm-right"><b>Encode Options:</b></b-col>
+            <b-col sm="2" class="text-sm-right"><b>Payload:</b></b-col>
             <b-col>
-              <div class="code">
-                <b-form-textarea
-                  rows="3"
-                  max-rows="6"
-                  :value="JSON.stringify(row.item.payload)"
-                ></b-form-textarea>
-              </div>
+              <b-form-textarea
+                class="code"
+                rows="6"
+                size="sm"
+                readonly
+                :value="JSON.stringify(row.item.payload, null, 2)"
+              ></b-form-textarea>
+            </b-col>
+          </b-row>
+
+          <b-row class="mb-2" v-if="row.item.status === 'completed'">
+            <b-col sm="2" class="text-sm-right"><b>Preview:</b></b-col>
+            <b-col>
+              <video :src="videoUrl(row.item.output)" width="70%" controls muted />
             </b-col>
           </b-row>
 
@@ -225,17 +234,15 @@ export default {
       storage.toggleDetails('queue', id, !enabled);
       this.getQueue();
     },
+    videoUrl(output) {
+      return `http://127.0.0.1:8080/${output}`;
+    },
   },
 };
 </script>
 
 <style>
-.code {
-  background-color: #f4f4f4;
-  border: 1px solid #aaa;
-  color: #000;
+textarea.code {
   font-family: monospace;
-  margin-top: 10px;
-  padding: 5px;
 }
 </style>
