@@ -1,4 +1,12 @@
 const storage = {
+  getItem(key) {
+    return JSON.parse(window.localStorage.getItem(key));
+  },
+
+  setItem(key, value) {
+    return window.localStorage.setItem(key, JSON.stringify(value));
+  },
+
   add(key, value) {
     const q = JSON.parse(window.localStorage.getItem(key)) || [];
     q.push(value);
@@ -6,8 +14,7 @@ const storage = {
   },
 
   getAll(key) {
-    const q = JSON.parse(window.localStorage.getItem(key)) || [];
-    return q;
+    return JSON.parse(window.localStorage.getItem(key)) || [];
   },
 
   get(key, id) {
