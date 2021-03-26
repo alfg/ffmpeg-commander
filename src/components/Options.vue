@@ -55,6 +55,7 @@
 
 <script>
 import form from '@/form';
+import storage from '@/storage';
 
 const {
   extraOptions,
@@ -74,9 +75,9 @@ export default {
     };
   },
   async created() {
-    this.extra = JSON.parse(window.localStorage.getItem('options')) || [];
-    this.loglevel = JSON.parse(window.localStorage.getItem('loglevel')) || 'none';
-    this.ffmpegd = window.localStorage.getItem('ffmpegd') === 'true';
+    this.extra = storage.getItem('options') || [];
+    this.loglevel = storage.getItem('loglevel') || 'none';
+    this.ffmpegd = storage.getItem('ffmpegd');
     await this.update('extra', this.extra);
     await this.update('loglevel', this.loglevel);
     await this.update('ffmpegd', this.ffmpegd);
@@ -88,9 +89,9 @@ export default {
   },
   methods: {
     setSettingsStorage() {
-      window.localStorage.setItem('options', JSON.stringify(this.extra));
-      window.localStorage.setItem('loglevel', JSON.stringify(this.loglevel));
-      window.localStorage.setItem('ffmpegd', this.ffmpegd);
+      storage.setItem('options', this.extra);
+      storage.setItem('loglevel', this.loglevel);
+      storage.setItem('ffmpegd', this.ffmpegd);
       this.$store.setFfmpegdEnabled(this.ffmpegd);
     },
     update(key, value) {

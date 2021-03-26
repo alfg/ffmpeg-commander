@@ -1,6 +1,8 @@
 /* eslint-disable import/no-dynamic-require */
 /* eslint-disable global-require */
 
+import storage from '@/storage';
+
 const LOCALSTORAGE_PRESETS_KEY = 'presets';
 
 const presetOptions = [
@@ -37,7 +39,7 @@ const presetOptions = [
 ];
 
 function getPresetOptions() {
-  presetOptions.find((o) => o.id === 'saved').data = JSON.parse(window.localStorage.getItem(LOCALSTORAGE_PRESETS_KEY));
+  presetOptions.find((o) => o.id === 'saved').data = storage.getItem(LOCALSTORAGE_PRESETS_KEY);
   return presetOptions;
 }
 
@@ -48,12 +50,12 @@ function getPreset(preset) {
 }
 
 function getPresetFromLocalStorage(preset) {
-  const data = JSON.parse(window.localStorage.getItem(LOCALSTORAGE_PRESETS_KEY));
+  const data = storage.getItem(LOCALSTORAGE_PRESETS_KEY);
   return data.find((o) => o.value === preset);
 }
 
 function savePresetToLocalStorage(preset, savedPresetName, formData) {
-  const saved = JSON.parse(window.localStorage.getItem(LOCALSTORAGE_PRESETS_KEY)) || [];
+  const saved = storage.getItem(LOCALSTORAGE_PRESETS_KEY) || [];
 
   // If a savedPresetName is provided, then we update the loaded preset, otherwise
   // create a new entry the stored presets array.
@@ -69,18 +71,18 @@ function savePresetToLocalStorage(preset, savedPresetName, formData) {
     saved.push({ name: presetName, value: presetName, data: formData });
   }
 
-  window.localStorage.setItem(LOCALSTORAGE_PRESETS_KEY, JSON.stringify(saved));
+  storage.setItem(LOCALSTORAGE_PRESETS_KEY, saved);
   return presetName;
 }
 
 function deletePreset(preset) {
-  const data = JSON.parse(window.localStorage.getItem(LOCALSTORAGE_PRESETS_KEY));
+  const data = storage.getItem(LOCALSTORAGE_PRESETS_KEY);
   const newData = data.filter((o) => o.value !== preset);
-  window.localStorage.setItem(LOCALSTORAGE_PRESETS_KEY, JSON.stringify(newData));
+  storage.setItem(LOCALSTORAGE_PRESETS_KEY, newData);
 }
 
 function deleteAllPresets() {
-  window.localStorage.removeItem(LOCALSTORAGE_PRESETS_KEY);
+  storage.deleteAll(LOCALSTORAGE_PRESETS_KEY);
 }
 
 export default {
