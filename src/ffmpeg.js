@@ -175,13 +175,24 @@ function setAudioFilters(options) {
   return af.join(',');
 }
 
-function set2Pass(flags) {
+function set2Pass(flags, options) {
   const op = '/dev/null &&'; // For Windows use `NUL && \`
   const copy = flags.slice(); // Array clone for pass 2.
 
   // Rewrite command with 1 and 2 pass flags and append to flags array.
-  flags.push(...['-pass', '1', op]);
-  copy.push(...['-pass', '2']);
+  if (options.vcodec === 'libx265' && options.codecOptions) {
+    // Add pass param if the -x265-params flag is already present.
+    const idx = flags.indexOf('-x265-params');
+    // eslint-disable-next-line no-param-reassign
+    flags[idx + 1] += ':pass=1';
+    copy[idx + 1] += ':pass=2';
+  } else if (options.vcodec === 'libx265') {
+    flags.push(...['-x265-params', 'pass=1', op]);
+    copy.push(...['-x265-params', 'pass=2']);
+  } else {
+    flags.push(...['-pass', '1', op]);
+    copy.push(...['-pass', '2']);
+  }
   return copy;
 }
 
@@ -274,7 +285,7 @@ function build(opt) {
 
   // Set 2 pass output if option is set.
   if (options.pass === '2') {
-    const copy = set2Pass(flags);
+    const copy = set2Pass(flags, options);
     flags.push(...copy);
   }
 
