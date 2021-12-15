@@ -3,10 +3,14 @@ A simple web UI for generating common FFmpeg encoding operations.
 
 https://alfg.github.io/ffmpeg-commander/
 
-Check out [docker-ffmpeg](https://github.com/alfg/docker-ffmpeg) for a customized Docker build of FFmpeg.
-
 ![github pages](https://github.com/alfg/ffmpeg-commander/workflows/github%20pages/badge.svg)
 [![Build Status](https://travis-ci.org/alfg/ffmpeg-commander.svg?branch=master)](https://travis-ci.org/alfg/ffmpeg-commander)
+
+![screenshot](https://user-images.githubusercontent.com/702541/146104964-3aaccb1a-08c8-47df-b4b9-e21a6c8c80ab.png)
+
+Read the blog post at: https://dev.to/alfg/ffmpeg-the-easy-way-4a0h
+
+Check out [docker-ffmpeg](https://github.com/alfg/docker-ffmpeg) for a customized Docker build of FFmpeg.
 
 
 ## Why?
@@ -42,6 +46,12 @@ npm run deploy
 docker build -t ffmpeg-commander .
 docker run -it -p 8080:80 --rm ffmpeg-commander
 ```
+
+## `ffmpegd`
+`ffmpegd` is an optional companion application that connects `ffmpeg-commander` to `ffmpeg` by providing a websocket server to send encode tasks and receive realtime progress updates back to the browser. This allows using ffmpeg-commander as a GUI for ffmpeg.
+
+See: https://github.com/alfg/ffmpegd
+
 
 ### TODO
 * Support multiple inputs and map option
