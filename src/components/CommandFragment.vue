@@ -51,7 +51,6 @@ export default {
 
 span.fragment {
   display: inline-block;
-  padding: 0 5px;
 }
 
 span.fragment:hover {
