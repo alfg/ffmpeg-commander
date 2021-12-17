@@ -23,8 +23,15 @@ If you feel some options can be improved, feel free to open an issue or pull req
 ## Development
 `ffmpeg-commander` is built with [Vue.js](https://vuejs.org) and [Bootstrap Vue](https://bootstrap-vue.org/).
 
+### Supported Node [LTS](https://nodejs.org/en/about/releases/) Versions
+* v12
+* v14
+* v16
+
+[NVM](https://github.com/nvm-sh/nvm) is recommended for quickly installing and using different versions of Node.js.
+
 ### Install
-```
+```bash
 npm install
 npm run serve
 ```
