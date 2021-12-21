@@ -6,6 +6,8 @@ App
   router-view
     Editor                Container component.
       Presets             Pre-defined and user-saved presets.
+      Input               Input source.
+      Output              Output destination.
       Format              FFmpeg Format Options
       Video               FFmpeg Video Options
       Audio               FFmpeg Audio Options
