@@ -118,17 +118,7 @@ export default {
       form: {
         io: {
           input: 'input.mp4',
-          inputFile: null,
           output: 'output.mp4',
-          outputFile: null,
-        },
-        input: {
-          name: 'input.mp4',
-          file: null,
-        },
-        output: {
-          name: 'output.mp4',
-          file: null,
         },
         format: {
           container: 'mp4',
