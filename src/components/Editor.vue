@@ -232,11 +232,11 @@ export default {
       this.cmd = ffmpeg.build(opt);
     },
     updateOutput() {
-      if (this.form.output) {
-        const { format, output } = this.form;
-        const ext = path.extname(output);
+      if (this.form.io.output) {
+        const { format, io } = this.form;
+        const ext = path.extname(io.output);
         if (ext) {
-          this.form.output = `${output.replace(ext, `.${format.container}`)}`;
+          this.form.io.output = `${io.output.replace(ext, `.${format.container}`)}`;
         }
       }
     },
@@ -268,15 +268,15 @@ export default {
       this.preset.name = this.preset.name || this.preset.id;
     },
     encode() {
-      const { input, output } = this.form;
+      const { input, output } = this.form.io;
       const json = util.transformToJSON(this.form);
       storage.add('queue', {
         id: Date.now(),
         type: 'encode',
         payload: json,
         status: 'queued',
-        input: input.name,
-        output: output.name,
+        input,
+        output,
         _showDetails: false,
       });
       this.$emit('onEncode');
