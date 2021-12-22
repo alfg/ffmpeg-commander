@@ -6,13 +6,12 @@ App
   router-view
     Editor                Container component.
       Presets             Pre-defined and user-saved presets.
-      Input               Input source.
-      Output              Output destination.
-      Format              FFmpeg Format Options
-      Video               FFmpeg Video Options
-      Audio               FFmpeg Audio Options
-      Filters             FFmpeg Filter Options
-      Options             FFmpeg General Options and Logging. Saves to localstorage.
+      FileIO              Source and destination inputs.
+      Format              FFmpeg format options.
+      Video               FFmpeg video options.
+      Audio               FFmpeg audio options.
+      Filters             FFmpeg filter options.
+      Options             FFmpeg general options and logging. Saves to localstorage.
       Command             Command building and rendering logic.
         CommandFragment   Builds command fragments with tooltips.
       Toolbar             User controls for copying command output and managing presets.

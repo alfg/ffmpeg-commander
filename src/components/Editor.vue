@@ -6,15 +6,7 @@
     <Presets v-model="preset" />
 
     <!-- Input and Output protocol and filenames. -->
-    <b-form-row>
-      <b-col>
-        <Input v-model="form.input" />
-      </b-col>
-
-      <b-col>
-        <Output v-model="form.output" />
-      </b-col>
-    </b-form-row>
+    <FileIO v-model="form.io" />
 
     <!-- Tabs for each command building component.
     Format, Video, Audio, Filters and Options -->
@@ -85,8 +77,7 @@ import util from '@/util';
 import storage from '@/storage';
 
 import Presets from './Presets.vue';
-import Input from './Input.vue';
-import Output from './Output.vue';
+import FileIO from './FileIO.vue';
 import Format from './Format.vue';
 import Video from './Video.vue';
 import Audio from './Audio.vue';
@@ -106,8 +97,7 @@ export default {
   name: 'Editor',
   components: {
     Presets,
-    Input,
-    Output,
+    FileIO,
     Format,
     Video,
     Audio,
@@ -126,6 +116,12 @@ export default {
         name: null,
       },
       form: {
+        io: {
+          input: 'input.mp4',
+          inputFile: null,
+          output: 'output.mp4',
+          outputFile: null,
+        },
         input: {
           name: 'input.mp4',
           file: null,
