@@ -40,7 +40,6 @@ export default {
   },
   methods: {
     update(key, value) {
-      console.log(key, value);
       this.$emit('input', { ...this.value, [key]: value });
     },
   },

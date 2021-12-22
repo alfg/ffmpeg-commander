@@ -95,7 +95,6 @@ import Options from './Options.vue';
 import Command from './Command.vue';
 import Toolbar from './Toolbar.vue';
 import JsonViewer from './JsonViewer.vue';
-// import FileBrowser from './FileBrowser.vue';
 
 const {
   protocols,
@@ -117,7 +116,6 @@ export default {
     Command,
     Toolbar,
     JsonViewer,
-    // FileBrowser,
   },
   props: {},
   data() {
@@ -127,8 +125,6 @@ export default {
         id: 'custom',
         name: null,
       },
-      // protocolInput: 'movie.mp4',
-      // protocolOutput: 'movie.mp4',
       form: {
         input: {
           name: 'input.mp4',
@@ -239,13 +235,6 @@ export default {
     },
   },
   methods: {
-    // setProtocol(type, value) {
-    //   if (type === 'input') {
-    //     this.form.input = value;
-    //   } else if (type === 'output') {
-    //     this.form.output = value;
-    //   }
-    // },
     setPreset(value) {
       this.reset();
       const preset = presets.getPreset(value);
@@ -273,9 +262,6 @@ export default {
       const params = util.transformToQueryParams(this.form);
       this.$router.push({ query: params }).catch(() => {});
     },
-    // update(key, value) {
-    //   this.$emit('input', { ...this.value, [key]: value });
-    // },
     reset() {
       // Restore form from default copy.
       this.form = merge(this.form, this.default);
@@ -296,28 +282,18 @@ export default {
       this.preset.name = this.preset.name || this.preset.id;
     },
     encode() {
-      const { input, inputFile, output } = this.form;
+      const { input, output } = this.form;
       const json = util.transformToJSON(this.form);
       storage.add('queue', {
         id: Date.now(),
         type: 'encode',
         payload: json,
         status: 'queued',
-        input: inputFile ? inputFile.name : input,
-        output,
+        input: input.name,
+        output: output.name,
         _showDetails: false,
       });
       this.$emit('onEncode');
-    },
-    onFileSelect(file) {
-      this.form.input = file;
-      this.showFileBrowser = false;
-    },
-    onFileFocus() {
-      this.showFileBrowser = true;
-    },
-    onClose() {
-      this.showFileBrowser = false;
     },
   },
 };
