@@ -77,15 +77,25 @@ export default {
   props: ['value'],
   data() {
     return {
+      protocols,
       protocolInput: 'movie.mp4',
       protocolOutput: 'movie.mp4',
-      protocols,
       showFileBrowser: false,
     };
   },
   methods: {
     update(key, value) {
       this.$emit('input', { ...this.value, [key]: value });
+    },
+    onFileSelect(file) {
+      this.update('input', file);
+      this.showFileBrowser = false;
+    },
+    onFileFocus() {
+      this.showFileBrowser = true;
+    },
+    onClose() {
+      this.showFileBrowser = false;
     },
   },
 };
