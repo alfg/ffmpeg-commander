@@ -6,69 +6,7 @@
     <Presets v-model="preset" />
 
     <!-- Input and Output protocol and filenames. -->
-    <b-form-row>
-      <b-col>
-        <b-form-group label="Input:" label-for="input">
-          <b-input-group>
-            <b-form-select
-              v-if="!$store.state.ffmpegdEnabled || !$store.state.wsConnected"
-              class="protocol"
-              v-model="protocolInput"
-              @change="setProtocol('input', $event)"
-            >
-              <option v-for="o in protocols" :key="o.id" :value="o.value">{{o.name}}</option>
-            </b-form-select>
-
-            <b-form-input
-              v-if="!$store.state.ffmpegdEnabled || !$store.state.wsConnected"
-              v-model="form.input"
-              :state="Boolean(form.input)"
-              placeholder="Example: output.mp4"
-            ></b-form-input>
-
-            <b-form-input
-              v-else
-              v-model="form.input"
-              placeholder=""
-              @focus="onFileFocus"
-            ></b-form-input>
-
-            <div v-if="showFileBrowser">
-              <FileBrowser v-on:file="onFileSelect" v-on:close="onClose" />
-            </div>
-
-            <!-- <b-form-file
-              v-else
-              v-model="form.inputFile"
-              :state="Boolean(form.inputFile)"
-              placeholder="Choose a file or drop it here..."
-              drop-placeholder="Drop file here..."
-            ></b-form-file> -->
-          </b-input-group>
-        </b-form-group>
-      </b-col>
-
-      <b-col>
-        <b-form-group label="Output:" label-for="output">
-          <b-input-group>
-            <b-form-select
-              v-if="!$store.state.ffmpegdEnabled"
-              class="protocol"
-              v-model="protocolOutput"
-              @change="setProtocol('output', $event)"
-            >
-              <option v-for="o in protocols" :key="o.id" :value="o.value">{{o.name}}</option>
-            </b-form-select>
-
-            <b-form-input
-              v-model="form.output"
-              :state="Boolean(form.output)"
-              placeholder="Example: output.mp4"
-            ></b-form-input>
-          </b-input-group>
-        </b-form-group>
-      </b-col>
-    </b-form-row>
+    <FileIO v-model="form.io" />
 
     <!-- Tabs for each command building component.
     Format, Video, Audio, Filters and Options -->
@@ -139,6 +77,7 @@ import util from '@/util';
 import storage from '@/storage';
 
 import Presets from './Presets.vue';
+import FileIO from './FileIO.vue';
 import Format from './Format.vue';
 import Video from './Video.vue';
 import Audio from './Audio.vue';
@@ -147,7 +86,6 @@ import Options from './Options.vue';
 import Command from './Command.vue';
 import Toolbar from './Toolbar.vue';
 import JsonViewer from './JsonViewer.vue';
-import FileBrowser from './FileBrowser.vue';
 
 const {
   protocols,
@@ -159,6 +97,7 @@ export default {
   name: 'Editor',
   components: {
     Presets,
+    FileIO,
     Format,
     Video,
     Audio,
@@ -167,7 +106,6 @@ export default {
     Command,
     Toolbar,
     JsonViewer,
-    FileBrowser,
   },
   props: {},
   data() {
@@ -177,12 +115,11 @@ export default {
         id: 'custom',
         name: null,
       },
-      protocolInput: 'movie.mp4',
-      protocolOutput: 'movie.mp4',
       form: {
-        input: 'input.mp4',
-        inputFile: null,
-        output: 'output.mp4',
+        io: {
+          input: 'input.mp4',
+          output: 'output.mp4',
+        },
         format: {
           container: 'mp4',
           clip: false,
@@ -284,13 +221,6 @@ export default {
     },
   },
   methods: {
-    setProtocol(type, value) {
-      if (type === 'input') {
-        this.form.input = value;
-      } else if (type === 'output') {
-        this.form.output = value;
-      }
-    },
     setPreset(value) {
       this.reset();
       const preset = presets.getPreset(value);
@@ -302,11 +232,11 @@ export default {
       this.cmd = ffmpeg.build(opt);
     },
     updateOutput() {
-      if (this.form.output) {
-        const { format, output } = this.form;
-        const ext = path.extname(output);
+      if (this.form.io.output) {
+        const { format, io } = this.form;
+        const ext = path.extname(io.output);
         if (ext) {
-          this.form.output = `${output.replace(ext, `.${format.container}`)}`;
+          this.form.io.output = `${io.output.replace(ext, `.${format.container}`)}`;
         }
       }
     },
@@ -317,9 +247,6 @@ export default {
     updateQueryParams() {
       const params = util.transformToQueryParams(this.form);
       this.$router.push({ query: params }).catch(() => {});
-    },
-    update(key, value) {
-      this.$emit('input', { ...this.value, [key]: value });
     },
     reset() {
       // Restore form from default copy.
@@ -341,28 +268,18 @@ export default {
       this.preset.name = this.preset.name || this.preset.id;
     },
     encode() {
-      const { input, inputFile, output } = this.form;
+      const { input, output } = this.form.io;
       const json = util.transformToJSON(this.form);
       storage.add('queue', {
         id: Date.now(),
         type: 'encode',
         payload: json,
         status: 'queued',
-        input: inputFile ? inputFile.name : input,
+        input,
         output,
         _showDetails: false,
       });
       this.$emit('onEncode');
-    },
-    onFileSelect(file) {
-      this.form.input = file;
-      this.showFileBrowser = false;
-    },
-    onFileFocus() {
-      this.showFileBrowser = true;
-    },
-    onClose() {
-      this.showFileBrowser = false;
     },
   },
 };
