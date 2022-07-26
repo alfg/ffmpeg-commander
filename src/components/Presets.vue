@@ -5,8 +5,8 @@
         <b-form-group label="Preset: " label-for="preset">
           <b-form-select
             class="u-full-width"
-            v-model="value.id"
-            @change="update('preset', $event)"
+            v-model="id"
+            @change="update('id', $event)"
           >
             <optgroup v-for="(o, i) in presets" :label="o.name" v-bind:key="i">
               <option
@@ -25,7 +25,7 @@
           v-if="value.name"
           >
           <b-form-input
-            v-model="value.name"
+            v-model="name"
           ></b-form-input>
         </b-form-group>
       </b-col>
@@ -42,6 +42,8 @@ export default {
   data() {
     return {
       presets: presets.getPresetOptions(),
+      id: 'custom',
+      name: '',
     };
   },
   methods: {
