@@ -68,7 +68,7 @@ App
 </template>
 
 <script>
-import { name, version } from '../package.json';
+import pkgInfo from '../package.json';
 import GitHubCorner from './components/GitHubCorner.vue';
 import Queue from './components/Queue.vue';
 
@@ -91,8 +91,8 @@ export default {
   },
   data() {
     return {
-      name,
-      version,
+      name: pkgInfo.name,
+      version: pkgInfo.version,
       tabIndex: 0,
     };
   },

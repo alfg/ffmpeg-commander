@@ -102,7 +102,7 @@ export default {
       }, 1000);
     },
     toggleJSON() {
-      this.value.showJSON = !this.value.showJSON;
+      this.$emit('toggleJSON');
     },
     deletePreset() {
       presets.deletePreset(this.preset.id);

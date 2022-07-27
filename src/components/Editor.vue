@@ -58,6 +58,7 @@
       v-on:reset="reset"
       v-on:save="save"
       v-on:encode="encode"
+      v-on:toggleJSON="toggleJSON"
     />
 
     <!-- JSON formatted viewer so the user can view or copy the configured
@@ -67,7 +68,6 @@
 </template>
 
 <script>
-import path from 'path';
 import merge from 'lodash.merge';
 import clone from 'lodash.clonedeep';
 import form from '@/form';
@@ -232,9 +232,11 @@ export default {
       this.cmd = ffmpeg.build(opt);
     },
     updateOutput() {
+      // This is a bit of a hack to update the output filename extension
+      // in the form.io.output field, which is mutating a property.
       if (this.form.io.output) {
         const { format, io } = this.form;
-        const ext = path.extname(io.output);
+        const ext = util.extname(io.output);
         if (ext) {
           this.form.io.output = `${io.output.replace(ext, `.${format.container}`)}`;
         }
@@ -260,9 +262,8 @@ export default {
       }
 
       // Save the preset name and reload the presets list.
-      const presetName = presets.savePresetToLocalStorage(
-        this.preset.id, this.preset.name, this.form,
-      );
+      const presetName = presets
+        .savePresetToLocalStorage(this.preset.id, this.preset.name, this.form);
       this.presets = presets.getPresetOptions();
       this.preset.id = presetName;
       this.preset.name = this.preset.name || this.preset.id;
@@ -280,6 +281,9 @@ export default {
         _showDetails: false,
       });
       this.$emit('onEncode');
+    },
+    toggleJSON() {
+      this.controls.showJSON = !this.controls.showJSON;
     },
   },
 };

@@ -238,9 +238,15 @@ function transformToQueryParams(form) {
   return params;
 }
 
+function extname(filename) {
+  const i = filename.lastIndexOf('.');
+  return (i < 0) ? '' : filename.substr(i);
+}
+
 export default {
   transform,
   transformToJSON,
   transformFromQueryParams,
   transformToQueryParams,
+  extname,
 };
