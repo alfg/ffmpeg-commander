@@ -100,12 +100,6 @@ export default {
     onClose() {
       this.showFileBrowser = false;
     },
-    // addInput() {
-    //   this.inputs += 1;
-    // },
-    // removeInput() {
-    //   this.inputs -= 1;
-    // },
   },
 };
 </script>
