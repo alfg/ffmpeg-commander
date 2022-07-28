@@ -5,6 +5,12 @@ import storage from '@/storage';
 
 const LOCALSTORAGE_PRESETS_KEY = 'presets';
 
+interface IPresetOption {
+  name: string;
+  value: string;
+  data: string;
+}
+
 const presetOptions = [
   {
     id: 'general',
@@ -39,32 +45,39 @@ const presetOptions = [
 ];
 
 function getPresetOptions() {
-  presetOptions.find((o) => o.id === 'saved').data = storage.getItem(LOCALSTORAGE_PRESETS_KEY);
+  const preset = presetOptions.find((o) => o.id === 'saved');
+  const items = <IPresetOption[]>storage.getItems(LOCALSTORAGE_PRESETS_KEY);
+  if (preset && items) {
+    preset.data = items;
+  }
   return presetOptions;
 }
 
-function getPreset(preset) {
+function getPreset(preset: string) {
   const r = preset.replace('./', '').replace('.json', '');
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const item = require(`./${r}`);
   return item;
 }
 
-function getPresetFromLocalStorage(preset) {
-  const data = storage.getItem(LOCALSTORAGE_PRESETS_KEY);
-  return data.find((o) => o.value === preset);
+function getPresetFromLocalStorage(preset: string) {
+  const data = <IPresetOption[]>storage.getItem(LOCALSTORAGE_PRESETS_KEY);
+  return data.find((o: { value: string; }) => o.value === preset);
 }
 
-function savePresetToLocalStorage(preset, savedPresetName, formData) {
-  const saved = storage.getItem(LOCALSTORAGE_PRESETS_KEY) || [];
+function savePresetToLocalStorage(preset: string, savedPresetName: string, formData: string) {
+  const saved = <IPresetOption[]>storage.getItem(LOCALSTORAGE_PRESETS_KEY) || [];
 
   // If a savedPresetName is provided, then we update the loaded preset, otherwise
   // create a new entry the stored presets array.
-  let presetName;
+  let presetName: string;
   if (savedPresetName) {
     presetName = preset;
-    const p = saved.find((o) => o.value === presetName);
-    p.name = savedPresetName || preset;
-    p.data = formData;
+    const p = saved.find((o: { value: string; }) => o.value === presetName);
+    if (p) {
+      p.name = savedPresetName || preset;
+      p.data = formData;
+    }
   } else {
     const date = new Date();
     presetName = `preset-${date.toISOString()}`;
@@ -75,8 +88,8 @@ function savePresetToLocalStorage(preset, savedPresetName, formData) {
   return presetName;
 }
 
-function deletePreset(preset) {
-  const data = storage.getItem(LOCALSTORAGE_PRESETS_KEY);
+function deletePreset(preset: string) {
+  const data = <IPresetOption[]>storage.getItem(LOCALSTORAGE_PRESETS_KEY);
   const newData = data.filter((o) => o.value !== preset);
   storage.setItem(LOCALSTORAGE_PRESETS_KEY, newData);
 }

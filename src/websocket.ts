@@ -11,7 +11,9 @@ const websocket = {
     const ws = new WebSocket(wsUri);
     ws.onopen = (event) => {
       console.info('[ffmpeg-commander] - websocket connection detected.');
-      const isReady = event.target.readyState === WebSocket.OPEN;
+      console.log(event);
+      const { target } = event;
+      const isReady = target && target.readyState === WebSocket.OPEN;
       store.setWSAction(isReady);
     };
 

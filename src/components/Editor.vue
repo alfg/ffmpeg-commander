@@ -248,6 +248,7 @@ export default {
     },
     updateQueryParams() {
       const params = util.transformToQueryParams(this.form);
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
       this.$router.push({ query: params }).catch(() => {});
     },
     reset() {

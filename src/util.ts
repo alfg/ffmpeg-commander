@@ -1,7 +1,8 @@
 import codecMap from '@/codecs';
+import type { IFFMpegOptionsForm } from './types';
 
 // Transforms the form options to ffmpeg build options.
-function transform(formData) {
+function transform(formData: IFFMpegOptionsForm) {
   const {
     io, format, video, audio, filters, options,
   } = formData;
@@ -17,7 +18,7 @@ function transform(formData) {
     stopTime: format.stopTime,
 
     // Video.
-    vcodec: codecMap[video.codec],
+    vcodec: Object(codecMap)[video.codec],
     preset: video.preset,
     pass: video.pass,
     crf: video.crf,
@@ -42,7 +43,7 @@ function transform(formData) {
     codecOptions: video.codec_options,
 
     // Audio.
-    acodec: codecMap[audio.codec],
+    acodec: Object(codecMap)[audio.codec],
     channel: audio.channel,
     quality: audio.quality,
     audioBitrate: audio.bitrate,
@@ -69,7 +70,7 @@ function transform(formData) {
   return opt;
 }
 
-function transformToJSON(formData) {
+function transformToJSON(formData: IFFMpegOptionsForm) {
   const {
     format, video, audio, filters,
   } = formData;
@@ -82,7 +83,7 @@ function transformToJSON(formData) {
       stopTime: format.stopTime,
     },
     video: {
-      codec: codecMap[video.codec],
+      codec: Object(codecMap)[video.codec],
       preset: video.preset,
       pass: video.pass,
       crf: video.crf,
@@ -107,7 +108,7 @@ function transformToJSON(formData) {
       codec_options: video.codec_options,
     },
     audio: {
-      codec: codecMap[audio.codec],
+      codec: Object(codecMap)[audio.codec],
       channel: audio.channel,
       quality: audio.quality,
       bitrate: audio.bitrate,
@@ -121,22 +122,22 @@ function transformToJSON(formData) {
       dejudder: filters.dejudder,
       denoise: filters.denoise,
       deinterlace: filters.deinterlace,
-      brightness: (filters.brightness / 100).toString(),
-      contrast: ((filters.contrast / 100) + 1).toString(),
+      brightness: (parseInt(filters.brightness, 10) / 100).toString(),
+      contrast: ((parseInt(filters.contrast, 10) / 100) + 1).toString(),
       saturation: filters.saturation.toString(),
-      gamma: (filters.gamma / 10).toString(),
+      gamma: (parseInt(filters.gamma, 10) / 10).toString(),
       acontrast: filters.acontrast.toString(),
     },
   };
   return json;
 }
 
-function transformFromQueryParams(form, query) {
+function transformFromQueryParams(form: IFFMpegOptionsForm, query: {[key: string]: string}) {
   const {
     format, video, audio, filters,
   } = form;
   format.container = query['format.container'] || format.container;
-  format.clip = query['format.clip'] || format.clip;
+  format.clip = (query['format.clip'] === 'true') || format.clip;
   format.startTime = query['format.startTime'] || format.startTime;
   format.stopTime = query['format.stopTime'] || format.stopTime;
 
@@ -155,7 +156,7 @@ function transformFromQueryParams(form, query) {
   video.tune = query['video.tune'] || video.tune;
   video.profile = query['video.profile'] || video.profile;
   video.level = query['video.level'] || video.level;
-  video.faststart = query['video.faststart'] || video.faststart;
+  video.faststart = (query['video.faststart'] === 'true') || video.faststart;
   video.size = query['video.size'] || video.size;
   video.width = query['video.width'] || video.width;
   video.height = query['video.height'] || video.height;
@@ -170,10 +171,10 @@ function transformFromQueryParams(form, query) {
   audio.sampleRate = query['audio.sample_rate'] || audio.sampleRate;
   audio.volume = query['audio.volume'] || audio.volume;
 
-  filters.deband = query['filters.deband'] || filters.deband;
-  filters.deflicker = query['filters.deflicker'] || filters.deflicker;
-  filters.deshake = query['filters.deshake'] || filters.deshake;
-  filters.dejudder = query['filters.dejudder'] || filters.dejudder;
+  filters.deband = (query['filters.deband'] === 'true') || filters.deband;
+  filters.deflicker = (query['filters.deflicker'] === 'true') || filters.deflicker;
+  filters.deshake = (query['filters.deshake'] === 'true') || filters.deshake;
+  filters.dejudder = (query['filters.dejudder'] === 'true') || filters.dejudder;
   filters.denoise = query['filters.denoise'] || filters.denoise;
   filters.deinterlace = query['filters.deinterlace'] || filters.deinterlace;
   filters.contrast = query['filters.contrast'] || filters.contrast;
@@ -183,7 +184,7 @@ function transformFromQueryParams(form, query) {
   filters.acontrast = query['filters.acontrast'] || filters.acontrast;
 }
 
-function transformToQueryParams(form) {
+function transformToQueryParams(form: IFFMpegOptionsForm) {
   const {
     format, video, audio, filters,
   } = form;
@@ -221,7 +222,7 @@ function transformToQueryParams(form) {
     ...(audio.channel !== 'source' && { 'audio.channel': audio.channel }),
     ...(audio.quality !== 'auto' && { 'audio.quality': audio.quality }),
     ...(audio.sampleRate !== 'auto' && { 'audio.sample_rate': audio.sampleRate }),
-    ...(audio.volume !== 100 && { 'audio.volume': audio.volume }),
+    ...(audio.volume !== '100' && { 'audio.volume': audio.volume }),
 
     ...(filters.deband && { 'filters.deband': filters.deband }),
     ...(filters.deflicker && { 'filters.deflicker': filters.deflicker }),
@@ -238,7 +239,7 @@ function transformToQueryParams(form) {
   return params;
 }
 
-function extname(filename) {
+function extname(filename: string) {
   const i = filename.lastIndexOf('.');
   return (i < 0) ? '' : filename.substr(i);
 }
