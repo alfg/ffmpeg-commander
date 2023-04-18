@@ -222,7 +222,7 @@ function transformToQueryParams(form: IFFMpegOptionsForm) {
     ...(audio.channel !== 'source' && { 'audio.channel': audio.channel }),
     ...(audio.quality !== 'auto' && { 'audio.quality': audio.quality }),
     ...(audio.sampleRate !== 'auto' && { 'audio.sample_rate': audio.sampleRate }),
-    ...(audio.volume !== '100' && { 'audio.volume': audio.volume }),
+    ...(parseInt(audio.volume, 10) !== 100 && { 'audio.volume': audio.volume }),
 
     ...(filters.deband && { 'filters.deband': filters.deband }),
     ...(filters.deflicker && { 'filters.deflicker': filters.deflicker }),
