@@ -1,3 +1,7 @@
+interface IFFmpegOptions {
+  [key: string]: string;
+}
+
 const formatOptionsMap = {
   startTime: '-ss',
   stopTime: '-to',
@@ -24,8 +28,8 @@ const audioOptionsMap = {
   sampleRate: '-ar',
 };
 
-function setFlagsFromMap(map, options) {
-  const flags = [];
+function setFlagsFromMap(map: IFFmpegOptions, options: IFFmpegOptions): string[] {
+  const flags: string[] = [];
   // Set flags by adding provided options from the map parameter and adding the
   // value to the flags array.
   Object.keys(map).forEach((o) => {
@@ -38,8 +42,8 @@ function setFlagsFromMap(map, options) {
 }
 
 // Builds an array of FFmpeg video filters (-vf).
-function setVideoFilters(options) {
-  const vf = [];
+function setVideoFilters(options: IFFmpegOptions) {
+  const vf: string[] = [];
 
   if (options.speed && options.speed !== 'auto') {
     const arg = [`setpts=${options.speed}`];
@@ -89,7 +93,7 @@ function setVideoFilters(options) {
   }
 
   if (options.denoise !== 'none') {
-    let arg;
+    let arg: string[] = [];
     switch (options.denoise) {
       case 'light':
         arg = ['removegrain=22'];
@@ -108,7 +112,7 @@ function setVideoFilters(options) {
   }
 
   if (options.deinterlace !== 'none') {
-    let arg;
+    let arg: string[] = [];
     switch (options.deinterlace) {
       case 'frame':
         arg = ['yadif=0:-1:0'];
@@ -131,22 +135,22 @@ function setVideoFilters(options) {
   // EQ Filters.
   const eq = [];
   if (parseInt(options.contrast, 10) !== 0) {
-    const arg = [`contrast=${(options.contrast / 100) + 1}`];
+    const arg = [`contrast=${(parseInt(options.contrast, 10) / 100) + 1}`];
     eq.push(...arg);
   }
 
   if (parseInt(options.brightness, 10) !== 0) {
-    const arg = [`brightness=${options.brightness / 100}`];
+    const arg = [`brightness=${parseInt(options.brightness, 10) / 100}`];
     eq.push(...arg);
   }
 
   if (parseInt(options.saturation, 10) !== 0) {
-    const arg = [`saturation=${(options.saturation)}`];
+    const arg = [`saturation=${parseInt(options.saturation, 10)}`];
     eq.push(...arg);
   }
 
   if (parseInt(options.gamma, 10) !== 0) {
-    const arg = [`gamma=${options.gamma / 10}`];
+    const arg = [`gamma=${parseInt(options.gamma, 10) / 10}`];
     eq.push(...arg);
   }
 
@@ -159,23 +163,23 @@ function setVideoFilters(options) {
 }
 
 // Builds an array of FFmpeg audio filters (-af).
-function setAudioFilters(options) {
+function setAudioFilters(options: IFFmpegOptions): string {
   const af = [];
 
   if (options.volume && parseInt(options.volume, 10) !== 100) {
-    const arg = [`volume=${options.volume / 100}`];
+    const arg = [`volume=${parseInt(options.volume, 10) / 100}`];
     af.push(...arg);
   }
 
   if (options.acontrast && parseInt(options.acontrast, 10) !== 33) {
-    const arg = [`acontrast=${options.acontrast / 100}`];
+    const arg = [`acontrast=${parseInt(options.acontrast, 10) / 100}`];
     af.push(...arg);
   }
 
   return af.join(',');
 }
 
-function set2Pass(flags, options) {
+function set2Pass(flags: string[], options: IFFmpegOptions) {
   const op = '/dev/null &&'; // For Windows use `NUL && \`
   const copy = flags.slice(); // Array clone for pass 2.
 
@@ -196,11 +200,11 @@ function set2Pass(flags, options) {
   return copy;
 }
 
-function setFormatFlags(options) {
+function setFormatFlags(options: IFFmpegOptions) {
   return setFlagsFromMap(formatOptionsMap, options);
 }
 
-function setVideoFlags(options) {
+function setVideoFlags(options: IFFmpegOptions) {
   const flags = setFlagsFromMap(videoOptionsMap, options);
 
   //
@@ -224,7 +228,7 @@ function setVideoFlags(options) {
   return flags;
 }
 
-function setAudioFlags(options) {
+function setAudioFlags(options: IFFmpegOptions) {
   const flags = setFlagsFromMap(audioOptionsMap, options);
 
   //
@@ -243,7 +247,7 @@ function setAudioFlags(options) {
 }
 
 // Build an array of FFmpeg from options parameter.
-function build(opt) {
+function build(opt: IFFmpegOptions): string {
   const options = opt || {};
 
   const {

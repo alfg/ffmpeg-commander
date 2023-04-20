@@ -7,15 +7,15 @@ export default {
     ffmpegdEnabled: false,
   }),
 
-  setWSAction(newValue) {
+  setWSAction(newValue: boolean) {
     this.state.wsConnected = newValue;
   },
 
-  setIsEncoding(newValue) {
+  setIsEncoding(newValue: boolean) {
     this.state.isEncoding = newValue;
   },
 
-  setFfmpegdEnabled(newValue) {
+  setFfmpegdEnabled(newValue: boolean) {
     this.state.ffmpegdEnabled = newValue;
   },
 };

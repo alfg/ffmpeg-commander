@@ -175,7 +175,7 @@ export default {
       if (this.err) {
         this.setJobStatus(this.job.id, Status.ERROR);
         store.setIsEncoding(false);
-        storage.set('queue', this.job.id, 'error', this.err);
+        storage.setError('queue', this.job.id, this.err);
       }
     },
 

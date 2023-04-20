@@ -1,15 +1,13 @@
 module.exports = {
   root: true,
-
   env: {
     node: true,
   },
-
   extends: [
     'plugin:vue/essential',
     '@vue/airbnb',
+    '@vue/typescript/recommended',
   ],
-
   rules: {
     'no-console': process.env.NODE_ENV === 'production' ? 'off' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
@@ -17,11 +15,9 @@ module.exports = {
     'vue/no-mutating-props': 'off',
     'vuejs-accessibility/media-has-caption': 'off',
   },
-
   parserOptions: {
-    parser: '@babel/eslint-parser',
+    ecmaVersion: 2020,
   },
-
   overrides: [
     {
       files: [

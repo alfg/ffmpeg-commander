@@ -6,19 +6,17 @@ const RETRY_TIMEOUT = 5000;
 const wsUri = window.localStorage.getItem(LOCALSTORAGE_WS_URI) || 'ws://localhost:8080/ws';
 
 const websocket = {
-  conn: null,
+  conn: null as null | WebSocket,
   connect() {
     const ws = new WebSocket(wsUri);
-    ws.onopen = (event) => {
+    ws.onopen = () => {
       console.info('[ffmpeg-commander] - websocket connection detected.');
-      const isReady = event.target.readyState === WebSocket.OPEN;
-      store.setWSAction(isReady);
+      store.setWSAction(ws.readyState === WebSocket.OPEN);
     };
 
-    ws.onclose = (event) => {
+    ws.onclose = () => {
       console.info('[ffmpeg-commander] - websocket connection closed.');
-      const isReady = event.target.readyState === WebSocket.OPEN;
-      store.setWSAction(isReady);
+      store.setWSAction(ws.readyState === WebSocket.OPEN);
       ws.close();
 
       setTimeout(() => {
