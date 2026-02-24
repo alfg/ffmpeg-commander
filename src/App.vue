@@ -33,6 +33,16 @@ App
 
     <GitHubCorner />
 
+    <b-alert
+      class="banner text-center mb-0"
+      variant="info"
+      dismissible
+      :show="showBanner"
+      @dismissed="dismissBanner"
+    >
+      🎉 Introducing <strong><a href="https://video-commander.com" target="_blank" rel="noopener noreferrer">video-commander.com</a></strong> — a new web-based video encoding tool. Check it out!
+    </b-alert>
+
     <div id="app" class="container">
       <b-tabs align="right" content-class="mt-4" v-model="tabIndex">
         <b-tab title="Builder">
@@ -94,12 +104,17 @@ export default {
       name: pkgInfo.name,
       version: pkgInfo.version,
       tabIndex: 0,
+      showBanner: localStorage.getItem('bannerDismissed') !== 'true',
     };
   },
   methods: {
     onEncode() {
       // eslint-disable-next-line no-plusplus
       this.tabIndex++;
+    },
+    dismissBanner() {
+      this.showBanner = false;
+      localStorage.setItem('bannerDismissed', 'true');
     },
   },
 };
