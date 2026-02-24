@@ -1,7 +1,7 @@
 # `ffmpeg-commander`
 A simple web UI for generating common FFmpeg encoding operations.
 
-https://alfg.github.io/ffmpeg-commander/
+https://ffmpeg-commander.com
 
 [![github pages](https://github.com/alfg/ffmpeg-commander/actions/workflows/github-pages.yml/badge.svg)](https://github.com/alfg/ffmpeg-commander/actions/workflows/github-pages.yml)
 [![Node.js CI](https://github.com/alfg/ffmpeg-commander/actions/workflows/node.js.yml/badge.svg)](https://github.com/alfg/ffmpeg-commander/actions/workflows/node.js.yml)
