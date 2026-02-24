@@ -20,7 +20,7 @@
               :state="Boolean(value.input)"
               placeholder="Example: input.mp4"
               @input="update('input', $event)"
-            ></b-form-input>
+            />
 
             <b-form-input
               v-else
@@ -28,7 +28,7 @@
               placeholder=""
               @focus="onFileFocus"
               @input="update('input', $event)"
-            ></b-form-input>
+            />
 
             <div v-if="showFileBrowser">
               <FileBrowser v-on:file="onFileSelect" v-on:close="onClose" />
@@ -55,7 +55,7 @@
               :state="Boolean(value.output)"
               placeholder="Example: output.mp4"
               @input="update('output', $event)"
-            ></b-form-input>
+            />
           </b-input-group>
         </b-form-group>
       </b-col>

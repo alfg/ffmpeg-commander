@@ -17,12 +17,12 @@
         </b-form-group>
       </b-col>
 
-      <b-col v-if="value.quality == 'custom'">
+      <b-col v-if="value.quality === 'custom'">
         <b-form-group class="label" label="Bitrate:" label-for="bitrate">
           <b-form-input
             v-bind:value="value.bitrate"
             @input="update('bitrate', $event)"
-          ></b-form-input>
+          />
         </b-form-group>
       </b-col>
 
@@ -32,7 +32,7 @@
             v-bind:value="value.volume"
             @input="update('volume', $event)"
             type="number"
-          ></b-form-input>
+          />
         </b-form-group>
       </b-col>
     </b-form-row>

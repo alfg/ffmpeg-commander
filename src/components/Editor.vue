@@ -47,7 +47,7 @@
         rows="0"
         max-rows="0"
         plaintext
-      ></b-form-textarea>
+      />
     </div>
 
     <!-- Toolbar is the set of controls for copying the command output,

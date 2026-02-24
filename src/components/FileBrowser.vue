@@ -12,7 +12,8 @@
       </ul>
       <b-button
         class="float-right mr-2"
-        squared variant="light"
+        squared
+        variant="light"
         size="sm"
         @click="close"
       >Cancel</b-button>

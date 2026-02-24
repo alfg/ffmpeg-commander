@@ -4,7 +4,10 @@
       <b-button @click="clearJobs">Clear All</b-button>
     </b-button-group>
 
-    <b-table striped hover dark
+    <b-table
+      striped
+      hover
+      dark
       :fields="fields"
       :items="items"
       :sort-by.sync="sortBy"
@@ -22,7 +25,7 @@
           :value="percent"
           :animated="percent !== 100"
           :variant="percent === 100 ? 'success' : 'primary'"
-          show-progress></b-progress>
+          show-progress />
         <p
           class="text-monospace text-center"
           style="font-size: 0.7em; margin: 0;"
@@ -58,7 +61,7 @@
         <b-row class="mb-2">
           <b-col sm="2" class="text-sm-right"><b>Output:</b></b-col>
           <b-col>
-            <a :href="videoUrl(row.item.output)" target="_blank">{{ row.item.output }}</a>
+            <a :href="videoUrl(row.item.output)" target="_blank" rel="noopener noreferrer">{{ row.item.output }}</a>
           </b-col>
         </b-row>
 
@@ -71,7 +74,7 @@
               size="sm"
               readonly
               :value="JSON.stringify(row.item.payload, null, 2)"
-            ></b-form-textarea>
+            />
           </b-col>
         </b-row>
 
@@ -91,7 +94,7 @@
                 rows="3"
                 max-rows="3"
                 :value="JSON.stringify(row.item.error)"
-              ></b-form-textarea>
+              />
             </div>
           </b-col>
         </b-row>

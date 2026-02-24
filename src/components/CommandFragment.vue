@@ -8,7 +8,7 @@
         :key="`fragment-filter-${j}-${filterType(value)}`"
         v-for="(f, j) in filters"
         class="fragment filter"
-      >{{ f.value }}{{ j+1 === filters.length ? '' : ',' }}&nbsp;</span>
+      >{{ f.value }}{{ j + 1 === filters.length ? '' : ',' }}&nbsp;</span>
     </template>
     <!-- Otherwise, create a normal fragment -->
     <template v-else>
@@ -27,7 +27,7 @@
       variant="warning"
     >
       <template v-slot:title>{{ p.value.replaceAll('"', '') }}</template>
-      <span v-html="p.description"></span>
+      <span v-html="p.description" />
     </b-popover>
   </span>
 </template>

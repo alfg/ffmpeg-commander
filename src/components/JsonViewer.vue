@@ -1,9 +1,9 @@
 <template>
-<div class="json-viewer">
-  <b-card v-if="show" no-body class="mt-3" header="JSON Format">
-    <pre><code>{{ formString }}</code></pre>
-  </b-card>
-</div>
+  <div class="json-viewer">
+    <b-card v-if="show" no-body class="mt-3" header="JSON Format">
+      <pre><code>{{ formString }}</code></pre>
+    </b-card>
+  </div>
 </template>
 
 <script>

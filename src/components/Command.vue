@@ -20,8 +20,8 @@
       :disabled="!o.description"
       placement="top"
       variant="warning">
-        <template v-slot:title>{{ o.value }}</template>
-        <span v-html="o.description"></span>
+      <template v-slot:title>{{ o.value }}</template>
+      <span v-html="o.description" />
     </b-popover>
   </div>
 </template>

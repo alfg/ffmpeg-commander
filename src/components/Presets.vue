@@ -23,10 +23,10 @@
           label="Preset Name:"
           label-for="preset-name"
           v-if="value.name"
-          >
+        >
           <b-form-input
             v-model="name"
-          ></b-form-input>
+          />
         </b-form-group>
       </b-col>
     </b-form-row>

@@ -35,7 +35,7 @@
             v-bind:value="value.startTime"
             @input="update('startTime', $event)"
             placeholder="00:00:00.000"
-          ></b-form-input>
+          />
         </b-form-group>
       </b-col>
 
@@ -45,11 +45,11 @@
             v-bind:value="value.stopTime"
             @input="update('stopTime', $event)"
             placeholder="00:00:00.000"
-          ></b-form-input>
+          />
         </b-form-group>
       </b-col>
     </b-form-row>
-   </div>
+  </div>
 </template>
 
 <script>

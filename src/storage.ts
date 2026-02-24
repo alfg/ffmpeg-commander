@@ -1,7 +1,3 @@
-interface IItem {
-  [key: string]: string;
-}
-
 interface IQueueItem {
   id: number;
   input: string;

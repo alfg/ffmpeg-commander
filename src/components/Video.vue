@@ -24,13 +24,15 @@
     </b-form-row>
 
     <!-- CRF slider if CRF enabled -->
-    <div v-if="value.pass == 'crf'">
-      <b-form-group class="label" :label="'CRF:' + value.crf" label-for="crf">
+    <div v-if="value.pass === 'crf'">
+      <b-form-group class="label" :label="`CRF:${value.crf}`" label-for="crf">
         <b-form-input
           id="crf"
           v-bind:value="value.crf"
           @input="update('crf', $event)"
-          type="range" min="0" max="51"></b-form-input>
+          type="range"
+          min="0"
+          max="51" />
       </b-form-group>
     </div>
     <hr />
@@ -43,7 +45,7 @@
             v-bind:value="value[item.value]"
             @input="update(item.value, $event)"
             :placeholder="item.name"
-          ></b-form-input>
+          />
         </b-form-group>
       </b-col>
     </b-form-row>
@@ -98,23 +100,23 @@
 
     <!-- Width and Height inputs if Custom Size is enabled -->
     <b-form-row>
-      <b-col v-if="value.size == 'custom'">
+      <b-col v-if="value.size === 'custom'">
         <b-form-group label="Width:" label-for="width">
           <b-form-input
             v-bind:value="value.width"
             @input="update('width', $event)"
             placeholder="Width"
-          ></b-form-input>
+          />
         </b-form-group>
       </b-col>
 
-      <b-col v-if="value.size == 'custom'">
+      <b-col v-if="value.size === 'custom'">
         <b-form-group label="Height:" label-for="height">
           <b-form-input
             v-bind:value="value.height"
             @input="update('height', $event)"
             placeholder="Height"
-          ></b-form-input>
+          />
         </b-form-group>
       </b-col>
     </b-form-row>
@@ -129,10 +131,10 @@
         id="codec-options"
         v-bind:value="value.codec_options"
         @input="update('codec_options', $event)"
-        :placeholder="'Set optional -' + value.codec + '-params here to overwrite encoder options.'"
+        :placeholder="`Set optional -${value.codec}-params here to overwrite encoder options.`"
         rows="1"
         max-rows="6"
-      ></b-form-textarea>
+      />
     </b-form-group>
   </div>
 </template>

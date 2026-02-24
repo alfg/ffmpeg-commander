@@ -28,7 +28,9 @@
             :id="item.name"
             v-bind:value="value[item.name]"
             @input="update(item.name, $event)"
-            type="range" :min="item.min" :max="item.max"></b-form-input>
+            type="range"
+            :min="item.min"
+            :max="item.max" />
         </b-form-group>
       </b-col>
     </b-form-row>
@@ -46,7 +48,9 @@
             :id="item.name"
             v-bind:value="value[item.name]"
             @input="update(item.name, $event)"
-            type="range" :min="item.min" :max="item.max"></b-form-input>
+            type="range"
+            :min="item.min"
+            :max="item.max" />
         </b-form-group>
       </b-col>
     </b-form-row>

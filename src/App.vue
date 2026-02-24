@@ -40,7 +40,7 @@ App
         </b-tab>
         <b-tab title="Queue" v-if="ffmpegdEnabled">
           <template #title>
-            <b-spinner small v-if="isEncoding"></b-spinner> Queue
+            <b-spinner small v-if="isEncoding" /> Queue
           </template>
           <Queue />
         </b-tab>
