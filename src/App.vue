@@ -40,7 +40,7 @@ App
       :show="showBanner"
       @dismissed="dismissBanner"
     >
-      🎉 Introducing <strong><a href="https://video-commander.com" target="_blank" rel="noopener noreferrer">video-commander.com</a></strong> — a new web-based video encoding tool. Check it out!
+      🎉 Introducing <strong><a href="https://video-commander.com" target="_blank" rel="noopener noreferrer">video-commander.com</a></strong> — a new desktop video encoding tool. Check it out!
     </b-alert>
 
     <div id="app" class="container">
