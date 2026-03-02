@@ -23,7 +23,7 @@ App
     <b-navbar type="dark" variant="dark">
       <div class="container">
         <b-navbar-nav>
-          <b-nav-item href="#">
+          <b-nav-item to="/">
             <img src="../public/ffmpeg.svg" height="25" width="25" alt="FFmpeg Commander" />
             FFmpeg Commander
           </b-nav-item>
@@ -43,7 +43,7 @@ App
       🎉 Introducing <strong><a href="https://video-commander.com" target="_blank" rel="noopener noreferrer">video-commander.com</a></strong> — a new desktop video encoding tool. Check it out!
     </b-alert>
 
-    <div id="app" class="container">
+    <div id="app-content" class="container">
       <b-tabs align="right" content-class="mt-4" v-model="tabIndex">
         <b-tab title="Builder">
           <router-view @onEncode="onEncode" />
@@ -121,7 +121,7 @@ export default {
 </script>
 
 <style>
-#app {
+#app-content {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -129,7 +129,7 @@ export default {
   margin-top: 30px;
 }
 
-#app a.router-link-exact-active {
+#app-content a.router-link-exact-active {
   color: #495057;
   background-color: #fff;
   border-color: #dee2e6 #dee2e6 #fff;
