@@ -3,6 +3,8 @@ A simple web UI for generating common FFmpeg encoding operations.
 
 https://ffmpeg-commander.com
 
+> 🎉 Introducing [Video Commander](https://video-commander.com) — a new desktop video encoding tool. Check it out! 
+
 [![github pages](https://github.com/alfg/ffmpeg-commander/actions/workflows/github-pages.yml/badge.svg)](https://github.com/alfg/ffmpeg-commander/actions/workflows/github-pages.yml)
 [![Node.js CI](https://github.com/alfg/ffmpeg-commander/actions/workflows/node.js.yml/badge.svg)](https://github.com/alfg/ffmpeg-commander/actions/workflows/node.js.yml)
 
