@@ -40,7 +40,7 @@ App
       :show="showBanner"
       @dismissed="dismissBanner"
     >
-      🎉 Introducing <strong><a href="https://video-commander.com" target="_blank" rel="noopener noreferrer">video-commander.com</a></strong> — a new desktop video encoding tool. Check it out!
+      Like ffmpeg-commander, but native. <strong><a href="https://video-commander.com" target="_blank" rel="noopener">Video Commander</a></strong> is a full desktop app for video engineers. <strong><a href="https://video-commander.com" target="_blank" rel="noopener noreferrer">video-commander.com</a> →
     </b-alert>
 
     <div id="app-content" class="container">
