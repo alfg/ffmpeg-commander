@@ -258,7 +258,7 @@ function build(opt: IFFmpegOptions): string {
 
   const flags = [
     'ffmpeg',
-    '-i', `${input}`,
+    '-i', `${input.includes(' ') ? `"${input}"` : input}`,
   ];
 
   // Set format flags if clip options are set.
@@ -332,7 +332,7 @@ function build(opt: IFFmpegOptions): string {
   }
 
   // Set output.
-  extra.push(output);
+  extra.push(output.includes(' ') ? `"${output}"` : output);
 
   // Push all flags and join them as a space separated string.
   flags.push(...extra);
