@@ -17,7 +17,17 @@ describe('page copy', () => {
   it('keeps the descriptive prose', () => {
     render(<App />)
     expect(screen.getByText(/without memorizing every flag/)).toBeTruthy()
-    expect(screen.getByRole('heading', { name: 'What You Can Configure' })).toBeTruthy()
+    expect(screen.getByText('What You Can Configure')).toBeTruthy()
     expect(screen.getByText(/H.264 and VP9 presets/)).toBeTruthy()
+  })
+
+  it('keeps the collapsed copy in the DOM so it is still indexed', () => {
+    render(<App />)
+    // A <details> summary hides its content visually, but it is rendered and
+    // crawlable. Losing that distinction would quietly cost the page its text.
+    const details = screen.getByText('What You Can Configure').closest('details')
+    expect(details).toBeTruthy()
+    expect(details!.textContent).toContain('deinterlacing and denoise')
+    expect(details!.open).toBe(false)
   })
 })
