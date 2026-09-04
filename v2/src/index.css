@@ -1,0 +1,13 @@
+@import "tailwindcss";
+
+/* The Vue app is dark-chrome with a light body (bootstrap navbar-dark bg-dark).
+   Keeping the same footprint so the two can be compared side by side during the
+   port. */
+@theme {
+  --color-chrome: #343a40;
+  --color-chrome-fg: #f8f9fa;
+}
+
+:root {
+  color-scheme: light dark;
+}

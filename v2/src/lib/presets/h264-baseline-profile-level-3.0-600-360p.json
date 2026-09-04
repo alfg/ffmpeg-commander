@@ -1,0 +1,19 @@
+{
+    "format": {
+        "container": "mp4"
+    },
+    "video": {
+        "codec": "x264",
+        "size": "480",
+        "minrate": "600K",
+        "maxrate": "600K",
+        "bufsize": "600K",
+        "bitrate": "600K",
+        "profile": "baseline",
+        "level": "3.0",
+        "codec_options": "scenecut=0:open_gop=0:min-keyint=72:keyint=72"
+    },
+    "audio": {
+        "codec": "copy"
+    }
+}
