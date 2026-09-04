@@ -27,13 +27,19 @@ export default function Banner() {
   return (
     <div className="border-b border-sky-200 bg-sky-50 text-sky-900 dark:border-sky-900 dark:bg-sky-950 dark:text-sky-100">
       <div className="mx-auto flex max-w-3xl items-center gap-3 px-4 py-2 text-sm">
-        <p className="flex-1 text-center">
-          ffmpeg-commander builds the command.{' '}
-          <a href={HREF} target="_blank" rel="noopener noreferrer" className="font-semibold underline">
-            Video Commander
-          </a>{' '}
-          runs the whole workflow. <span aria-hidden>→</span>
-        </p>
+        {/* The whole line is the target, not just the product name: every
+            clause is about the product, and a wider hit area is worth more than
+            a tidy inline link. */}
+        <a
+          href={HREF}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex-1 text-center text-balance hover:underline"
+        >
+          Skip the terminal. <strong className="font-semibold">Video Commander</strong> runs
+          the encode and validates the output. Free for personal use.{' '}
+          <span aria-hidden>→</span>
+        </a>
         <button
           type="button"
           onClick={dismiss}

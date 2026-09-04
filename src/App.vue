@@ -40,7 +40,9 @@ App
       :show="showBanner"
       @dismissed="dismissBanner"
     >
-      ffmpeg-commander builds the command. <strong><a href="https://video-commander.com?ref=ffmpeg-commander" target="_blank" rel="noopener">Video Commander</a></strong> runs the whole workflow. <strong><a href="https://video-commander.com?ref=ffmpeg-commander" target="_blank" rel="noopener">video-commander.com</a> →
+      <a href="https://video-commander.com?ref=ffmpeg-commander" target="_blank" rel="noopener">
+        Skip the terminal. <strong>Video Commander</strong> runs the encode and
+        validates the output. Free for personal use. →</a>
     </b-alert>
 
     <div id="app-content" class="container">
