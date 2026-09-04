@@ -63,6 +63,15 @@ export default function AudioSection({ value, container, onChange }: Props) {
           onChange={(sampleRate) => onChange({ sampleRate })}
         />
       </Field>
+
+      <Field label="Volume" htmlFor="audio-volume" hint="Percent of the source level.">
+        <Input
+          id="audio-volume"
+          type="number"
+          value={String(value.volume ?? '')}
+          onChange={(volume) => onChange({ volume })}
+        />
+      </Field>
     </Section>
   )
 }

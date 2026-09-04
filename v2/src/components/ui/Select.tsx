@@ -18,8 +18,11 @@ const base =
 export default function Select({ id, value, options, onChange }: SelectProps) {
   return (
     <select id={id} className={base} value={value} onChange={(e) => onChange(e.target.value)}>
+      {/* Keyed by name as well as value: the size list legitimately repeats
+          widths (1440p and 1600p are both 2560 wide), and keying on value alone
+          makes React drop one of the pair. */}
       {options.map((o) => (
-        <option key={String(o.value)} value={String(o.value)}>
+        <option key={`${o.name}-${o.value}`} value={String(o.value)}>
           {o.name}
         </option>
       ))}
