@@ -2,7 +2,6 @@ import Banner from '@/components/Banner'
 import CommandOutput from '@/components/CommandOutput'
 import FileIO from '@/components/FileIO'
 import Footer from '@/components/Footer'
-import GitHubCorner from '@/components/GitHubCorner'
 import Navbar from '@/components/Navbar'
 import Toolbar from '@/components/Toolbar'
 import AudioSection from '@/components/sections/AudioSection'
@@ -90,7 +89,6 @@ export default function App() {
 
   return (
     <div className="relative min-h-screen bg-white text-gray-900 dark:bg-gray-900 dark:text-gray-100">
-      <GitHubCorner />
       <Navbar />
       <Banner />
 
