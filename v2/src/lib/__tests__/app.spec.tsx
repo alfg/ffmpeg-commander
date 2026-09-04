@@ -7,7 +7,10 @@ import App from '@/App'
 // interaction has to flow through form state -> util.transform -> ffmpeg.build
 // and land in both the rendered command and the URL.
 
-const commandText = () => screen.getByText(/^ffmpeg /).textContent
+// The command renders as one span per fragment so each can be hovered, so read
+// the block as a whole and normalise the whitespace those spans introduce.
+const commandText = () =>
+  screen.getByTestId('command').textContent?.replace(/\s+/g, ' ').trim()
 
 // The editor sections live behind tabs, so a control has to be revealed before
 // it can be driven.

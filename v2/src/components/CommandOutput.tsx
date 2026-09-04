@@ -1,15 +1,124 @@
-/**
- * The Vue app split the command into per-token fragments with a tooltip each
- * (Command.vue + CommandFragment.vue + lib/tooltips). That is still to port;
- * the block itself keeps the black monospace look it has always had, and stays
- * darker than the page in both themes so it reads as output, not as a field.
- */
+import { useCallback, useLayoutEffect, useRef, useState } from 'react'
+import { parseCommand, type Fragment } from '@/lib/command'
+
+interface Active {
+  /** Fragment label shown as the tooltip title. */
+  title: string
+  /** Tooltip body. Authored HTML from lib/tooltips. */
+  description: string
+  /** Centre of the trigger, relative to the command block. */
+  centre: number
+  /** Top of the trigger, relative to the command block. */
+  top: number
+}
+
+const fragmentBase =
+  'inline-block rounded-sm -mx-0.5 px-0.5 transition-colors focus-visible:outline-2 ' +
+  'focus-visible:outline-offset-1 focus-visible:outline-sky-400'
+
 export default function CommandOutput({ cmd }: { cmd: string }) {
+  const fragments = parseCommand(cmd)
+  const boxRef = useRef<HTMLDivElement>(null)
+  const tipRef = useRef<HTMLDivElement>(null)
+  const [active, setActive] = useState<Active | null>(null)
+
+  // Position the single tooltip against whichever fragment is active, clamped
+  // to the command block so a long tip near either edge stays readable. Written
+  // straight to the node rather than through state: measuring the tooltip needs
+  // it rendered, and setting state here would loop.
+  useLayoutEffect(() => {
+    const tip = tipRef.current
+    const box = boxRef.current
+    if (!tip || !box || !active) return
+    const width = tip.offsetWidth
+    const max = box.clientWidth - width - 8
+    tip.style.left = `${Math.round(Math.min(Math.max(active.centre - width / 2, 8), Math.max(max, 8)))}px`
+    tip.style.top = `${Math.round(active.top)}px`
+  })
+
+  const show = useCallback((el: HTMLElement, fragment: Fragment) => {
+    if (!fragment.description) return
+    setActive({
+      title: fragment.value.replaceAll('"', ''),
+      description: fragment.description,
+      centre: el.offsetLeft + el.offsetWidth / 2,
+      top: el.offsetTop,
+    })
+  }, [])
+
+  const hide = useCallback(() => setActive(null), [])
+
+  const renderFragment = (fragment: Fragment, key: string, isFilter: boolean) => {
+    const describable = Boolean(fragment.description)
+    return (
+      <span
+        key={key}
+        data-fragment=""
+        // Only describable fragments take focus; making all ~40 tokens
+        // tabbable would bury the rest of the page behind them.
+        tabIndex={describable ? 0 : undefined}
+        aria-describedby={describable && active?.title === fragment.value.replaceAll('"', '')
+          ? 'command-tooltip'
+          : undefined}
+        onMouseEnter={(e) => show(e.currentTarget, fragment)}
+        onFocus={(e) => show(e.currentTarget, fragment)}
+        onMouseLeave={hide}
+        onBlur={hide}
+        className={[
+          fragmentBase,
+          describable ? 'cursor-help' : '',
+          isFilter ? 'hover:bg-green-700 focus-visible:bg-green-700' : 'hover:bg-gray-700 focus-visible:bg-gray-700',
+        ].join(' ')}
+      >
+        {fragment.value}
+      </span>
+    )
+  }
+
   return (
-    <div className="rounded-lg bg-gray-950 p-4 ring-1 ring-black/10 dark:bg-black dark:ring-white/10">
-      <code className="block overflow-x-auto font-mono text-sm leading-relaxed font-semibold break-words whitespace-pre-wrap text-gray-50">
-        {cmd}
+    <div
+      ref={boxRef}
+      className="relative rounded-lg bg-gray-950 p-4 ring-1 ring-black/10 dark:bg-black dark:ring-white/10"
+      onKeyDown={(e) => {
+        if (e.key === 'Escape') hide()
+      }}
+    >
+      <code
+        data-testid="command"
+        className="block overflow-x-auto font-mono text-sm leading-loose font-semibold whitespace-pre-wrap text-gray-50"
+      >
+        {fragments.map((fragment, i) => (
+          <span key={`fragment-${i}`}>
+            {renderFragment(fragment, `f-${i}`, false)}
+            {fragment.filters
+              ? fragment.filters.map((filter, j) => (
+                  <span key={`filter-${i}-${j}`}>
+                    {' '}
+                    {renderFragment(filter, `ff-${i}-${j}`, true)}
+                    {j + 1 === fragment.filters!.length ? '' : ','}
+                  </span>
+                ))
+              : null}{' '}
+          </span>
+        ))}
       </code>
+
+      {active ? (
+        <div
+          ref={tipRef}
+          id="command-tooltip"
+          role="tooltip"
+          className="pointer-events-none absolute z-20 max-w-80 -translate-y-full rounded-md bg-amber-50 p-2 text-xs text-gray-900 shadow-lg ring-1 ring-black/10"
+          style={{ marginTop: '-0.5rem' }}
+        >
+          <p className="mb-1 font-mono font-semibold">{active.title}</p>
+          {/* Authored in lib/tooltips.ts, which uses <em>, <code> and links. */}
+          <p
+            className="leading-snug [&_a]:underline [&_code]:font-mono"
+            dangerouslySetInnerHTML={{ __html: active.description }}
+          />
+        </div>
+      ) : null}
     </div>
   )
 }
