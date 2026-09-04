@@ -4,9 +4,19 @@ export default function Navbar() {
   return (
     <nav className="bg-chrome text-chrome-fg">
       <div className="mx-auto flex max-w-3xl items-center gap-3 px-4 py-3">
-        <a href="/" className="flex items-center gap-2 font-medium hover:opacity-90">
+        {/* The wordmark is set as a shell command: the app's whole job is
+            producing one. aria-label keeps the spoken name the product name,
+            since "chevron ffmpeg hyphen commander" helps nobody. */}
+        <a
+          href="/"
+          aria-label="FFmpeg Commander"
+          className="flex items-center gap-2.5 transition-opacity hover:opacity-90"
+        >
           <img src="/ffmpeg.svg" width="24" height="24" alt="" />
-          FFmpeg Commander
+          <span aria-hidden className="font-mono text-[15px] font-semibold tracking-tight">
+            <span className="text-terminal">❯</span> ffmpeg-commander
+            <span className="ml-0.5 inline-block h-[1.05em] w-[9px] -mb-[3px] bg-terminal animate-caret motion-reduce:animate-none" />
+          </span>
         </a>
         <div className="ml-auto">
           <GitHubBadge />

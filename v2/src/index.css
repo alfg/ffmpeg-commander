@@ -6,6 +6,21 @@
 @theme {
   --color-chrome: #343a40;
   --color-chrome-fg: #f8f9fa;
+  /* The FFmpeg mark is #388E3C, too dark to read on the navbar; this is the
+     same hue lifted to a legible weight against #343a40. */
+  --color-terminal: #4ade80;
+  --animate-caret: caret-blink 1.1s steps(1) infinite;
+}
+
+@keyframes caret-blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
 }
 
 :root {
