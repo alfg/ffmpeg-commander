@@ -109,7 +109,12 @@ export default function App() {
             ) : null}
           </div>
 
-          <FileIO value={form.io} onChange={(patch) => update('io', patch)} />
+          <FileIO
+          value={form.io}
+          onChange={(patch) => update('io', patch)}
+          ffmpegdEnabled={ffmpegd.enabled}
+          ffmpegdConnected={ffmpegd.connected}
+        />
 
           <Tabs tabs={tabs} />
 

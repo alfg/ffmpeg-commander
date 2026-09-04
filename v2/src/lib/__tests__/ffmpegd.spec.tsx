@@ -5,6 +5,9 @@ import App from '@/App'
 import storage from '@/lib/storage'
 import { FFMPEGD_KEY, POLL_MS, QUEUE_KEY, Status } from '@/lib/ffmpegd'
 
+const commandText = () =>
+  screen.getByTestId('command').textContent?.replace(/\s+/g, ' ').trim() ?? ''
+
 /** Minimal stand-in for the daemon: records sends, lets tests drive events. */
 class FakeSocket {
   static instances: FakeSocket[] = []
@@ -179,6 +182,54 @@ describe('ffmpegd', () => {
     // one, so timers grew without bound for as long as the page stayed open.
     expect(setInterval.mock.calls.length).toBeLessThanOrEqual(2)
     setInterval.mockRestore()
+  })
+
+  it('lets you browse the daemon machine for the input file', async () => {
+    const user = userEvent.setup()
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(() =>
+        Promise.resolve({
+          ok: true,
+          json: () =>
+            Promise.resolve({
+              cwd: '/Users/alf/media',
+              folders: ['clips/'],
+              files: [{ name: './bbb.mp4' }],
+            }),
+        }),
+      ),
+    )
+    enableFfmpegd()
+    render(<App />)
+    await act(async () => socket().open())
+
+    // Nothing until the field is focused.
+    expect(screen.queryByText('./bbb.mp4')).toBeNull()
+    await user.click(screen.getByLabelText('Input'))
+
+    expect(await screen.findByText('/Users/alf/media')).toBeTruthy()
+    await user.click(screen.getByText('./bbb.mp4'))
+
+    expect(screen.getByLabelText<HTMLInputElement>('Input').value).toBe('./bbb.mp4')
+    // The browser closes on pick. (The filename itself is still on the page --
+    // it is in the generated command now.)
+    expect(screen.queryByText('/Users/alf/media')).toBeNull()
+    expect(commandText()).toContain('-i ./bbb.mp4')
+  })
+
+  it('swaps the protocol picker for the browser only while connected', async () => {
+    enableFfmpegd()
+    render(<App />)
+    // Not connected yet: the protocol select is still the way in.
+    expect(screen.getByLabelText('Input protocol')).toBeTruthy()
+
+    await act(async () => socket().open())
+
+    expect(screen.queryByLabelText('Input protocol')).toBeNull()
+    // The output field never gets a browser -- it names a file that does not
+    // exist yet -- but it does lose its protocol picker once ffmpegd is on.
+    expect(screen.queryByLabelText('Output protocol')).toBeNull()
   })
 
   it('does not close a socket mid-handshake', async () => {
