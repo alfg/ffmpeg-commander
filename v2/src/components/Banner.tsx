@@ -38,7 +38,7 @@ export default function Banner() {
       <div className="mx-auto flex max-w-3xl items-center gap-3 px-4 py-2">
         <p className="min-w-0 flex-1 text-sm text-balance">
           Skip the terminal. <strong className="font-semibold">Video Commander</strong> runs the
-          encode and validates the output — free for personal use.
+          encode — free for personal use.
         </p>
         {/* A button rather than an inline link: this is the one thing on the
             page we actually want clicked. */}
