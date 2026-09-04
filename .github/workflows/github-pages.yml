@@ -4,10 +4,21 @@ on:
   push:
     branches:
       - master
+  # Allows a deploy without a code change, e.g. to re-publish after a revert.
+  workflow_dispatch:
+
+# Never let two deploys race to write the gh-pages branch.
+concurrency:
+  group: github-pages
+  cancel-in-progress: true
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: v2
+
     steps:
       - uses: actions/checkout@v4
 
@@ -16,9 +27,13 @@ jobs:
         with:
           node-version: '22'
           cache: 'npm'
+          cache-dependency-path: v2/package-lock.json
 
       - run: npm ci
+      - run: npm run lint
       - run: npm test
+      # tsc runs as part of build, so a type error fails the deploy rather than
+      # shipping.
       - run: npm run build
 
       - name: Publish
@@ -27,4 +42,3 @@ jobs:
           npx gh-pages -d dist -u "github-actions-bot <support+actions@github.com>"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-

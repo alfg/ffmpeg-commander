@@ -46,15 +46,10 @@ npm run build
 ```
 
 ### Deploy
-Deploys to [Github Pages](https://pages.github.com/)
+Deploys to [GitHub Pages](https://pages.github.com/) automatically on every push to
+`master`, via `.github/workflows/github-pages.yml`. To publish by hand:
 ```
-npm run deploy
-```
-
-### Docker
-```
-docker build -t ffmpeg-commander .
-docker run -it -p 8080:80 --rm ffmpeg-commander
+cd v2 && npm run deploy
 ```
 
 ## `ffmpegd`

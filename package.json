@@ -9,8 +9,7 @@
     "build": "vue-cli-service build",
     "test": "npm run test:unit",
     "test:unit": "NODE_OPTIONS=--no-deprecation vue-cli-service test:unit",
-    "lint": "vue-cli-service lint",
-    "deploy": "npm run build && gh-pages -d dist"
+    "lint": "vue-cli-service lint"
   },
   "dependencies": {
     "bootstrap": "^4.6.2",
