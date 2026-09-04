@@ -3,6 +3,9 @@ import { useState } from 'react'
 interface Props {
   cmd: string
   isSavedPreset: boolean
+  canEncode: boolean
+  encoding: boolean
+  onEncode: () => void
   onSave: () => void
   onSaveAsNew: () => void
   onDelete: () => void
@@ -18,6 +21,9 @@ const quiet = `${btn} border-line text-fg hover:bg-sunken focus-visible:ring-rin
 export default function Toolbar({
   cmd,
   isSavedPreset,
+  canEncode,
+  encoding,
+  onEncode,
   onSave,
   onSaveAsNew,
   onDelete,
@@ -46,6 +52,17 @@ export default function Toolbar({
       >
         {copied ? 'Copied' : 'Copy'}
       </button>
+
+      {/* Only offered once a daemon is actually listening. */}
+      {canEncode ? (
+        <button
+          type="button"
+          onClick={onEncode}
+          className={`${btn} border-terminal bg-terminal/15 text-fg hover:bg-terminal/25 focus-visible:ring-ring`}
+        >
+          {encoding ? 'Encoding…' : 'Encode'}
+        </button>
+      ) : null}
 
       <button type="button" onClick={onSave} className={quiet}>
         {isSavedPreset ? 'Save' : 'Save preset'}

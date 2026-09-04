@@ -7,9 +7,16 @@ import type { IFFMpegOptionsForm } from '@/lib/types'
 interface Props {
   value: IFFMpegOptionsForm['options']
   onChange: (patch: Partial<IFFMpegOptionsForm['options']>) => void
+  ffmpegdEnabled: boolean
+  onFfmpegdChange: (enabled: boolean) => void
 }
 
-export default function OptionsSection({ value, onChange }: Props) {
+export default function OptionsSection({
+  value,
+  onChange,
+  ffmpegdEnabled,
+  onFfmpegdChange,
+}: Props) {
   // `extra` is typed as string in lib/types but is really a string[]; see the
   // note in lib/defaults.ts.
   const extra = value.extra as unknown as string[]
@@ -36,6 +43,16 @@ export default function OptionsSection({ value, onChange }: Props) {
             />
           ))}
         </div>
+      </div>
+
+      <div>
+        <h3 className="mb-2 text-xs font-semibold tracking-wide text-muted uppercase">ffmpegd</h3>
+        <Toggle
+          id="options-ffmpegd"
+          checked={ffmpegdEnabled}
+          label="Send encode jobs to a local ffmpegd daemon (experimental)."
+          onChange={onFfmpegdChange}
+        />
       </div>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
