@@ -10,23 +10,32 @@
    on dark. Colour is spent only on destructive actions and on one brand accent,
    which is why it reads as calm. Green lives on the logo, the shell prompt and
    the filter highlights -- never on a button. */
+/* Softened from shadcn's stock light values, which pair a pure-white page with
+   near-black text. That is fine on a mostly-text page, but this one also carries
+   a dark navbar, a dark command block and a dark primary button, and the stack
+   of maximum-contrast surfaces glares.
+
+   The page moves off pure white so white panels lift off it, and the darkest
+   inks step back from black: body text lands at 14.9:1 rather than 19.8:1, still
+   comfortably past AAA. `muted` stays at 0.55 -- it reads as a candidate for
+   lightening, but 0.58 drops it to 4.1:1 and fails AA for label text. */
 :root {
-  --surface: oklch(1 0 0);
+  --surface: oklch(0.985 0 0);
   --panel: oklch(1 0 0);
-  --sunken: oklch(0.97 0 0);
-  --line: oklch(0.922 0 0);
-  --fg: oklch(0.145 0 0);
-  --muted: oklch(0.556 0 0);
-  --accent: oklch(0.205 0 0);
-  --accent-hover: oklch(0.145 0 0);
-  --accent-fg: oklch(0.985 0 0);
-  --ring: oklch(0.708 0 0);
-  --danger: oklch(0.577 0.245 27.325);
-  --chrome: oklch(0.205 0 0);
-  --chrome-fg: oklch(0.985 0 0);
+  --sunken: oklch(0.955 0 0);
+  --line: oklch(0.905 0 0);
+  --fg: oklch(0.26 0 0);
+  --muted: oklch(0.55 0 0);
+  --accent: oklch(0.28 0 0);
+  --accent-hover: oklch(0.22 0 0);
+  --accent-fg: oklch(0.99 0 0);
+  --ring: oklch(0.72 0 0);
+  --danger: oklch(0.585 0.2 27.3);
+  --chrome: oklch(0.28 0 0);
+  --chrome-fg: oklch(0.97 0 0);
   --terminal: oklch(0.75 0.13 150);
-  --code-bg: oklch(0.145 0 0);
-  --code-fg: oklch(0.985 0 0);
+  --code-bg: oklch(0.22 0 0);
+  --code-fg: oklch(0.96 0 0);
 }
 
 .dark {
