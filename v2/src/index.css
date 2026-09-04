@@ -36,6 +36,10 @@
   --terminal: oklch(0.75 0.13 150);
   --promo: oklch(0.55 0.17 258);
   --promo-fg: oklch(0.99 0 0);
+  /* The band gets its own value rather than an alpha of --promo: one shared
+     opacity cannot read the same over a near-white page and a near-black one. */
+  --promo-bg: oklch(0.92 0.055 258);
+  --promo-line: oklch(0.82 0.09 258);
   --code-bg: oklch(0.31 0 0);
   --code-fg: oklch(0.96 0 0);
 }
@@ -57,6 +61,8 @@
   --terminal: oklch(0.75 0.13 150);
   --promo: oklch(0.72 0.13 258);
   --promo-fg: oklch(0.18 0 0);
+  --promo-bg: oklch(0.29 0.07 258);
+  --promo-line: oklch(0.4 0.09 258);
   --code-bg: oklch(0.11 0 0);
   --code-fg: oklch(0.985 0 0);
 }
@@ -80,6 +86,8 @@
   --color-terminal: var(--terminal);
   --color-promo: var(--promo);
   --color-promo-fg: var(--promo-fg);
+  --color-promo-bg: var(--promo-bg);
+  --color-promo-line: var(--promo-line);
   --color-code-bg: var(--code-bg);
   --color-code-fg: var(--code-fg);
 }
