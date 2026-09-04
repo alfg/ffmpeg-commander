@@ -254,8 +254,12 @@ function setAudioFlags(options: IFFmpegOptions) {
   }
 
   if (options.quality && options.quality !== 'auto') {
-    const arg = ['-b:a', options.quality === 'custom' ? options.audioBitrate : options.quality];
-    flags.push(...arg);
+    const bitrate = options.quality === 'custom' ? options.audioBitrate : options.quality;
+    // A blank custom bitrate would emit a bare -b:a, and ffmpeg would read the
+    // output path as its argument.
+    if (isSet(bitrate)) {
+      flags.push(...['-b:a', bitrate]);
+    }
   }
   return flags;
 }

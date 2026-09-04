@@ -102,6 +102,12 @@ export function useFfmpegd() {
     return () => {
       stopped = true
       window.clearTimeout(retry)
+      // Detaching onclose below means nothing else will report the disconnect,
+      // so do it here. Otherwise socketOpen stays true, `connected` is true on
+      // the first render after re-enabling, and the pump sends on a socket that
+      // is still CONNECTING.
+      setSocketOpen(false)
+
       const ws = socket.current
       socket.current = null
       if (!ws) return
@@ -149,8 +155,11 @@ export function useFfmpegd() {
       return
     }
 
+    const ws = socket.current
+    if (!ws || ws.readyState !== WebSocket.OPEN) return
+
     activeId.current = next.id
-    socket.current?.send(encodeMessage(next))
+    ws.send(encodeMessage(next))
     storage.updateStatus(QUEUE_KEY, next.id, Status.ENCODING)
     setJobs(storage.getAll(QUEUE_KEY) as Job[])
   }, [connected])

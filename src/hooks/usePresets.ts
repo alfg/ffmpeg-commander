@@ -1,6 +1,8 @@
 import { useCallback, useState } from 'react'
 import createDefaultForm from '@/lib/defaults'
 import presets, { type IPresetOption } from '@/lib/presets'
+import { deepMerge } from '@/lib/merge'
+import { reconcile } from '@/lib/reconcile'
 import type { IFFMpegOptionsForm } from '@/lib/types'
 
 const SAVED_PREFIX = 'preset-'
@@ -45,10 +47,11 @@ export function usePresets({ form, setForm }: Options) {
         if (!saved) return
         // Apply the snapshot onto pristine defaults rather than the current
         // form, so nothing from the previous preset survives underneath.
-        setForm({
-          ...(createDefaultForm() as unknown as IFFMpegOptionsForm),
-          ...(saved.data as Partial<IFFMpegOptionsForm>),
-        })
+        const merged = deepMerge(
+          createDefaultForm() as unknown as Record<string, unknown>,
+          saved.data as Record<string, unknown>,
+        )
+        setForm(reconcile(merged as unknown as IFFMpegOptionsForm))
         setPresetName(saved.name)
         return
       }
@@ -57,12 +60,12 @@ export function usePresets({ form, setForm }: Options) {
       const base = createDefaultForm() as unknown as IFFMpegOptionsForm
       setForm(
         preset
-          ? {
+          ? reconcile({
               ...base,
               format: { ...base.format, ...preset.format },
               video: { ...base.video, ...preset.video },
               audio: { ...base.audio, ...preset.audio },
-            }
+            })
           : base,
       )
       setPresetName(null)

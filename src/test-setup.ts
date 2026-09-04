@@ -9,6 +9,9 @@ beforeEach(() => {
   )
   localStorage.clear()
   document.documentElement.classList.remove('dark')
+  // The app mirrors form state into the query string, so a test that changes
+  // the form leaves it there for the next one to read back on mount.
+  window.history.replaceState(null, '', '/')
 
   // jsdom ships no matchMedia. Default to a light system preference so theme
   // behaviour is exercised rather than skipped; individual tests can restub it.

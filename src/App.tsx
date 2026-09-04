@@ -26,7 +26,8 @@ const selectClass =
   'focus:border-ring focus:ring-1 focus:ring-ring focus:outline-none'
 
 export default function App() {
-  const { form, cmd, update, updateFormat, reset, setForm } = useFfmpegForm()
+  const { form, cmd, update, updateFormat, updateVideo, updateOptions, reset, setForm } =
+    useFfmpegForm()
   const preset = usePresets({ form, setForm })
   const ffmpegd = useFfmpegd()
   const [showJson, setShowJson] = useState(false)
@@ -47,7 +48,7 @@ export default function App() {
         <VideoSection
           value={form.video}
           container={container}
-          onChange={(patch) => update('video', patch)}
+          onChange={updateVideo}
         />
       ),
     },
@@ -75,7 +76,7 @@ export default function App() {
       content: (
         <OptionsSection
           value={form.options}
-          onChange={(patch) => update('options', patch)}
+          onChange={updateOptions}
           ffmpegdEnabled={ffmpegd.enabled}
           onFfmpegdChange={ffmpegd.setEnabled}
         />
@@ -163,33 +164,33 @@ export default function App() {
       <Banner />
 
       <main className="mx-auto flex max-w-3xl flex-col gap-5 px-4 py-6">
-        {/* The Queue only exists when a daemon is in play, so the whole tab
-            strip appears with it rather than sitting there empty. */}
-        {ffmpegd.enabled ? (
-          <Tabs
-            align="right"
-            tabs={[
-              { id: 'builder', label: 'Builder', content: builder },
-              {
-                id: 'queue',
-                label: ffmpegd.jobs.length ? `Queue (${ffmpegd.jobs.length})` : 'Queue',
-                content: (
-                  <Queue
-                    jobs={ffmpegd.jobs}
-                    progress={ffmpegd.progress}
-                    connected={ffmpegd.connected}
-                    onCancel={ffmpegd.cancel}
-                    onRestart={ffmpegd.restart}
-                    onToggleDetails={ffmpegd.toggleDetails}
-                    onClear={ffmpegd.clear}
-                  />
-                ),
-              },
-            ]}
-          />
-        ) : (
-          builder
-        )}
+        {/* One Tabs instance either way, so toggling ffmpegd does not remount
+            the builder and throw the user out of whatever tab they were on. */}
+        <Tabs
+          align="right"
+          tabs={[
+            { id: 'builder', label: 'Builder', content: builder },
+            ...(ffmpegd.enabled
+              ? [
+                  {
+                    id: 'queue',
+                    label: ffmpegd.jobs.length ? `Queue (${ffmpegd.jobs.length})` : 'Queue',
+                    content: (
+                      <Queue
+                        jobs={ffmpegd.jobs}
+                        progress={ffmpegd.progress}
+                        connected={ffmpegd.connected}
+                        onCancel={ffmpegd.cancel}
+                        onRestart={ffmpegd.restart}
+                        onToggleDetails={ffmpegd.toggleDetails}
+                        onClear={ffmpegd.clear}
+                      />
+                    ),
+                  },
+                ]
+              : []),
+          ]}
+        />
       </main>
 
       <Footer />

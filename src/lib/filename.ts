@@ -20,3 +20,4 @@ export function retargetExtension(filename: string, container: string): string {
   if (!ext || ext.includes('/') || ext.includes('\\')) return filename
   return `${filename.slice(0, -ext.length)}.${container}`
 }
+

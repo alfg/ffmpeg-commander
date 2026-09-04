@@ -38,9 +38,13 @@ export default function Tabs({ tabs, align = 'left' }: TabsProps) {
 
   return (
     <div>
+      {/* A lone tab is noise: the strip appears when there is a choice. Keeping
+          the panels mounted either way is what stops a tab appearing or
+          disappearing from remounting its content. */}
       <div
         role="tablist"
         onKeyDown={onKeyDown}
+        hidden={tabs.length < 2}
         className={[
           'flex gap-1 overflow-x-auto border-b border-line',
           align === 'right' ? 'justify-end' : '',

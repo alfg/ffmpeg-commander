@@ -49,10 +49,11 @@ describe('App', () => {
     expect(params.get('video.size')).toBe('1280')
   })
 
-  it('restores state from the URL on load', () => {
+  it('restores state from the URL on load, output extension included', () => {
     window.history.replaceState(null, '', '/?video.codec=vp9&format.container=webm')
     render(<App />)
-    expect(commandText()).toBe('ffmpeg -i input.mp4 -c:v libvpx-vp9 -c:a copy output.mp4')
+    // The container comes from the link, so the output name has to follow it.
+    expect(commandText()).toBe('ffmpeg -i input.mp4 -c:v libvpx-vp9 -c:a copy output.webm')
   })
 
   it('keeps the URL clean when everything is default', () => {
