@@ -28,7 +28,7 @@ export default function Toolbar({ cmd, onReset }: Props) {
       <button
         type="button"
         onClick={copy}
-        className={`${btn} border-blue-600 bg-blue-600 text-white hover:bg-blue-700 focus-visible:ring-blue-500`}
+        className={`${btn} border-accent bg-accent text-accent-fg hover:bg-accent-hover focus-visible:ring-accent`}
       >
         {copied ? 'Copied' : 'Copy'}
       </button>
@@ -36,7 +36,7 @@ export default function Toolbar({ cmd, onReset }: Props) {
       <button
         type="button"
         onClick={onReset}
-        className={`${btn} border-red-300 text-red-700 hover:bg-red-50 focus-visible:ring-red-500 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-950`}
+        className={`${btn} border-danger/40 text-danger hover:bg-danger/10 focus-visible:ring-danger`}
       >
         Reset
       </button>

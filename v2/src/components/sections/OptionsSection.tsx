@@ -22,7 +22,7 @@ export default function OptionsSection({ value, onChange }: Props) {
   return (
     <div className="flex flex-col gap-5">
       <div>
-        <h3 className="mb-2 text-xs font-semibold tracking-wide text-gray-500 uppercase">
+        <h3 className="mb-2 text-xs font-semibold tracking-wide text-muted uppercase">
           Extra flags
         </h3>
         <div className="flex flex-col">

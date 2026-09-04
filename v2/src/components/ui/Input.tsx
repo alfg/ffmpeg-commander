@@ -7,9 +7,8 @@ interface InputProps {
 }
 
 const base =
-  'w-full rounded border border-gray-300 bg-white px-2 py-1.5 text-sm ' +
-  'focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none ' +
-  'dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100'
+  'w-full rounded border border-line bg-panel px-2 py-1.5 text-sm text-fg ' +
+  'focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none'
 
 /** Replaces b-form-input. */
 export default function Input({ id, value, placeholder, type = 'text', onChange }: InputProps) {

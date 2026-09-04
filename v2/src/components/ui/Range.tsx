@@ -10,10 +10,10 @@ interface RangeProps {
 /** Labelled slider. The Vue app put the live value in the label; so does this. */
 export default function Range({ id, label, value, min, max, onChange }: RangeProps) {
   return (
-    <div className="flex flex-col gap-1">
-      <label htmlFor={id} className="flex justify-between text-xs font-medium text-gray-600 dark:text-gray-400">
+    <div className="flex min-w-0 flex-col gap-1">
+      <label htmlFor={id} className="flex justify-between text-xs font-medium text-muted">
         <span>{label}</span>
-        <span className="font-mono text-gray-900 tabular-nums dark:text-gray-100">{value}</span>
+        <span className="font-mono text-fg tabular-nums">{value}</span>
       </label>
       <input
         id={id}
@@ -22,7 +22,7 @@ export default function Range({ id, label, value, min, max, onChange }: RangePro
         max={max}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="h-1.5 w-full cursor-pointer appearance-none rounded-full bg-gray-200 accent-blue-600 dark:bg-gray-700"
+        className="h-1.5 w-full cursor-pointer appearance-none rounded-full bg-sunken accent-accent"
       />
     </div>
   )

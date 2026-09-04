@@ -8,6 +8,23 @@ beforeEach(() => {
     vi.fn(() => Promise.reject(new Error('network disabled in tests'))),
   )
   localStorage.clear()
+  document.documentElement.classList.remove('dark')
+
+  // jsdom ships no matchMedia. Default to a light system preference so theme
+  // behaviour is exercised rather than skipped; individual tests can restub it.
+  vi.stubGlobal(
+    'matchMedia',
+    vi.fn((query: string) => ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    })),
+  )
 })
 
 afterEach(() => {

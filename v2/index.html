@@ -5,6 +5,20 @@
     <link rel="icon" href="/ffmpeg.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>FFmpeg Commander | Visual FFmpeg Command Generator</title>
+    <script>
+      // Applied before first paint so a dark-mode visitor never sees a white
+      // flash. Mirrors resolveTheme in src/lib/theme.ts.
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme')
+          var dark =
+            stored === 'dark' ||
+            ((stored === 'system' || !stored) &&
+              window.matchMedia('(prefers-color-scheme: dark)').matches)
+          document.documentElement.classList.toggle('dark', dark)
+        } catch (e) {}
+      })()
+    </script>
   </head>
   <body>
     <div id="root"></div>

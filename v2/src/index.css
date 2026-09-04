@@ -1,14 +1,67 @@
 @import "tailwindcss";
 
-/* The Vue app is dark-chrome with a light body (bootstrap navbar-dark bg-dark).
-   Keeping the same footprint so the two can be compared side by side during the
-   port. */
-@theme {
-  --color-chrome: #343a40;
-  --color-chrome-fg: #f8f9fa;
-  /* The FFmpeg mark is #388E3C, too dark to read on the navbar; this is the
-     same hue lifted to a legible weight against #343a40. */
-  --color-terminal: #4ade80;
+/* Dark mode is driven by a class on <html>, not by the media query alone, so a
+   visitor can override their system setting. index.html sets the class before
+   first paint; useTheme keeps it in sync afterwards. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Semantic palette. Components reference these roles rather than raw greys, so
+   the two themes stay in step and `dark:` variants nearly vanish from the JSX. */
+:root {
+  --surface: #ffffff;
+  --panel: #ffffff;
+  --sunken: #f6f8fa;
+  --line: #d0d7de;
+  --fg: #1f2328;
+  --muted: #59636e;
+  --accent: #1a7f37;
+  --accent-hover: #15682d;
+  --accent-fg: #ffffff;
+  --danger: #cf222e;
+  --chrome: #1f2428;
+  --chrome-fg: #f0f6fc;
+  --terminal: #3fb950;
+  --code-bg: #0d1117;
+  --code-fg: #e6edf3;
+}
+
+.dark {
+  --surface: #0d1117;
+  --panel: #161b22;
+  --sunken: #0d1117;
+  --line: #30363d;
+  --fg: #e6edf3;
+  --muted: #8b949e;
+  --accent: #3fb950;
+  --accent-hover: #56d364;
+  --accent-fg: #0d1117;
+  --danger: #f85149;
+  --chrome: #010409;
+  --chrome-fg: #e6edf3;
+  --terminal: #3fb950;
+  --code-bg: #010409;
+  --code-fg: #e6edf3;
+}
+
+/* `inline` so the utilities resolve the variable at use time, which is what
+   lets a class swap on <html> restyle the page. */
+@theme inline {
+  --color-surface: var(--surface);
+  --color-panel: var(--panel);
+  --color-sunken: var(--sunken);
+  --color-line: var(--line);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-fg: var(--accent-fg);
+  --color-danger: var(--danger);
+  --color-chrome: var(--chrome);
+  --color-chrome-fg: var(--chrome-fg);
+  --color-terminal: var(--terminal);
+  --color-code-bg: var(--code-bg);
+  --color-code-fg: var(--code-fg);
+
   --animate-caret: caret-blink 1.1s steps(1) infinite;
 }
 
@@ -23,6 +76,10 @@
   }
 }
 
+/* Keeps form controls and scrollbars matched to the active theme. */
 :root {
-  color-scheme: light dark;
+  color-scheme: light;
+}
+.dark {
+  color-scheme: dark;
 }

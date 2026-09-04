@@ -18,9 +18,8 @@ import type { IFFMpegOptionsForm } from '@/lib/types'
 const presetGroups = presets.getPresetOptions()
 
 const selectClass =
-  'w-full rounded border border-gray-300 bg-white px-2 py-1.5 text-sm ' +
-  'focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none ' +
-  'dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100'
+  'w-full rounded border border-line bg-panel px-2 py-1.5 text-sm text-fg ' +
+  'focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none'
 
 export default function App() {
   const { form, cmd, update, reset, setForm } = useFfmpegForm()
@@ -88,7 +87,7 @@ export default function App() {
   ]
 
   return (
-    <div className="relative min-h-screen bg-white text-gray-900 dark:bg-gray-900 dark:text-gray-100">
+    <div className="relative min-h-screen bg-surface text-fg">
       <Navbar />
       <Banner />
 
@@ -120,7 +119,7 @@ export default function App() {
 
         <div className="flex flex-col gap-2">
           <CommandOutput cmd={cmd} />
-          <p className="text-xs text-gray-500 italic dark:text-gray-400">
+          <p className="text-xs text-muted italic">
             *Generated options may vary based on your FFmpeg version and build
             configuration.
           </p>

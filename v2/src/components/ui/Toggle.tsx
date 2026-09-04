@@ -20,8 +20,8 @@ export default function Toggle({ id, checked, label, onChange }: ToggleProps) {
         aria-hidden
         className={[
           'mt-0.5 h-5 w-9 shrink-0 rounded-full p-0.5 transition-colors',
-          'peer-focus-visible:ring-2 peer-focus-visible:ring-blue-500 peer-focus-visible:ring-offset-1',
-          checked ? 'bg-blue-600' : 'bg-gray-300 dark:bg-gray-600',
+          'peer-focus-visible:ring-2 peer-focus-visible:ring-accent peer-focus-visible:ring-offset-1',
+          checked ? 'bg-accent' : 'bg-line',
         ].join(' ')}
       >
         <span
@@ -31,7 +31,7 @@ export default function Toggle({ id, checked, label, onChange }: ToggleProps) {
           ].join(' ')}
         />
       </span>
-      <span className="text-sm text-gray-700 dark:text-gray-300">{label}</span>
+      <span className="text-sm text-fg">{label}</span>
     </label>
   )
 }

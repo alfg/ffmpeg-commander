@@ -36,7 +36,7 @@ export default function FiltersSection({ value, onChange }: Props) {
   return (
     <div className="flex flex-col gap-5">
       <div>
-        <h3 className="mb-3 text-xs font-semibold tracking-wide text-gray-500 uppercase">Video</h3>
+        <h3 className="mb-3 text-xs font-semibold tracking-wide text-muted uppercase">Video</h3>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
           {toggles.map(({ key, options }) => (
             <Field key={key} label={label(key)} htmlFor={`filters-${key}`}>
@@ -62,7 +62,7 @@ export default function FiltersSection({ value, onChange }: Props) {
       </div>
 
       <div>
-        <h3 className="mb-3 text-xs font-semibold tracking-wide text-gray-500 uppercase">
+        <h3 className="mb-3 text-xs font-semibold tracking-wide text-muted uppercase">
           Colour
         </h3>
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
@@ -81,7 +81,7 @@ export default function FiltersSection({ value, onChange }: Props) {
       </div>
 
       <div>
-        <h3 className="mb-3 text-xs font-semibold tracking-wide text-gray-500 uppercase">Audio</h3>
+        <h3 className="mb-3 text-xs font-semibold tracking-wide text-muted uppercase">Audio</h3>
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
           <Range
             id="filters-acontrast"

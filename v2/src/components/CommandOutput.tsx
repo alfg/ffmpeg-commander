@@ -14,7 +14,7 @@ interface Active {
 
 const fragmentBase =
   'inline-block rounded-sm -mx-0.5 px-0.5 transition-colors focus-visible:outline-2 ' +
-  'focus-visible:outline-offset-1 focus-visible:outline-sky-400'
+  'focus-visible:outline-offset-1 focus-visible:outline-terminal'
 
 export default function CommandOutput({ cmd }: { cmd: string }) {
   const fragments = parseCommand(cmd)
@@ -67,7 +67,9 @@ export default function CommandOutput({ cmd }: { cmd: string }) {
         className={[
           fragmentBase,
           describable ? 'cursor-help' : '',
-          isFilter ? 'hover:bg-green-700 focus-visible:bg-green-700' : 'hover:bg-gray-700 focus-visible:bg-gray-700',
+          isFilter
+            ? 'hover:bg-terminal/35 focus-visible:bg-terminal/35'
+            : 'hover:bg-white/15 focus-visible:bg-white/15',
         ].join(' ')}
       >
         {fragment.value}
@@ -78,14 +80,14 @@ export default function CommandOutput({ cmd }: { cmd: string }) {
   return (
     <div
       ref={boxRef}
-      className="relative rounded-lg bg-gray-950 p-4 ring-1 ring-black/10 dark:bg-black dark:ring-white/10"
+      className="relative rounded-lg bg-code-bg p-4 ring-1 ring-line"
       onKeyDown={(e) => {
         if (e.key === 'Escape') hide()
       }}
     >
       <code
         data-testid="command"
-        className="block overflow-x-auto font-mono text-sm leading-loose font-semibold whitespace-pre-wrap text-gray-50"
+        className="block overflow-x-auto font-mono text-sm leading-loose font-semibold whitespace-pre-wrap text-code-fg"
       >
         {fragments.map((fragment, i) => (
           <span key={`fragment-${i}`}>
@@ -108,7 +110,7 @@ export default function CommandOutput({ cmd }: { cmd: string }) {
           ref={tipRef}
           id="command-tooltip"
           role="tooltip"
-          className="pointer-events-none absolute z-20 max-w-80 -translate-y-full rounded-md bg-amber-50 p-2 text-xs text-gray-900 shadow-lg ring-1 ring-black/10"
+          className="pointer-events-none absolute z-20 max-w-80 -translate-y-full rounded-md bg-panel p-2 text-xs text-fg shadow-lg ring-1 ring-line"
           style={{ marginTop: '-0.5rem' }}
         >
           <p className="mb-1 font-mono font-semibold">{active.title}</p>

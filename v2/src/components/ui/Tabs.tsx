@@ -42,7 +42,7 @@ export default function Tabs({ tabs, align = 'left' }: TabsProps) {
         role="tablist"
         onKeyDown={onKeyDown}
         className={[
-          'flex gap-1 overflow-x-auto border-b border-gray-200 dark:border-gray-700',
+          'flex gap-1 overflow-x-auto border-b border-line',
           align === 'right' ? 'justify-end' : '',
         ].join(' ')}
       >
@@ -63,10 +63,10 @@ export default function Tabs({ tabs, align = 'left' }: TabsProps) {
               onClick={() => setActive(i)}
               className={[
                 'relative -mb-px shrink-0 rounded-t px-3 py-2 text-sm font-medium whitespace-nowrap',
-                'focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none',
+                'focus-visible:ring-2 focus-visible:ring-accent focus-visible:outline-none',
                 selected
-                  ? 'border-b-2 border-blue-600 text-blue-700 dark:border-blue-400 dark:text-blue-300'
-                  : 'border-b-2 border-transparent text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200',
+                  ? 'border-b-2 border-accent text-accent'
+                  : 'border-b-2 border-transparent text-muted hover:text-fg',
               ].join(' ')}
             >
               {tab.label}

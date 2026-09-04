@@ -8,9 +8,8 @@ interface Props {
 }
 
 const control =
-  'border border-gray-300 bg-white px-2 py-1.5 text-sm focus:z-10 focus:border-blue-500 ' +
-  'focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800 ' +
-  'dark:text-gray-100'
+  'border border-line bg-panel px-2 py-1.5 text-sm text-fg focus:z-10 focus:border-accent ' +
+  'focus:ring-1 focus:ring-accent focus:outline-none'
 
 /** Protocol select + filename, as an attached input group. */
 function Row({
@@ -28,7 +27,7 @@ function Row({
 }) {
   return (
     <Field label={label} htmlFor={id}>
-      <div className="flex">
+      <div className="flex min-w-0">
         <select
           aria-label={`${label} protocol`}
           className={`${control} w-24 shrink-0 rounded-l`}
@@ -46,7 +45,7 @@ function Row({
         </select>
         <input
           id={id}
-          className={`${control} -ml-px w-full rounded-r`}
+          className={`${control} -ml-px w-full min-w-0 rounded-r`}
           value={value}
           placeholder={placeholder}
           onChange={(e) => onChange(e.target.value)}
