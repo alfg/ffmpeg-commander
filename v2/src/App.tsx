@@ -2,6 +2,8 @@ import Banner from '@/components/Banner'
 import CommandOutput from '@/components/CommandOutput'
 import FileIO from '@/components/FileIO'
 import Footer from '@/components/Footer'
+import JsonViewer from '@/components/JsonViewer'
+import { PageAbout, PageHeading } from '@/components/PageIntro'
 import Navbar from '@/components/Navbar'
 import Toolbar from '@/components/Toolbar'
 import AudioSection from '@/components/sections/AudioSection'
@@ -12,6 +14,7 @@ import VideoSection from '@/components/sections/VideoSection'
 import Field from '@/components/ui/Field'
 import Input from '@/components/ui/Input'
 import Tabs from '@/components/ui/Tabs'
+import { useState } from 'react'
 import Queue from '@/components/Queue'
 import { useFfmpegd } from '@/hooks/useFfmpegd'
 import { useFfmpegForm } from '@/hooks/useFfmpegForm'
@@ -26,6 +29,7 @@ export default function App() {
   const { form, cmd, update, updateFormat, reset, setForm } = useFfmpegForm()
   const preset = usePresets({ form, setForm })
   const ffmpegd = useFfmpegd()
+  const [showJson, setShowJson] = useState(false)
   const container = form.format.container ?? 'mp4'
 
   const tabs = [
@@ -81,6 +85,8 @@ export default function App() {
 
   const builder = (
     <div className="flex flex-col gap-5">
+          <PageHeading />
+
           <div className="grid gap-3 sm:grid-cols-2">
             <Field label="Preset" htmlFor="preset">
               <select
@@ -134,6 +140,8 @@ export default function App() {
             onEncode={() =>
               ffmpegd.enqueue(form.io.input, form.io.output, util.transformToJSON(form))
             }
+            showJson={showJson}
+            onToggleJson={() => setShowJson((v) => !v)}
             onSave={() => preset.save()}
             onSaveAsNew={() => preset.save(true)}
             onDelete={preset.remove}
@@ -142,6 +150,10 @@ export default function App() {
               preset.select('custom')
             }}
           />
+
+          {showJson ? <JsonViewer form={form} /> : null}
+
+          <PageAbout />
     </div>
   )
 

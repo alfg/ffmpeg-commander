@@ -6,6 +6,8 @@ interface Props {
   canEncode: boolean
   encoding: boolean
   onEncode: () => void
+  showJson: boolean
+  onToggleJson: () => void
   onSave: () => void
   onSaveAsNew: () => void
   onDelete: () => void
@@ -24,6 +26,8 @@ export default function Toolbar({
   canEncode,
   encoding,
   onEncode,
+  showJson,
+  onToggleJson,
   onSave,
   onSaveAsNew,
   onDelete,
@@ -63,6 +67,15 @@ export default function Toolbar({
           {encoding ? 'Encoding…' : 'Encode'}
         </button>
       ) : null}
+
+      <button
+        type="button"
+        onClick={onToggleJson}
+        aria-pressed={showJson}
+        className={quiet}
+      >
+        {showJson ? 'Hide JSON' : 'Show JSON'}
+      </button>
 
       <button type="button" onClick={onSave} className={quiet}>
         {isSavedPreset ? 'Save' : 'Save preset'}
