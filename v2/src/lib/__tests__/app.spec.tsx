@@ -112,6 +112,45 @@ describe('App', () => {
     }
   })
 
+  it('renames the output file when the container changes', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+
+    await user.selectOptions(screen.getByLabelText('Container'), 'mkv')
+
+    expect(screen.getByLabelText<HTMLInputElement>('Output').value).toBe('output.mkv')
+    expect(commandText()).toContain('output.mkv')
+  })
+
+  it('leaves a typed output name alone until the container changes', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+
+    const output = screen.getByLabelText('Output')
+    await user.clear(output)
+    await user.type(output, 'render.avi')
+
+    // The Vue app rewrote this on every keystroke; here it survives.
+    expect(screen.getByLabelText<HTMLInputElement>('Output').value).toBe('render.avi')
+
+    await user.selectOptions(screen.getByLabelText('Container'), 'webm')
+    expect(screen.getByLabelText<HTMLInputElement>('Output').value).toBe('render.webm')
+  })
+
+  it('does not rename a URL output', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+
+    const output = screen.getByLabelText('Output')
+    await user.clear(output)
+    await user.type(output, 'rtmp://host.com/live/stream')
+    await user.selectOptions(screen.getByLabelText('Container'), 'flv')
+
+    expect(screen.getByLabelText<HTMLInputElement>('Output').value).toBe(
+      'rtmp://host.com/live/stream',
+    )
+  })
+
   it('narrows the audio codec list to what the container supports', async () => {
     const user = userEvent.setup()
     render(<App />)

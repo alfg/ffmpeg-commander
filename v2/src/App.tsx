@@ -20,7 +20,7 @@ const selectClass =
   'focus:border-ring focus:ring-1 focus:ring-ring focus:outline-none'
 
 export default function App() {
-  const { form, cmd, update, reset, setForm } = useFfmpegForm()
+  const { form, cmd, update, updateFormat, reset, setForm } = useFfmpegForm()
   const preset = usePresets({ form, setForm })
   const container = form.format.container ?? 'mp4'
 
@@ -29,7 +29,7 @@ export default function App() {
       id: 'format',
       label: 'Format',
       content: (
-        <FormatSection value={form.format} onChange={(patch) => update('format', patch)} />
+        <FormatSection value={form.format} onChange={updateFormat} />
       ),
     },
     {
