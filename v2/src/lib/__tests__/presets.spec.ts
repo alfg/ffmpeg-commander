@@ -84,9 +84,9 @@ describe('preset commands', () => {
       + '-profile:v baseline -level 3.0 -x264-params scenecut=0:open_gop=0:min-keyint=72:keyint=72 '
       + '-vf "scale=480:-1" -c:a copy output.mp4'],
     ['vp9-3000-1080p',
-      'ffmpeg -i input.mp4 -c:v libvpx-vp9 -b:v 3000k -g 72 -vf "scale=1920:-1" -c:a libopus output.mp4'],
+      'ffmpeg -i input.mp4 -c:v libvpx-vp9 -b:v 3000k -g 72 -profile:v 0 -vf "scale=1920:-1" -c:a libopus output.mp4'],
     ['vp9-1500-720p',
-      'ffmpeg -i input.mp4 -c:v libvpx-vp9 -b:v 1500k -g 72 -vf "scale=1280:-1" -c:a libopus output.mp4'],
+      'ffmpeg -i input.mp4 -c:v libvpx-vp9 -b:v 1500k -g 72 -profile:v 0 -vf "scale=1280:-1" -c:a libopus output.mp4'],
   ])('%s', (slug, expected) => {
     expect(buildPreset(slug)).toBe(expected);
   });
@@ -110,13 +110,12 @@ describe('preset quality settings', () => {
     expect(buildPreset(slug)).toContain(`-crf ${preset.video?.crf}`);
   });
 
-  it('KNOWN BUG: the VP9 presets declare profile 0, which never reaches the command', () => {
-    // setFlagsFromMap guards with `if (options[o])`, and 0 is falsy, so a
-    // legitimate VP9 profile of 0 is dropped. Same code path in the Vue app.
-    // The guard needs to test for undefined/null/'' rather than truthiness.
+  it('emits the VP9 profile of 0', () => {
+    // setFlagsFromMap used to guard with `if (options[o])`, and 0 is falsy, so
+    // this legitimate profile was silently dropped from both VP9 presets.
     ['vp9-3000-1080p', 'vp9-1500-720p'].forEach((slug) => {
       expect(presets.getPreset(slug).video?.profile).toBe(0);
-      expect(buildPreset(slug)).not.toContain('-profile:v');
+      expect(buildPreset(slug)).toContain('-profile:v 0');
     });
   });
 

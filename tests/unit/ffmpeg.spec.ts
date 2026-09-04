@@ -267,4 +267,23 @@ describe('ffmpeg.build', () => {
       expect(build({ video: { [key]: 'auto' } })).toBe(build());
     });
   });
+
+  describe('zero and empty values', () => {
+    it('emits a numeric option set to 0', () => {
+      // The guard was a truthiness test, which swallowed 0. VP9 profile 0 is
+      // the case that surfaced it, but it applied to every mapped option.
+      expect(build({ video: { profile: 0 } }))
+        .toBe('ffmpeg -i input.mp4 -c:v libx264 -profile:v 0 -c:a copy output.mp4');
+      expect(build({ video: { gopsize: 0 } }))
+        .toBe('ffmpeg -i input.mp4 -c:v libx264 -g 0 -c:a copy output.mp4');
+    });
+
+    it.each([
+      ['null', null],
+      ['undefined', undefined],
+      ['an empty string', ''],
+    ])('still drops an option set to %s', (_label, value) => {
+      expect(build({ video: { bitrate: value } })).toBe(build());
+    });
+  });
 });

@@ -28,12 +28,18 @@ const audioOptionsMap = {
   sampleRate: '-ar',
 };
 
+// An option is set if it has a value at all. Deliberately not a truthiness test:
+// 0 is a legitimate value (VP9 profile 0, for one) and used to be dropped here.
+function isSet(value: unknown): boolean {
+  return value !== undefined && value !== null && value !== '';
+}
+
 function setFlagsFromMap(map: IFFmpegOptions, options: IFFmpegOptions): string[] {
   const flags: string[] = [];
   // Set flags by adding provided options from the map parameter and adding the
   // value to the flags array.
   Object.keys(map).forEach((o) => {
-    if (options[o] && options[o] !== 'none' && options[o] !== 'auto') {
+    if (isSet(options[o]) && options[o] !== 'none' && options[o] !== 'auto') {
       const arg = [map[o], options[o]];
       flags.push(...arg);
     }

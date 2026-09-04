@@ -83,9 +83,9 @@ describe('preset commands', () => {
       + '-profile:v baseline -level 3.0 -x264-params scenecut=0:open_gop=0:min-keyint=72:keyint=72 '
       + '-vf "scale=480:-1" -c:a copy output.mp4'],
     ['vp9-3000-1080p',
-      'ffmpeg -i input.mp4 -c:v libvpx-vp9 -b:v 3000k -g 72 -vf "scale=1920:-1" -c:a libopus output.mp4'],
+      'ffmpeg -i input.mp4 -c:v libvpx-vp9 -b:v 3000k -g 72 -profile:v 0 -vf "scale=1920:-1" -c:a libopus output.mp4'],
     ['vp9-1500-720p',
-      'ffmpeg -i input.mp4 -c:v libvpx-vp9 -b:v 1500k -g 72 -vf "scale=1280:-1" -c:a libopus output.mp4'],
+      'ffmpeg -i input.mp4 -c:v libvpx-vp9 -b:v 1500k -g 72 -profile:v 0 -vf "scale=1280:-1" -c:a libopus output.mp4'],
   ])('%s', (slug, expected) => {
     expect(buildPreset(slug)).toBe(expected);
   });
