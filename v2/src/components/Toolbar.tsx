@@ -2,6 +2,10 @@ import { useState } from 'react'
 
 interface Props {
   cmd: string
+  isSavedPreset: boolean
+  onSave: () => void
+  onSaveAsNew: () => void
+  onDelete: () => void
   onReset: () => void
 }
 
@@ -9,8 +13,18 @@ const btn =
   'rounded-md border px-3 py-1.5 text-sm font-medium transition-colors ' +
   'focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:outline-none'
 
-export default function Toolbar({ cmd, onReset }: Props) {
+const quiet = `${btn} border-line text-fg hover:bg-sunken focus-visible:ring-ring`
+
+export default function Toolbar({
+  cmd,
+  isSavedPreset,
+  onSave,
+  onSaveAsNew,
+  onDelete,
+  onReset,
+}: Props) {
   const [copied, setCopied] = useState(false)
+  const [confirmingDelete, setConfirmingDelete] = useState(false)
 
   const copy = async () => {
     try {
@@ -24,7 +38,7 @@ export default function Toolbar({ cmd, onReset }: Props) {
   }
 
   return (
-    <div className="flex items-center justify-between gap-3">
+    <div className="flex flex-wrap items-center gap-2">
       <button
         type="button"
         onClick={copy}
@@ -33,13 +47,59 @@ export default function Toolbar({ cmd, onReset }: Props) {
         {copied ? 'Copied' : 'Copy'}
       </button>
 
-      <button
-        type="button"
-        onClick={onReset}
-        className={`${btn} border-danger/40 text-danger hover:bg-danger/10 focus-visible:ring-danger`}
-      >
-        Reset
+      <button type="button" onClick={onSave} className={quiet}>
+        {isSavedPreset ? 'Save' : 'Save preset'}
       </button>
+
+      {/* Only meaningful once you are editing something already saved. */}
+      {isSavedPreset ? (
+        <button type="button" onClick={onSaveAsNew} className={quiet}>
+          Save as new
+        </button>
+      ) : null}
+
+      <div className="ml-auto flex items-center gap-2">
+        {isSavedPreset ? (
+          confirmingDelete ? (
+            <>
+              <span className="text-sm text-muted">Delete preset?</span>
+              <button
+                type="button"
+                onClick={() => {
+                  onDelete()
+                  setConfirmingDelete(false)
+                }}
+                className={`${btn} border-danger bg-danger text-accent-fg focus-visible:ring-danger`}
+              >
+                Delete
+              </button>
+              <button
+                type="button"
+                onClick={() => setConfirmingDelete(false)}
+                className={quiet}
+              >
+                Cancel
+              </button>
+            </>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setConfirmingDelete(true)}
+              className={`${btn} border-danger/40 text-danger hover:bg-danger/10 focus-visible:ring-danger`}
+            >
+              Delete
+            </button>
+          )
+        ) : null}
+
+        <button
+          type="button"
+          onClick={onReset}
+          className={`${btn} border-danger/40 text-danger hover:bg-danger/10 focus-visible:ring-danger`}
+        >
+          Reset
+        </button>
+      </div>
     </div>
   )
 }

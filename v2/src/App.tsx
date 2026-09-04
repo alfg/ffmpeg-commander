@@ -10,12 +10,10 @@ import FormatSection from '@/components/sections/FormatSection'
 import OptionsSection from '@/components/sections/OptionsSection'
 import VideoSection from '@/components/sections/VideoSection'
 import Field from '@/components/ui/Field'
+import Input from '@/components/ui/Input'
 import Tabs from '@/components/ui/Tabs'
 import { useFfmpegForm } from '@/hooks/useFfmpegForm'
-import presets from '@/lib/presets'
-import type { IFFMpegOptionsForm } from '@/lib/types'
-
-const presetGroups = presets.getPresetOptions()
+import { usePresets } from '@/hooks/usePresets'
 
 const selectClass =
   'w-full rounded border border-line bg-panel px-2 py-1.5 text-sm text-fg ' +
@@ -23,22 +21,8 @@ const selectClass =
 
 export default function App() {
   const { form, cmd, update, reset, setForm } = useFfmpegForm()
+  const preset = usePresets({ form, setForm })
   const container = form.format.container ?? 'mp4'
-
-  const applyPreset = (slug: string) => {
-    if (slug === 'custom') {
-      reset()
-      return
-    }
-    const preset = presets.getPreset(slug) as Partial<IFFMpegOptionsForm> | undefined
-    if (!preset) return
-    setForm((prev) => ({
-      ...prev,
-      format: { ...prev.format, ...preset.format },
-      video: { ...prev.video, ...preset.video },
-      audio: { ...prev.audio, ...preset.audio },
-    }))
-  }
 
   const tabs = [
     {
@@ -97,10 +81,10 @@ export default function App() {
             <select
               id="preset"
               className={selectClass}
-              defaultValue="custom"
-              onChange={(e) => applyPreset(e.target.value)}
+              value={preset.presetId}
+              onChange={(e) => preset.select(e.target.value)}
             >
-              {presetGroups.map((group) => (
+              {preset.groups.map((group) => (
                 <optgroup key={group.id} label={group.name}>
                   {group.data.map((p) => (
                     <option key={p.value} value={p.value}>
@@ -111,6 +95,13 @@ export default function App() {
               ))}
             </select>
           </Field>
+
+          {/* Only a preset of your own has a name you can edit. */}
+          {preset.isSaved ? (
+            <Field label="Preset name" htmlFor="preset-name">
+              <Input id="preset-name" value={preset.presetName ?? ''} onChange={preset.rename} />
+            </Field>
+          ) : null}
         </div>
 
         <FileIO value={form.io} onChange={(patch) => update('io', patch)} />
@@ -125,7 +116,17 @@ export default function App() {
           </p>
         </div>
 
-        <Toolbar cmd={cmd} onReset={reset} />
+        <Toolbar
+          cmd={cmd}
+          isSavedPreset={preset.isSaved}
+          onSave={() => preset.save()}
+          onSaveAsNew={() => preset.save(true)}
+          onDelete={preset.remove}
+          onReset={() => {
+            reset()
+            preset.select('custom')
+          }}
+        />
       </main>
 
       <Footer />
