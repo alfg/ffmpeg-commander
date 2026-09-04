@@ -7,30 +7,7 @@ on:
     branches: [master]
 
 jobs:
-  v2:
-    name: v2 (React)
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: v2
-    strategy:
-      matrix:
-        node-version: [20.x, 22.x]
-
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-          cache-dependency-path: v2/package-lock.json
-      - run: npm ci
-      - run: npm run lint
-      - run: npm test
-      - run: npm run build
-
-  legacy:
-    name: legacy (Vue)
+  build:
     runs-on: ubuntu-latest
     strategy:
       matrix:

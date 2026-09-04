@@ -3,7 +3,7 @@ A simple web UI for generating common FFmpeg encoding operations.
 
 https://ffmpeg-commander.com
 
-> 💡 Like ffmpeg-commander, but native. <strong><a href="https://video-commander.com" target="_blank" rel="noopener">Video Commander</a></strong> is a full desktop app for video engineers. <strong><a href="https://video-commander.com" target="_blank" rel="noopener">video-commander.com</a> →
+> 💡 Skip the terminal. **[Video Commander](https://video-commander.com?ref=ffmpeg-commander)** runs the encode — free for personal use.
 
 
 [![github pages](https://github.com/alfg/ffmpeg-commander/actions/workflows/github-pages.yml/badge.svg)](https://github.com/alfg/ffmpeg-commander/actions/workflows/github-pages.yml)
@@ -24,38 +24,51 @@ This tool does NOT cover all options of FFmpeg and some assumptions are made whe
 If you feel some options can be improved, feel free to open an issue or pull request.
 
 ## Development
-`ffmpeg-commander` is built with [Vue.js](https://vuejs.org) and [Bootstrap Vue](https://bootstrap-vue.org/).
+`ffmpeg-commander` is built with [React](https://react.dev), [Vite](https://vite.dev) and
+[Tailwind CSS](https://tailwindcss.com).
 
-### Supported Node [LTS](https://nodejs.org/en/about/releases/) Versions
-* v12
-* v14
-* v16
-
-[NVM](https://github.com/nvm-sh/nvm) is recommended for quickly installing and using different versions of Node.js.
+Node 20 or newer. [NVM](https://github.com/nvm-sh/nvm) is recommended for managing versions.
 
 ### Install
 ```bash
 npm install
-npm run serve
+npm run dev
 ```
-* Load `http://localhost:8080/` in the web browser.
+* Load `http://localhost:5173/` in the web browser.
 
-### Compiles and minifies for production
-```
+### Test, lint and build
+```bash
+npm test
+npm run lint
 npm run build
+```
+
+### Layout
+```
+src/lib/          framework-agnostic modules: command generation, the URL
+                  contract, presets, storage, the ffmpegd client
+src/lib/__tests__ the test suite
+src/components/   React components (ui/ primitives, sections/ form groups)
+src/hooks/        form state, presets, theme, ffmpegd connection
 ```
 
 ### Deploy
 Deploys to [GitHub Pages](https://pages.github.com/) automatically on every push to
 `master`, via `.github/workflows/github-pages.yml`. To publish by hand:
 ```
-cd v2 && npm run deploy
+npm run deploy
 ```
 
 ## `ffmpegd`
 `ffmpegd` is an optional companion application that connects `ffmpeg-commander` to `ffmpeg` by providing a websocket server to send encode tasks and receive realtime progress updates back to the browser. This allows using ffmpeg-commander as a GUI for ffmpeg.
 
 See: https://github.com/alfg/ffmpegd
+
+When running the dev server, the Vite config proxies `/ws` and `/files` to
+`localhost:8080`. `ffmpegd` only accepts a websocket upgrade whose `Origin`
+matches its own host and port, so a dev server on another port cannot reach it
+directly.
+
 
 
 ### TODO
