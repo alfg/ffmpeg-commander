@@ -16,7 +16,6 @@ export default function Navbar() {
           <img src="/ffmpeg.svg" width="24" height="24" alt="" />
           <span aria-hidden className="font-mono text-[13px] font-semibold tracking-tight sm:text-[15px]">
             <span className="text-terminal">❯</span> ffmpeg-commander
-            <span className="ml-0.5 hidden h-[1.05em] w-[9px] -mb-[3px] bg-terminal animate-caret motion-reduce:animate-none sm:inline-block" />
           </span>
         </a>
         <div className="ml-auto flex items-center gap-1.5 sm:gap-2">

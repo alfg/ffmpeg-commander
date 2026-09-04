@@ -22,7 +22,7 @@ export default function Range({ id, label, value, min, max, onChange }: RangePro
         max={max}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="h-1.5 w-full cursor-pointer appearance-none rounded-full bg-sunken accent-accent"
+        className="h-1.5 w-full cursor-pointer appearance-none rounded-full bg-sunken accent-fg"
       />
     </div>
   )

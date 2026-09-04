@@ -20,13 +20,13 @@ export default function Toggle({ id, checked, label, onChange }: ToggleProps) {
         aria-hidden
         className={[
           'mt-0.5 h-5 w-9 shrink-0 rounded-full p-0.5 transition-colors',
-          'peer-focus-visible:ring-2 peer-focus-visible:ring-accent peer-focus-visible:ring-offset-1',
+          'peer-focus-visible:ring-2 peer-focus-visible:ring-ring peer-focus-visible:ring-offset-1',
           checked ? 'bg-accent' : 'bg-line',
         ].join(' ')}
       >
         <span
           className={[
-            'block h-4 w-4 rounded-full bg-white transition-transform',
+            'block h-4 w-4 rounded-full bg-panel transition-transform',
             checked ? 'translate-x-4' : 'translate-x-0',
           ].join(' ')}
         />

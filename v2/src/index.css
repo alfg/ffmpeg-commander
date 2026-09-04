@@ -5,42 +5,47 @@
    first paint; useTheme keeps it in sync afterwards. */
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* Semantic palette. Components reference these roles rather than raw greys, so
-   the two themes stay in step and `dark:` variants nearly vanish from the JSX. */
+/* Palette follows shadcn/ui's default "Neutral" base, values and all. The point
+   of that preset is that --primary is achromatic: near-black on light, near-white
+   on dark. Colour is spent only on destructive actions and on one brand accent,
+   which is why it reads as calm. Green lives on the logo, the shell prompt and
+   the filter highlights -- never on a button. */
 :root {
-  --surface: #ffffff;
-  --panel: #ffffff;
-  --sunken: #f6f8fa;
-  --line: #d0d7de;
-  --fg: #1f2328;
-  --muted: #59636e;
-  --accent: #1a7f37;
-  --accent-hover: #15682d;
-  --accent-fg: #ffffff;
-  --danger: #cf222e;
-  --chrome: #1f2428;
-  --chrome-fg: #f0f6fc;
-  --terminal: #3fb950;
-  --code-bg: #0d1117;
-  --code-fg: #e6edf3;
+  --surface: oklch(1 0 0);
+  --panel: oklch(1 0 0);
+  --sunken: oklch(0.97 0 0);
+  --line: oklch(0.922 0 0);
+  --fg: oklch(0.145 0 0);
+  --muted: oklch(0.556 0 0);
+  --accent: oklch(0.205 0 0);
+  --accent-hover: oklch(0.145 0 0);
+  --accent-fg: oklch(0.985 0 0);
+  --ring: oklch(0.708 0 0);
+  --danger: oklch(0.577 0.245 27.325);
+  --chrome: oklch(0.205 0 0);
+  --chrome-fg: oklch(0.985 0 0);
+  --terminal: oklch(0.75 0.13 150);
+  --code-bg: oklch(0.145 0 0);
+  --code-fg: oklch(0.985 0 0);
 }
 
 .dark {
-  --surface: #0d1117;
-  --panel: #161b22;
-  --sunken: #0d1117;
-  --line: #30363d;
-  --fg: #e6edf3;
-  --muted: #8b949e;
-  --accent: #3fb950;
-  --accent-hover: #56d364;
-  --accent-fg: #0d1117;
-  --danger: #f85149;
-  --chrome: #010409;
-  --chrome-fg: #e6edf3;
-  --terminal: #3fb950;
-  --code-bg: #010409;
-  --code-fg: #e6edf3;
+  --surface: oklch(0.145 0 0);
+  --panel: oklch(0.205 0 0);
+  --sunken: oklch(0.269 0 0);
+  --line: oklch(1 0 0 / 12%);
+  --fg: oklch(0.985 0 0);
+  --muted: oklch(0.708 0 0);
+  --accent: oklch(0.922 0 0);
+  --accent-hover: oklch(0.985 0 0);
+  --accent-fg: oklch(0.205 0 0);
+  --ring: oklch(0.556 0 0);
+  --danger: oklch(0.704 0.191 22.216);
+  --chrome: oklch(0.205 0 0);
+  --chrome-fg: oklch(0.985 0 0);
+  --terminal: oklch(0.75 0.13 150);
+  --code-bg: oklch(0.11 0 0);
+  --code-fg: oklch(0.985 0 0);
 }
 
 /* `inline` so the utilities resolve the variable at use time, which is what
@@ -55,25 +60,13 @@
   --color-accent: var(--accent);
   --color-accent-hover: var(--accent-hover);
   --color-accent-fg: var(--accent-fg);
+  --color-ring: var(--ring);
   --color-danger: var(--danger);
   --color-chrome: var(--chrome);
   --color-chrome-fg: var(--chrome-fg);
   --color-terminal: var(--terminal);
   --color-code-bg: var(--code-bg);
   --color-code-fg: var(--code-fg);
-
-  --animate-caret: caret-blink 1.1s steps(1) infinite;
-}
-
-@keyframes caret-blink {
-  0%,
-  49% {
-    opacity: 1;
-  }
-  50%,
-  100% {
-    opacity: 0;
-  }
 }
 
 /* Keeps form controls and scrollbars matched to the active theme. */

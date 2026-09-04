@@ -28,7 +28,7 @@ export default function Toolbar({ cmd, onReset }: Props) {
       <button
         type="button"
         onClick={copy}
-        className={`${btn} border-accent bg-accent text-accent-fg hover:bg-accent-hover focus-visible:ring-accent`}
+        className={`${btn} border-accent bg-accent text-accent-fg hover:bg-accent-hover focus-visible:ring-ring`}
       >
         {copied ? 'Copied' : 'Copy'}
       </button>

@@ -63,7 +63,7 @@ export default function Tabs({ tabs, align = 'left' }: TabsProps) {
               onClick={() => setActive(i)}
               className={[
                 'relative -mb-px shrink-0 rounded-t px-3 py-2 text-sm font-medium whitespace-nowrap',
-                'focus-visible:ring-2 focus-visible:ring-accent focus-visible:outline-none',
+                'focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
                 selected
                   ? 'border-b-2 border-accent text-accent'
                   : 'border-b-2 border-transparent text-muted hover:text-fg',

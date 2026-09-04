@@ -25,7 +25,7 @@ export default function Banner() {
   }
 
   return (
-    <div className="border-b border-accent/25 bg-accent/10 text-fg">
+    <div className="border-b border-line bg-sunken text-fg">
       <div className="mx-auto flex max-w-3xl items-center gap-3 px-4 py-2 text-sm">
         {/* The whole line is the target, not just the product name: every
             clause is about the product, and a wider hit area is worth more than

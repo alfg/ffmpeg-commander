@@ -19,7 +19,7 @@ const presetGroups = presets.getPresetOptions()
 
 const selectClass =
   'w-full rounded border border-line bg-panel px-2 py-1.5 text-sm text-fg ' +
-  'focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none'
+  'focus:border-ring focus:ring-1 focus:ring-ring focus:outline-none'
 
 export default function App() {
   const { form, cmd, update, reset, setForm } = useFfmpegForm()
