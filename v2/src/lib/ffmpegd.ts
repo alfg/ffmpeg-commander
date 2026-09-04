@@ -43,21 +43,29 @@ export interface FileListing {
   files?: { name: string }[]
 }
 
-// Both are overridable from localStorage, matching the Vue app, so a daemon on
-// another host or port can be pointed at without a rebuild.
+// Both default to the page's own origin and are overridable from localStorage,
+// so a daemon elsewhere can be pointed at without a rebuild.
+//
+// Same-origin is the only default that can actually work: ffmpegd rejects a
+// websocket upgrade whose Origin is not its own host:port, so the page must
+// either be served by the daemon itself or reach it through a proxy on the
+// page's own origin. The Vue app hardcoded localhost:8080, which only connected
+// when the page happened to be served from there too.
+const sameOriginWs = () => `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/ws`
+
 export const wsUri = () => {
   try {
-    return localStorage.getItem(WS_URI_KEY) || 'ws://localhost:8080/ws'
+    return localStorage.getItem(WS_URI_KEY) || sameOriginWs()
   } catch {
-    return 'ws://localhost:8080/ws'
+    return sameOriginWs()
   }
 }
 
 export const host = () => {
   try {
-    return localStorage.getItem(HOST_KEY) || 'http://localhost:8080'
+    return localStorage.getItem(HOST_KEY) || window.location.origin
   } catch {
-    return 'http://localhost:8080'
+    return window.location.origin
   }
 }
 

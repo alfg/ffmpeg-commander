@@ -104,11 +104,24 @@ export function useFfmpegd() {
       window.clearTimeout(retry)
       const ws = socket.current
       socket.current = null
-      if (ws) {
-        // Drop the handler first so the close does not schedule a retry.
-        ws.onclose = null
-        ws.close()
+      if (!ws) return
+
+      // Drop the handlers first so tearing down cannot schedule a retry or
+      // report a disconnect for a socket nobody is listening to any more.
+      ws.onclose = null
+      ws.onerror = null
+      ws.onmessage = null
+
+      if (ws.readyState === WebSocket.CONNECTING) {
+        // Closing mid-handshake makes browsers log the attempt as a failure --
+        // visible in dev, where StrictMode mounts the effect twice. Let the
+        // handshake finish, then close it quietly.
+        ws.onopen = () => ws.close()
+        return
       }
+
+      ws.onopen = null
+      ws.close()
     }
   }, [enabled])
 

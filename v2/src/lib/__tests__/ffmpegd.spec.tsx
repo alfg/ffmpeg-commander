@@ -8,7 +8,10 @@ import { FFMPEGD_KEY, POLL_MS, QUEUE_KEY, Status } from '@/lib/ffmpegd'
 /** Minimal stand-in for the daemon: records sends, lets tests drive events. */
 class FakeSocket {
   static instances: FakeSocket[] = []
+  static CONNECTING = 0
   static OPEN = 1
+  static CLOSING = 2
+  static CLOSED = 3
   readyState = 0
   sent: string[] = []
   onopen: (() => void) | null = null
@@ -176,6 +179,22 @@ describe('ffmpegd', () => {
     // one, so timers grew without bound for as long as the page stayed open.
     expect(setInterval.mock.calls.length).toBeLessThanOrEqual(2)
     setInterval.mockRestore()
+  })
+
+  it('does not close a socket mid-handshake', async () => {
+    // StrictMode mounts effects twice in dev, so the first socket is torn down
+    // while still connecting. Closing it there makes the browser log a failed
+    // connection; waiting for the handshake keeps the console clean.
+    enableFfmpegd()
+    const { unmount } = render(<App />)
+    const ws = socket()
+    expect(ws.readyState).toBe(FakeSocket.CONNECTING)
+
+    unmount()
+
+    expect(ws.closed).toBe(false)
+    await act(async () => ws.open())
+    expect(ws.closed).toBe(true)
   })
 
   it('closes the socket and stops retrying when disabled again', async () => {
