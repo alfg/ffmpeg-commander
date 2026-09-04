@@ -146,7 +146,7 @@ function transformFromQueryParams(form: IFFMpegOptionsForm, query: {[key: string
   video.pass = query['video.pass'] || video.pass;
   video.crf = query['video.crf'] || video.crf;
   video.bitrate = query['video.bitrate'] || video.bitrate;
-  video.minrate = query['video.bitrate'] || video.minrate;
+  video.minrate = query['video.minrate'] || video.minrate;
   video.maxrate = query['video.maxrate'] || video.maxrate;
   video.bufsize = query['video.bufsize'] || video.bufsize;
   video.gopsize = query['video.gopsize'] || video.gopsize;
@@ -190,7 +190,7 @@ function transformToQueryParams(form: IFFMpegOptionsForm) {
   } = form;
   const params = {
     ...(format.container !== 'mp4' && { 'format.container': format.container }),
-    ...(format.clip && { 'format.clip': format.clip }),
+    ...(format.clip && { 'format.clip': 'true' }),
     ...(format.startTime && { 'format.startTime': format.startTime }),
     ...(format.stopTime && { 'format.stopTime': format.stopTime }),
 
@@ -209,7 +209,7 @@ function transformToQueryParams(form: IFFMpegOptionsForm) {
     ...(video.tune !== 'none' && { 'video.tune': video.tune }),
     ...(video.profile !== 'none' && { 'video.profile': video.profile }),
     ...(video.level !== 'none' && { 'video.level': video.level }),
-    ...(video.faststart && { 'video.faststart': video.faststart }),
+    ...(video.faststart && { 'video.faststart': 'true' }),
     ...(video.size !== 'source' && { 'video.size': video.size }),
     ...(video.width !== '0' && video.size === 'custom' && { 'video.width': video.width }),
     ...(video.height !== '0' && video.size === 'custom' && { 'video.height': video.height }),
@@ -224,10 +224,10 @@ function transformToQueryParams(form: IFFMpegOptionsForm) {
     ...(audio.sampleRate !== 'auto' && { 'audio.sample_rate': audio.sampleRate }),
     ...(parseInt(audio.volume, 10) !== 100 && { 'audio.volume': audio.volume }),
 
-    ...(filters.deband && { 'filters.deband': filters.deband }),
-    ...(filters.deflicker && { 'filters.deflicker': filters.deflicker }),
-    ...(filters.deshake && { 'filters.deshake': filters.deshake }),
-    ...(filters.dejudder && { 'filters.dejudder': filters.dejudder }),
+    ...(filters.deband && { 'filters.deband': 'true' }),
+    ...(filters.deflicker && { 'filters.deflicker': 'true' }),
+    ...(filters.deshake && { 'filters.deshake': 'true' }),
+    ...(filters.dejudder && { 'filters.dejudder': 'true' }),
     ...(filters.denoise !== 'none' && { 'filters.denoise': filters.denoise }),
     ...(filters.deinterlace !== 'none' && { 'filters.deinterlace': filters.deinterlace }),
     ...(parseInt(filters.contrast, 10) !== 0 && { 'filters.contrast': filters.contrast }),

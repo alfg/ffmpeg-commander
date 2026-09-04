@@ -5,6 +5,7 @@
     "video": {
         "codec": "x264",
         "preset": "fast",
+        "pass": "crf",
         "crf": 21,
         "frame_rate": "30",
         "size": "1280"

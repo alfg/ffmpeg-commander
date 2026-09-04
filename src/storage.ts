@@ -34,8 +34,8 @@ const storage = {
     let q = [];
     if (item) {
       q = JSON.parse(item);
-      q.push(value);
     }
+    q.push(value);
     window.localStorage.setItem(key, JSON.stringify(q));
   },
 

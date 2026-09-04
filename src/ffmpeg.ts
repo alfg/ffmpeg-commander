@@ -62,7 +62,9 @@ function setVideoFilters(options: IFFmpegOptions) {
     scaleFilters.push(...arg);
   }
 
-  if (options.scaling && options.scaling !== 'auto') {
+  // Only meaningful alongside a scale filter: `flags` is an option of scale, so
+  // emitting it on its own produces a filter chain ffmpeg rejects.
+  if (options.scaling && options.scaling !== 'auto' && scaleFilters.length > 0) {
     const arg = [`flags=${options.scaling}`];
     scaleFilters.push(...arg);
   }
@@ -190,6 +192,7 @@ function set2Pass(flags: string[], options: IFFmpegOptions) {
     // eslint-disable-next-line no-param-reassign
     flags[idx + 1] += ':pass=1';
     copy[idx + 1] += ':pass=2';
+    flags.push(op);
   } else if (options.vcodec === 'libx265') {
     flags.push(...['-x265-params', 'pass=1', op]);
     copy.push(...['-x265-params', 'pass=2']);
@@ -229,6 +232,11 @@ function setVideoFlags(options: IFFmpegOptions) {
 }
 
 function setAudioFlags(options: IFFmpegOptions) {
+  // "None" means no audio track at all, so -an replaces every other audio flag.
+  if (options.acodec === 'none') {
+    return ['-an'];
+  }
+
   const flags = setFlagsFromMap(audioOptionsMap, options);
 
   //
@@ -281,8 +289,8 @@ function build(opt: IFFmpegOptions): string {
   const audioFlags = setAudioFlags(options);
   flags.push(...audioFlags);
 
-  // Set audio filters.
-  const af = setAudioFilters(options);
+  // Set audio filters. Skipped when the audio track is disabled.
+  const af = options.acodec === 'none' ? '' : setAudioFilters(options);
   if (af) {
     flags.push(`-af "${af}"`);
   }

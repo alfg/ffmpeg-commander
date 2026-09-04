@@ -18,6 +18,12 @@ const codecs = {
   ac3: 'ac3',
   vorbis: 'libvorbis',
   opus: 'libopus',
+  lame: 'libmp3lame',
+  flac: 'flac',
+  pcm: 'pcm_s16le',
+
+  // No audio. Handled as -an in setAudioFlags rather than a -c:a value.
+  none: 'none',
 
   // Copy codec.
   copy: 'copy',
