@@ -69,12 +69,12 @@
 
 <script>
 import merge from 'lodash.merge';
-import clone from 'lodash.clonedeep';
 import form from '@/form';
 import presets from '@/presets';
 import ffmpeg from '@/ffmpeg';
 import util from '@/util';
 import storage from '@/storage';
+import createDefaultForm from '@/defaults';
 
 import Presets from './Presets.vue';
 import FileIO from './FileIO.vue';
@@ -115,68 +115,7 @@ export default {
         id: 'custom',
         name: null,
       },
-      form: {
-        io: {
-          input: 'input.mp4',
-          output: 'output.mp4',
-        },
-        format: {
-          container: 'mp4',
-          clip: false,
-          startTime: null,
-          stopTime: null,
-        },
-        video: {
-          codec: 'x264',
-          preset: 'none',
-          pass: '1',
-          crf: 23,
-          bitrate: null,
-          minrate: null,
-          maxrate: null,
-          bufsize: null,
-          gopsize: null,
-          pixel_format: 'auto',
-          frame_rate: 'auto',
-          speed: 'auto',
-          tune: 'none',
-          profile: 'none',
-          level: 'none',
-          faststart: false,
-          size: 'source',
-          width: '1080',
-          height: '1920',
-          format: 'widescreen',
-          aspect: 'auto',
-          scaling: 'auto',
-          codec_options: '',
-        },
-        audio: {
-          codec: 'copy',
-          channel: 'source',
-          quality: 'auto',
-          sampleRate: 'auto',
-          volume: 100,
-        },
-        filters: {
-          deband: false,
-          deshake: false,
-          deflicker: false,
-          dejudder: false,
-          denoise: 'none',
-          deinterlace: 'none',
-          brightness: 0,
-          contrast: 0,
-          saturation: 0,
-          gamma: 0,
-
-          acontrast: 33,
-        },
-        options: {
-          extra: [],
-          loglevel: 'none',
-        },
-      },
+      form: createDefaultForm(),
       protocols,
       containers,
       codecs,
@@ -189,7 +128,7 @@ export default {
   },
   created() {
     this.generateCommand();
-    this.default = clone(this.form); // Make copy of initial form as defaults.
+    this.default = createDefaultForm(); // Pristine defaults, for reset().
 
     this.setDataFromQueryParams();
   },
