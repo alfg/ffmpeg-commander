@@ -72,6 +72,41 @@ describe('App', () => {
     )
   })
 
+  it('applies a recipe that carries filters, not just format/video/audio', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+
+    await user.selectOptions(screen.getByLabelText('Preset'), 'stabilize-action-cam-1080p')
+
+    // deshake and deflicker live in the form's `filters` section, which only
+    // reaches the command because presets are deep merged onto the defaults.
+    // Each filter renders as its own hoverable span, hence the spaces.
+    expect(commandText()).toContain('-vf "scale=1920:-1, deshake, deflicker"')
+  })
+
+  it('applies an audio-only recipe, output extension included', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+
+    await user.selectOptions(screen.getByLabelText('Preset'), 'audio-mp3-192k')
+
+    expect(commandText()).toBe(
+      'ffmpeg -i input.mp4 -vn -c:a libmp3lame -ar 44100 -b:a 192k output.mp3',
+    )
+  })
+
+  it('drops back to the defaults when a recipe is followed by Custom', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+
+    await user.selectOptions(screen.getByLabelText('Preset'), 'preview-clip-10s')
+    expect(commandText()).toContain('-ss 00:00:00 -to 00:00:10')
+
+    // The clip times a recipe sets must not survive underneath the next choice.
+    await user.selectOptions(screen.getByLabelText('Preset'), 'custom')
+    expect(commandText()).toBe('ffmpeg -i input.mp4 -c:v libx264 -c:a copy output.mp4')
+  })
+
   it('shows one tab panel at a time and switches on click', async () => {
     const user = userEvent.setup()
     render(<App />)

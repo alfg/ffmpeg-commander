@@ -1,0 +1,13 @@
+{
+    "format": {
+        "container": "m4a"
+    },
+    "video": {
+        "codec": "none"
+    },
+    "audio": {
+        "codec": "aac",
+        "quality": "256k",
+        "sampleRate": "48000"
+    }
+}

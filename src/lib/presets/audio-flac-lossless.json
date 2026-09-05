@@ -1,0 +1,11 @@
+{
+    "format": {
+        "container": "flac"
+    },
+    "video": {
+        "codec": "none"
+    },
+    "audio": {
+        "codec": "flac"
+    }
+}

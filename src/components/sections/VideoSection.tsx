@@ -47,6 +47,23 @@ export default function VideoSection({ value, container, onChange }: Props) {
   const presets = filterSupported(form.presets as SupportedOption[], value.codec)
   const set = (key: keyof Video) => (v: string) => onChange({ [key]: v } as Partial<Video>)
 
+  // "None" is -vn: there is no video stream left to configure, so every control
+  // below the codec select would be dead. The audio recipes rely on this.
+  if (value.codec === 'none') {
+    return (
+      <div className="flex flex-col gap-5">
+        <Group title="Encoder">
+          <Field label="Codec" htmlFor="video-codec">
+            <Select id="video-codec" value={value.codec} options={codecs} onChange={set('codec')} />
+          </Field>
+        </Group>
+        <p className="text-xs text-muted italic">
+          Video is disabled (<code>-vn</code>). Choose a codec to bring the video options back.
+        </p>
+      </div>
+    )
+  }
+
   return (
     <div className="flex flex-col gap-5">
       <Group title="Encoder">

@@ -214,6 +214,12 @@ function setFormatFlags(options: IFFmpegOptions) {
 }
 
 function setVideoFlags(options: IFFmpegOptions) {
+  // "None" means no video track at all, so -vn replaces every other video flag.
+  // Mirrors how acodec === 'none' is handled in setAudioFlags.
+  if (options.vcodec === 'none') {
+    return ['-vn'];
+  }
+
   const flags = setFlagsFromMap(videoOptionsMap, options);
 
   //
@@ -289,8 +295,8 @@ function build(opt: IFFmpegOptions): string {
   const videoFlags = setVideoFlags(options);
   flags.push(...videoFlags);
 
-  // Set video filters.
-  const vf = setVideoFilters(options);
+  // Set video filters. Skipped when the video track is disabled.
+  const vf = options.vcodec === 'none' ? '' : setVideoFilters(options);
   if (vf) {
     flags.push(`-vf "${vf}"`);
   }

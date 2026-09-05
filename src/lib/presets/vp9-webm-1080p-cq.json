@@ -1,0 +1,17 @@
+{
+    "format": {
+        "container": "webm"
+    },
+    "video": {
+        "codec": "vp9",
+        "pass": "crf",
+        "crf": 31,
+        "bitrate": "0",
+        "gopsize": 240,
+        "size": "1920"
+    },
+    "audio": {
+        "codec": "opus",
+        "quality": "128k"
+    }
+}

@@ -1,0 +1,22 @@
+{
+    "format": {
+        "container": "mp4"
+    },
+    "video": {
+        "codec": "x264",
+        "preset": "medium",
+        "pass": "crf",
+        "crf": 22,
+        "pixel_format": "yuv420p",
+        "faststart": true,
+        "size": "1920"
+    },
+    "audio": {
+        "codec": "aac",
+        "quality": "128k"
+    },
+    "filters": {
+        "deshake": true,
+        "deflicker": true
+    }
+}

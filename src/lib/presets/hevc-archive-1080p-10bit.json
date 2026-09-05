@@ -1,0 +1,16 @@
+{
+    "format": {
+        "container": "mkv"
+    },
+    "video": {
+        "codec": "x265",
+        "preset": "slow",
+        "pass": "crf",
+        "crf": 20,
+        "pixel_format": "yuv420p10le",
+        "size": "1920"
+    },
+    "audio": {
+        "codec": "copy"
+    }
+}

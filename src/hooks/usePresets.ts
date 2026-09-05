@@ -56,17 +56,17 @@ export function usePresets({ form, setForm }: Options) {
         return
       }
 
-      const preset = presets.getPreset(id) as Partial<IFFMpegOptionsForm> | undefined
-      const base = createDefaultForm() as unknown as IFFMpegOptionsForm
+      const preset = presets.getPreset(id)
+      const base = createDefaultForm() as unknown as Record<string, unknown>
+      // Deep merged rather than spread section by section: a bundled preset is a
+      // sparse overlay that may touch filters and options too, not just the
+      // format/video/audio trio the first twelve happened to use.
       setForm(
         preset
-          ? reconcile({
-              ...base,
-              format: { ...base.format, ...preset.format },
-              video: { ...base.video, ...preset.video },
-              audio: { ...base.audio, ...preset.audio },
-            })
-          : base,
+          ? reconcile(
+              deepMerge(base, preset as Record<string, unknown>) as unknown as IFFMpegOptionsForm,
+            )
+          : (base as unknown as IFFMpegOptionsForm),
       )
       setPresetName(null)
     },

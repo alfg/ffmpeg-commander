@@ -15,11 +15,18 @@ const buildPreset = (slug: string) => ffmpeg.build(
   util.transform(makeForm(presets.getPreset(slug) as Record<string, unknown>)) as never,
 );
 
-const general = presets.getPresetOptions().find((o) => o.id === 'general');
-const slugs = (general?.data ?? []).map((p) => p.value);
+const groups = presets.getPresetOptions();
+const groupSlugs = (id: string) => (groups.find((o) => o.id === id)?.data ?? []).map((p) => p.value);
+const slugs = groupSlugs('general');
+
+// Every group that ships JSON with it, in picker order. `custom` and `saved` are
+// not bundled: one is the defaults and the other comes from localStorage.
+const bundledSlugs = groups
+  .filter((g) => !['custom', 'saved'].includes(g.id))
+  .flatMap((g) => g.data.map((p) => p.value));
 
 describe('preset catalogue', () => {
-  it('lists the expected 12 presets, in order', () => {
+  it('lists the expected 12 General presets, in order', () => {
     expect(slugs).toEqual([
       'h264-very-fast-1080p30',
       'h264-very-fast-720p30',
@@ -44,12 +51,26 @@ describe('preset catalogue', () => {
     const onDisk = Object.keys(import.meta.glob('../presets/*.json'))
       .map((f) => f.split('/').pop()!.replace('.json', ''))
       .sort();
-    expect(onDisk).toEqual([...slugs].sort());
+    expect(onDisk).toEqual([...bundledSlugs].sort());
     onDisk.forEach((slug) => expect(presets.getPreset(slug)).toBeDefined());
   });
 
-  it('exposes the Custom and Saved groups alongside General', () => {
-    expect(presets.getPresetOptions().map((o) => o.id)).toEqual(['general', 'custom', 'saved']);
+  it('exposes the recipe groups, then Custom and Saved', () => {
+    expect(groups.map((o) => o.id)).toEqual([
+      'general',
+      'web',
+      'social',
+      'archive',
+      'restore',
+      'audio',
+      'utility',
+      'custom',
+      'saved',
+    ]);
+  });
+
+  it('has no duplicate slugs across groups', () => {
+    expect(new Set(bundledSlugs).size).toBe(bundledSlugs.length);
   });
 });
 
@@ -124,5 +145,89 @@ describe('preset quality settings', () => {
     bitratePresets.forEach((slug) => {
       expect(presets.getPreset(slug).video?.crf).toBeUndefined();
     });
+  });
+});
+
+// The recipe groups added on top of the original twelve. Same contract: the slug
+// is public and the command is the visible output, so both are pinned.
+const recipes: [string, string][] = [
+    ['web-mp4-1080p',
+      'ffmpeg -i input.mp4 -c:v libx264 -preset medium -pix_fmt yuv420p -profile:v high -level 4.0 '
+      + '-crf 23 -movflags faststart -vf "scale=1920:-1" -c:a aac -ar 48000 -b:a 128k output.mp4'],
+    ['web-mp4-720p',
+      'ffmpeg -i input.mp4 -c:v libx264 -preset medium -pix_fmt yuv420p -profile:v main -level 3.1 '
+      + '-crf 23 -movflags faststart -vf "scale=1280:-1" -c:a aac -ar 48000 -b:a 128k output.mp4'],
+    ['hevc-mp4-1080p',
+      'ffmpeg -i input.mp4 -c:v libx265 -preset medium -pix_fmt yuv420p -crf 26 -movflags faststart '
+      + '-vf "scale=1920:-1" -c:a aac -ar 48000 -b:a 128k output.mp4'],
+    // -b:v 0 alongside -crf is what puts libvpx-vp9 in constant-quality mode;
+    // without it the CRF is treated as a cap on a bitrate-targeted encode.
+    ['vp9-webm-1080p-cq',
+      'ffmpeg -i input.mp4 -c:v libvpx-vp9 -b:v 0 -g 240 -crf 31 -vf "scale=1920:-1" '
+      + '-c:a libopus -b:a 128k output.mp4'],
+    ['av1-mp4-1080p',
+      'ffmpeg -i input.mp4 -c:v libaom-av1 -b:v 0 -pix_fmt yuv420p -crf 30 -movflags faststart '
+      + '-vf "scale=1920:-1" -c:a aac -b:a 128k output.mp4'],
+
+    ['social-vertical-1080x1920',
+      'ffmpeg -i input.mp4 -c:v libx264 -preset medium -pix_fmt yuv420p -r 30 -profile:v high '
+      + '-level 4.0 -crf 23 -movflags faststart -vf "scale=1080:1920" -c:a aac -ar 48000 -b:a 128k output.mp4'],
+    ['social-square-1080x1080',
+      'ffmpeg -i input.mp4 -c:v libx264 -preset medium -pix_fmt yuv420p -r 30 -profile:v high '
+      + '-level 4.0 -crf 23 -movflags faststart -vf "scale=1080:1080" -c:a aac -ar 48000 -b:a 128k output.mp4'],
+
+    ['h264-visually-lossless-1080p',
+      'ffmpeg -i input.mp4 -c:v libx264 -preset slow -pix_fmt yuv420p -crf 18 -movflags faststart '
+      + '-vf "scale=1920:-1" -c:a aac -ar 48000 -b:a 320k output.mp4'],
+    ['hevc-archive-1080p-10bit',
+      'ffmpeg -i input.mp4 -c:v libx265 -preset slow -pix_fmt yuv420p10le -crf 20 '
+      + '-vf "scale=1920:-1" -c:a copy output.mp4'],
+    ['hevc-4k-uhd',
+      'ffmpeg -i input.mp4 -c:v libx265 -preset medium -pix_fmt yuv420p10le -crf 22 -movflags faststart '
+      + '-vf "scale=3840:-1" -c:a copy output.mp4'],
+
+    // The three restore recipes are the first bundled presets to carry a
+    // `filters` section, which only reaches the form because presets are deep
+    // merged onto the defaults rather than spread section by section.
+    ['deinterlace-to-mp4',
+      'ffmpeg -i input.mp4 -c:v libx264 -preset slow -pix_fmt yuv420p -crf 20 -movflags faststart '
+      + '-vf "yadif=1:-1:0" -c:a aac -ar 48000 -b:a 192k output.mp4'],
+    ['denoise-old-footage-720p',
+      'ffmpeg -i input.mp4 -c:v libx264 -preset slow -pix_fmt yuv420p -crf 21 -movflags faststart '
+      + '-vf "scale=1280:-1,deband,vaguedenoiser=threshold=3:method=soft:nsteps=5" -c:a aac -b:a 160k output.mp4'],
+    ['stabilize-action-cam-1080p',
+      'ffmpeg -i input.mp4 -c:v libx264 -preset medium -pix_fmt yuv420p -crf 22 -movflags faststart '
+      + '-vf "scale=1920:-1,deshake,deflicker" -c:a aac -b:a 128k output.mp4'],
+
+    // Audio-only recipes select the video codec "None", which is -vn. The output
+    // extension follows the container once reconcile() runs; makeForm skips it.
+    ['audio-mp3-192k', 'ffmpeg -i input.mp4 -vn -c:a libmp3lame -ar 44100 -b:a 192k output.mp4'],
+    ['audio-m4a-aac-256k', 'ffmpeg -i input.mp4 -vn -c:a aac -ar 48000 -b:a 256k output.mp4'],
+    ['audio-flac-lossless', 'ffmpeg -i input.mp4 -vn -c:a flac output.mp4'],
+    ['audio-podcast-mono-mp3',
+      'ffmpeg -i input.mp4 -vn -c:a libmp3lame -ar 44100 -rematrix_maxval 1.0 -ac 1 -b:a 96k output.mp4'],
+
+    ['remux-to-mp4', 'ffmpeg -i input.mp4 -c:v copy -movflags faststart -c:a copy output.mp4'],
+    ['strip-audio', 'ffmpeg -i input.mp4 -c:v copy -movflags faststart -an output.mp4'],
+    ['preview-clip-10s',
+      'ffmpeg -i input.mp4 -ss 00:00:00 -to 00:00:10 -c:v libx264 -preset veryfast -pix_fmt yuv420p '
+      + '-crf 23 -movflags faststart -vf "scale=1280:-1" -c:a aac -b:a 128k output.mp4'],
+    ['timelapse-5x',
+      'ffmpeg -i input.mp4 -c:v libx264 -preset medium -pix_fmt yuv420p -r 30 -crf 23 -movflags faststart '
+      + '-vf "setpts=.2*PTS" -an output.mp4'],
+    ['slow-motion-50',
+      'ffmpeg -i input.mp4 -c:v libx264 -preset medium -pix_fmt yuv420p -crf 21 -movflags faststart '
+      + '-vf "setpts=2*PTS" -an output.mp4'],
+];
+
+describe('recipe commands', () => {
+  it.each(recipes)('%s', (slug, expected) => {
+    expect(buildPreset(slug)).toBe(expected);
+  });
+
+  it('pins a command for every recipe outside the General group', () => {
+    // Guards against a new preset landing in the picker with no pinned command.
+    expect(recipes.map(([slug]) => slug).sort())
+      .toEqual(bundledSlugs.filter((s) => !slugs.includes(s)).sort());
   });
 });

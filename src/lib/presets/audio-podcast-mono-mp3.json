@@ -1,0 +1,14 @@
+{
+    "format": {
+        "container": "mp3"
+    },
+    "video": {
+        "codec": "none"
+    },
+    "audio": {
+        "codec": "lame",
+        "channel": "1",
+        "quality": "96k",
+        "sampleRate": "44100"
+    }
+}

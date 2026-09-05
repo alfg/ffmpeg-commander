@@ -23,6 +23,23 @@ This tool does NOT cover all options of FFmpeg and some assumptions are made whe
 
 If you feel some options can be improved, feel free to open an issue or pull request.
 
+## Presets
+The **Preset** picker ships ready-made recipes for the workflows people reach for
+most. Pick one, adjust anything you like, and copy the command.
+
+| Group | Recipes |
+| --- | --- |
+| General | H264 and VP9 ladders from 360p to 1080p, CRF and fixed-bitrate |
+| Web & Streaming | H264/HEVC MP4 with `faststart`, VP9 WebM constant quality, AV1 |
+| Social & Mobile | Vertical 9:16 1080x1920, square 1:1 1080x1080 |
+| Archive & Quality | Visually lossless H264, 10-bit HEVC archive, 4K UHD |
+| Restore & Cleanup | Deinterlace DVD/broadcast, denoise + deband, stabilize action cam |
+| Audio Only | Extract to MP3, M4A/AAC, FLAC, and a mono podcast mix |
+| Utility | Remux to MP4, strip audio, 10 second preview clip, timelapse, slow motion |
+
+Your own presets are saved to local storage, and every setting is also encoded in
+the URL, so a tweaked recipe can be shared as a link.
+
 ## Development
 `ffmpeg-commander` is built with [React](https://react.dev), [Vite](https://vite.dev) and
 [Tailwind CSS](https://tailwindcss.com).

@@ -1,0 +1,12 @@
+{
+    "format": {
+        "container": "mp4"
+    },
+    "video": {
+        "codec": "copy",
+        "faststart": true
+    },
+    "audio": {
+        "codec": "copy"
+    }
+}

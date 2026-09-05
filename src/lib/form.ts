@@ -42,6 +42,7 @@ const form = {
       { name: 'VP8', value: 'vp8', supported: ['mp4', 'webm', 'mkv', 'avi'] },
       { name: 'VP9', value: 'vp9', supported: ['mp4', 'webm', 'mkv', 'avi'] },
       { name: 'copy', value: 'copy', supported: null },
+      { name: 'None', value: 'none', supported: null },
     ],
     audio: [
       { name: 'AAC', value: 'aac', supported: ['mp4', 'mp3', 'm4a', 'mkv', 'avi', 'flv'] },

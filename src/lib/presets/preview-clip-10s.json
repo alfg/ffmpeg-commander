@@ -1,0 +1,21 @@
+{
+    "format": {
+        "container": "mp4",
+        "clip": true,
+        "startTime": "00:00:00",
+        "stopTime": "00:00:10"
+    },
+    "video": {
+        "codec": "x264",
+        "preset": "veryfast",
+        "pass": "crf",
+        "crf": 23,
+        "pixel_format": "yuv420p",
+        "faststart": true,
+        "size": "1280"
+    },
+    "audio": {
+        "codec": "aac",
+        "quality": "128k"
+    }
+}

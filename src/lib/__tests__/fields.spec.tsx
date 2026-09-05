@@ -14,6 +14,33 @@ const openTab = (user: ReturnType<typeof userEvent.setup>, name: string) =>
 
 afterEach(cleanup)
 
+describe('the video codec "None"', () => {
+  it('emits -vn and hides the controls it would silence', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    await openTab(user, 'Video')
+
+    await user.selectOptions(screen.getByLabelText('Codec', { selector: '#video-codec' }), 'none')
+
+    expect(command()).toBe('ffmpeg -i input.mp4 -vn -c:a copy output.mp4')
+    expect(screen.queryByLabelText('Encoder preset')).toBeNull()
+    expect(screen.queryByLabelText('Size')).toBeNull()
+  })
+
+  it('drops the video filters along with the stream', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+
+    await openTab(user, 'Filters')
+    await user.selectOptions(screen.getByLabelText('Denoise'), 'light')
+    expect(command()).toContain('-vf "removegrain=22"')
+
+    await openTab(user, 'Video')
+    await user.selectOptions(screen.getByLabelText('Codec', { selector: '#video-codec' }), 'none')
+    expect(command()).not.toContain('-vf')
+  })
+})
+
 describe('video controls reach the command', () => {
   it.each([
     ['Pixel format', 'yuv420p', '-pix_fmt yuv420p'],
