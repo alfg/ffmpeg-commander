@@ -114,6 +114,15 @@ export const wsUri = () => {
 
 export const host = () => read(HOST_KEY) || defaultHost()
 
+/** host() as host:port without the scheme, for display. */
+export function displayHost(): string {
+  try {
+    return new URL(host()).host
+  } catch {
+    return host()
+  }
+}
+
 export async function listFiles(prefix = ''): Promise<FileListing> {
   const res = await fetch(`${host()}/files?prefix=${encodeURIComponent(prefix)}`)
   if (!res.ok) throw new Error(`ffmpegd responded ${res.status}`)

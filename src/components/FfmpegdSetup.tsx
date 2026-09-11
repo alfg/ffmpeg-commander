@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { host } from '@/lib/ffmpegd'
+import { displayHost } from '@/lib/ffmpegd'
 
 export const FFMPEGD_INSTALL_URL = 'https://github.com/alfg/ffmpegd#install'
 
@@ -10,15 +10,6 @@ export const SETUP_DELAY_MS = 1500
 const link = 'text-accent underline underline-offset-2 hover:text-accent-hover'
 // nowrap keeps a command in one piece rather than breaking it mid-line on a phone.
 const code = 'rounded bg-sunken px-1 font-mono text-xs whitespace-nowrap'
-
-// host:port without the scheme, for display. Falls back to the raw address.
-export function displayAddress(): string {
-  try {
-    return new URL(host()).host
-  } catch {
-    return host()
-  }
-}
 
 /**
  * How to get ffmpegd running, shown wherever ffmpegd is enabled but not
@@ -40,7 +31,7 @@ export default function FfmpegdSetup({ explain = true }: { explain?: boolean }) 
   if (!visible) {
     return (
       <p className="text-sm text-muted">
-        Connecting to ffmpegd at <code className={code}>{displayAddress()}</code>…
+        Connecting to ffmpegd at <code className={code}>{displayHost()}</code>…
       </p>
     )
   }
@@ -48,7 +39,7 @@ export default function FfmpegdSetup({ explain = true }: { explain?: boolean }) 
   return (
     <div role="status" className="rounded-lg border border-line bg-panel p-4 text-sm text-fg">
       <p className="font-medium">
-        Can&apos;t reach ffmpegd at <code className={code}>{displayAddress()}</code>
+        Can&apos;t reach ffmpegd at <code className={code}>{displayHost()}</code>
       </p>
       <p className="mt-1 text-muted">
         {explain ? 'ffmpegd is a small companion app that runs these commands on your computer. ' : ''}
@@ -61,7 +52,7 @@ export default function FfmpegdSetup({ explain = true }: { explain?: boolean }) 
           <a href={FFMPEGD_INSTALL_URL} target="_blank" rel="noopener noreferrer" className={link}>
             the install guide
           </a>
-          . ffmpegd 0.1.0 and earlier can&apos;t connect to this site, so update an older copy.
+          . If it&apos;s already installed, make sure it&apos;s up to date.
         </li>
         <li>
           Run <code className={code}>ffmpegd</code> in the folder with your videos. Input and output

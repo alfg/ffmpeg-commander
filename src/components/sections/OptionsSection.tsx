@@ -3,8 +3,8 @@ import Field from '@/components/ui/Field'
 import Input from '@/components/ui/Input'
 import Select from '@/components/ui/Select'
 import Toggle from '@/components/ui/Toggle'
-import FfmpegdSetup, { displayAddress, FFMPEGD_INSTALL_URL } from '@/components/FfmpegdSetup'
-import { defaultHost, parseAddress } from '@/lib/ffmpegd'
+import FfmpegdSetup, { FFMPEGD_INSTALL_URL } from '@/components/FfmpegdSetup'
+import { defaultHost, displayHost, parseAddress } from '@/lib/ffmpegd'
 import form from '@/lib/form'
 import type { IFFMpegOptionsForm } from '@/lib/types'
 
@@ -132,7 +132,7 @@ export default function OptionsSection({
               {ffmpegdConnected ? (
                 <p role="status" className="text-sm text-terminal">
                   ● Connected to ffmpegd at{' '}
-                  <code className="rounded bg-sunken px-1 font-mono text-xs">{displayAddress()}</code>
+                  <code className="rounded bg-sunken px-1 font-mono text-xs">{displayHost()}</code>
                 </p>
               ) : (
                 <FfmpegdSetup explain={false} />

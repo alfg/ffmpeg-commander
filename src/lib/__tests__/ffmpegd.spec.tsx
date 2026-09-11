@@ -325,7 +325,7 @@ describe('ffmpegd setup hint and status', () => {
     const hint = screen.getByRole('status')
     expect(hint.textContent).toContain("Can't reach ffmpegd at localhost:3000")
     expect(hint.textContent).toContain('brew install alfg/tap/ffmpegd')
-    expect(hint.textContent).toContain('ffmpegd 0.1.0 and earlier can\'t connect to this site')
+    expect(hint.textContent).toContain("If it's already installed, make sure it's up to date.")
     expect(within(hint).getByRole('link', { name: 'the install guide' }).getAttribute('href'))
       .toBe(FFMPEGD_INSTALL_URL)
   })
