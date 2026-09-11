@@ -200,3 +200,31 @@ describe('new controls reach the command', () => {
     expect(command()).toContain('-af "adelay=delays=150:all=1"')
   })
 })
+
+describe('two-pass without a bit rate', () => {
+  it('flags the missing bit rate until one is entered', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    await openTab(user, 'Video')
+
+    expect(screen.queryByRole('alert')).toBeNull()
+    await user.selectOptions(screen.getByLabelText('Rate control'), '2')
+    expect(screen.getByRole('alert').textContent).toContain('Two-pass needs a target bit rate')
+
+    await user.type(screen.getByLabelText('Bit rate'), '3000k')
+    expect(screen.queryByRole('alert')).toBeNull()
+    expect(command()).toContain('-b:v 3000k')
+  })
+
+  it('does not flag VP9, which has its own default bit rate', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    await openTab(user, 'Format')
+    await user.selectOptions(screen.getByLabelText('Container'), 'webm')
+    await openTab(user, 'Video')
+    await user.selectOptions(screen.getByLabelText('Codec', { selector: '#video-codec' }), 'vp9')
+    await user.selectOptions(screen.getByLabelText('Rate control'), '2')
+
+    expect(screen.queryByRole('alert')).toBeNull()
+  })
+})

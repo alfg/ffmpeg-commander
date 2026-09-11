@@ -40,12 +40,18 @@ const encodeFields = [
   { key: 'level', label: 'Level', options: form.levels },
 ] as const
 
+// x264 and x265 fall back to CRF without a target bit rate, and CRF cannot
+// drive a two-pass encode: pass 2 fails to open the encoder.
+const twoPassNeedsBitrate = ['x264', 'x265']
+
 export default function VideoSection({ value, container, onChange }: Props) {
   // Mirrors the Vue app: the codec list narrows to what the container supports,
   // and the encoder presets narrow to what the codec supports.
   const codecs = filterSupported(form.codecs.video as SupportedOption[], container)
   const presets = filterSupported(form.presets as SupportedOption[], value.codec)
   const profiles = filterSupported(form.profiles as SupportedOption[], value.codec)
+  const missingBitrate =
+    value.pass === '2' && twoPassNeedsBitrate.includes(value.codec) && !value.bitrate
   const set = (key: keyof Video) => (v: string) => onChange({ [key]: v } as Partial<Video>)
 
   // "None" is -vn: there is no video stream left to configure, so every control
@@ -100,7 +106,12 @@ export default function VideoSection({ value, container, onChange }: Props) {
         {rateFields
           .filter((f) => !('supported' in f) || f.supported.includes(value.codec as never))
           .map((f) => (
-            <Field key={f.key} label={f.label} htmlFor={`video-${f.key}`}>
+            <Field
+              key={f.key}
+              label={f.label}
+              htmlFor={`video-${f.key}`}
+              error={f.key === 'bitrate' && missingBitrate ? 'Two-pass needs a target bit rate.' : undefined}
+            >
               <Input
                 id={`video-${f.key}`}
                 value={value[f.key] ?? ''}
