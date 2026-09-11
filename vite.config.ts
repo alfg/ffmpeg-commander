@@ -15,13 +15,11 @@ export default defineConfig({
   // app, so the base path stays '/'.
   base: '/',
   server: {
-    // ffmpegd refuses a websocket upgrade unless the Origin matches its own
-    // host:port -- it accepts http://localhost:8080 and nothing else, not even
-    // the production site. A dev server on another port therefore cannot reach
-    // it directly. Proxying with changeOrigin rewrites the Origin to the target,
-    // so the browser talks to Vite and Vite talks to the daemon.
-    // changeOrigin only rewrites Host; the Origin header is forwarded as-is,
-    // which is the one ffmpegd actually checks. Set it explicitly.
+    // ffmpegd only accepts websocket upgrades and /files requests from a fixed
+    // list of origins, and the dev server's own port is not on it. Proxy both
+    // through Vite and present the daemon's own origin, which is. changeOrigin
+    // only rewrites Host; the Origin header is forwarded as-is, and that is the
+    // one ffmpegd checks, so set it explicitly.
     proxy: {
       '/ws': {
         target: 'ws://localhost:8080',

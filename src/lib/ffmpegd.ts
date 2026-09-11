@@ -43,29 +43,40 @@ export interface FileListing {
   files?: { name: string }[]
 }
 
-// Both default to the page's own origin and are overridable from localStorage,
-// so a daemon elsewhere can be pointed at without a rebuild.
+// ffmpegd listens on localhost:8080 by default and only accepts a fixed list of
+// origins (see allowedOrigins in ffmpegd's cmd/ffmpegd.go). Both endpoints are
+// overridable from localStorage, so a daemon elsewhere can be pointed at without
+// a rebuild.
 //
-// Same-origin is the only default that can actually work: ffmpegd rejects a
-// websocket upgrade whose Origin is not its own host:port, so the page must
-// either be served by the daemon itself or reach it through a proxy on the
-// page's own origin. The Vue app hardcoded localhost:8080, which only connected
-// when the page happened to be served from there too.
-const sameOriginWs = () => `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/ws`
+// When the page itself is on localhost -- the Vite dev server, whose config
+// proxies /ws and /files to the daemon -- talk to our own origin so the proxy
+// is used. Anywhere else, such as the deployed site, the daemon runs on the
+// visitor's machine, so talk to it there directly.
+export const DAEMON_ORIGIN = 'http://localhost:8080'
+
+const LOCAL_HOSTNAMES = ['localhost', '127.0.0.1', '[::1]']
+const isLocalPage = () => LOCAL_HOSTNAMES.includes(window.location.hostname)
+
+const defaultHost = () => (isLocalPage() ? window.location.origin : DAEMON_ORIGIN)
+
+const defaultWsUri = () => {
+  if (!isLocalPage()) return `${DAEMON_ORIGIN.replace(/^http/, 'ws')}/ws`
+  return `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/ws`
+}
 
 export const wsUri = () => {
   try {
-    return localStorage.getItem(WS_URI_KEY) || sameOriginWs()
+    return localStorage.getItem(WS_URI_KEY) || defaultWsUri()
   } catch {
-    return sameOriginWs()
+    return defaultWsUri()
   }
 }
 
 export const host = () => {
   try {
-    return localStorage.getItem(HOST_KEY) || window.location.origin
+    return localStorage.getItem(HOST_KEY) || defaultHost()
   } catch {
-    return window.location.origin
+    return defaultHost()
   }
 }
 

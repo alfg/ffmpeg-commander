@@ -85,10 +85,16 @@ npm run deploy
 
 See: https://github.com/alfg/ffmpegd
 
+The app connects to `ffmpegd` at `localhost:8080`. `ffmpegd` only accepts
+connections from a fixed list of origins, so the site you load
+`ffmpeg-commander` from must be on that list.
+
 When running the dev server, the Vite config proxies `/ws` and `/files` to
-`localhost:8080`. `ffmpegd` only accepts a websocket upgrade whose `Origin`
-matches its own host and port, so a dev server on another port cannot reach it
-directly.
+`localhost:8080` and presents an origin `ffmpegd` accepts, since the dev
+server's own port is not on the list.
+
+To use a daemon on another host or port, set `host` (e.g. `http://mybox:8080`)
+and `ws_uri` (e.g. `ws://mybox:8080/ws`) in the browser's localStorage.
 
 
 
