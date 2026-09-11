@@ -12,7 +12,7 @@ const link = 'text-accent underline underline-offset-2 hover:text-accent-hover'
 const code = 'rounded bg-sunken px-1 font-mono text-xs whitespace-nowrap'
 
 // host:port without the scheme, for display. Falls back to the raw address.
-function displayAddress(): string {
+export function displayAddress(): string {
   try {
     return new URL(host()).host
   } catch {
@@ -22,8 +22,9 @@ function displayAddress(): string {
 
 /**
  * How to get ffmpegd running, shown wherever ffmpegd is enabled but not
- * connected. Renders nothing for the first SETUP_DELAY_MS so a normal connect
- * does not flash it; the parent unmounts it once the socket opens.
+ * connected. For the first SETUP_DELAY_MS it only says it is connecting, so a
+ * normal connect does not flash install steps; the parent unmounts it once the
+ * socket opens.
  *
  * `explain` adds a sentence on what ffmpegd is, for places that don't already
  * say so (the Options tab does, right above it).
@@ -36,7 +37,13 @@ export default function FfmpegdSetup({ explain = true }: { explain?: boolean }) 
     return () => window.clearTimeout(id)
   }, [])
 
-  if (!visible) return null
+  if (!visible) {
+    return (
+      <p className="text-sm text-muted">
+        Connecting to ffmpegd at <code className={code}>{displayAddress()}</code>…
+      </p>
+    )
+  }
 
   return (
     <div role="status" className="rounded-lg border border-line bg-panel p-4 text-sm text-fg">
@@ -54,7 +61,7 @@ export default function FfmpegdSetup({ explain = true }: { explain?: boolean }) 
           <a href={FFMPEGD_INSTALL_URL} target="_blank" rel="noopener noreferrer" className={link}>
             the install guide
           </a>
-          . An older copy may need updating to connect.
+          . ffmpegd 0.1.0 and earlier can&apos;t connect to this site, so update an older copy.
         </li>
         <li>
           Run <code className={code}>ffmpegd</code> in the folder with your videos. Input and output
