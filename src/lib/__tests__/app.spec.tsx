@@ -68,7 +68,7 @@ describe('App', () => {
     await user.selectOptions(screen.getByLabelText('Preset'), 'h264-fast-720p30')
 
     expect(commandText()).toBe(
-      'ffmpeg -i input.mp4 -c:v libx264 -preset fast -r 30 -crf 21 -vf "scale=1280:-1" -c:a copy output.mp4',
+      'ffmpeg -i input.mp4 -c:v libx264 -preset fast -r 30 -crf 21 -vf "scale=1280:-2" -c:a copy output.mp4',
     )
   })
 
@@ -81,7 +81,7 @@ describe('App', () => {
     // deshake and deflicker live in the form's `filters` section, which only
     // reaches the command because presets are deep merged onto the defaults.
     // Each filter renders as its own hoverable span, hence the spaces.
-    expect(commandText()).toContain('-vf "scale=1920:-1, deshake, deflicker"')
+    expect(commandText()).toContain('-vf "scale=1920:-2, deshake, deflicker"')
   })
 
   it('applies an audio-only recipe, output extension included', async () => {

@@ -43,6 +43,11 @@ describe('ffmpeg.build', () => {
         .toBe('ffmpeg -i input.mp4 -c:v libx264 -crf 18 -c:a copy output.mp4');
     });
 
+    it.each([0, '0'])('emits crf %j, which is lossless for x264', (crf) => {
+      expect(build({ video: { pass: 'crf', crf } }))
+        .toBe('ffmpeg -i input.mp4 -c:v libx264 -crf 0 -c:a copy output.mp4');
+    });
+
     it('drops -crf when pass is not "crf", even if a crf value is set', () => {
       // This is what silently disables -crf in six of the twelve bundled
       // presets: they set video.crf but never set video.pass.
@@ -128,7 +133,7 @@ describe('ffmpeg.build', () => {
 
     it('ignores fit for the preset sizes', () => {
       expect(build({ video: { size: '1280', fit: true } }))
-        .toBe('ffmpeg -i input.mp4 -c:v libx264 -vf "scale=1280:-1" -c:a copy output.mp4');
+        .toBe('ffmpeg -i input.mp4 -c:v libx264 -vf "scale=1280:-2" -c:a copy output.mp4');
     });
   });
 
@@ -213,12 +218,12 @@ describe('ffmpeg.build', () => {
   describe('scaling', () => {
     it('scales by width for widescreen', () => {
       expect(build({ video: { size: '1280' } }))
-        .toBe('ffmpeg -i input.mp4 -c:v libx264 -vf "scale=1280:-1" -c:a copy output.mp4');
+        .toBe('ffmpeg -i input.mp4 -c:v libx264 -vf "scale=1280:-2" -c:a copy output.mp4');
     });
 
     it('scales by height for fullscreen', () => {
       expect(build({ video: { size: '1280', format: 'fullscreen' } }))
-        .toBe('ffmpeg -i input.mp4 -c:v libx264 -vf "scale=-1:1280" -c:a copy output.mp4');
+        .toBe('ffmpeg -i input.mp4 -c:v libx264 -vf "scale=-2:1280" -c:a copy output.mp4');
     });
 
     it('uses explicit width:height for custom size', () => {
@@ -228,7 +233,7 @@ describe('ffmpeg.build', () => {
 
     it('appends the scaling algorithm to the scale filter', () => {
       expect(build({ video: { size: '1280', scaling: 'lanczos' } }))
-        .toBe('ffmpeg -i input.mp4 -c:v libx264 -vf "scale=1280:-1:flags=lanczos" -c:a copy output.mp4');
+        .toBe('ffmpeg -i input.mp4 -c:v libx264 -vf "scale=1280:-2:flags=lanczos" -c:a copy output.mp4');
     });
 
     it('drops the scaling algorithm when there is nothing to scale', () => {
@@ -312,6 +317,14 @@ describe('ffmpeg.build', () => {
     });
 
     // acontrast takes 0-100 itself; this used to emit acontrast=0.5.
+    it.each([
+      [{ audio: { codec: 'aac', volume: 0 } }, '-af "volume=0"'],
+      [{ audio: { codec: 'aac', volume: '0' } }, '-af "volume=0"'],
+      [{ audio: { codec: 'aac' }, filters: { acontrast: 0 } }, '-af "acontrast=0"'],
+    ])('treats 0 as a real value: %j', (overrides, expected) => {
+      expect(build(overrides)).toContain(expected);
+    });
+
     it('emits acontrast when moved off its default of 33', () => {
       expect(build({ filters: { acontrast: 50 } }))
         .toBe('ffmpeg -i input.mp4 -c:v libx264 -c:a copy -af "acontrast=50" output.mp4');

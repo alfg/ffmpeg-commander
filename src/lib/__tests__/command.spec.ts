@@ -30,10 +30,10 @@ describe('parseCommand', () => {
   })
 
   it('matches filters on a prefix, so arguments do not defeat the lookup', () => {
-    const fragments = parseCommand('ffmpeg -i in.mp4 -vf "scale=1920:-1" out.mp4')
+    const fragments = parseCommand('ffmpeg -i in.mp4 -vf "scale=1920:-2" out.mp4')
     const scale = fragments.find((f) => f.value === '-vf')?.filters?.[0]
     // A lone filter keeps both quotes; only a comma split strips the inner one.
-    expect(scale?.value).toBe('"scale=1920:-1"')
+    expect(scale?.value).toBe('"scale=1920:-2"')
     expect(scale?.description).toBeTruthy()
   })
 

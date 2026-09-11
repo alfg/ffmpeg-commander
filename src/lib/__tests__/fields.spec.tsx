@@ -98,7 +98,7 @@ describe('video controls reach the command', () => {
     expect(command()).not.toContain('flags=lanczos')
 
     await user.selectOptions(screen.getByLabelText('Size'), '1280')
-    expect(command()).toContain('scale=1280:-1:flags=lanczos')
+    expect(command()).toContain('scale=1280:-2:flags=lanczos')
   })
 
   it('codec options become the encoder params flag', async () => {

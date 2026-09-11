@@ -78,6 +78,10 @@ function transformToJSON(formData: IFFMpegOptionsForm) {
   } = formData;
 
   const json = {
+    // The payload contract ffmpegd reads. Version 2: an untouched saturation is
+    // null rather than 0, so 0 can mean greyscale. ffmpegd still reads 0 as
+    // untouched in payloads without a version, which queued jobs may carry.
+    version: 2,
     format: {
       container: format.container,
       clip: format.clip,
@@ -104,6 +108,7 @@ function transformToJSON(formData: IFFMpegOptionsForm) {
       size: video.size,
       width: video.width,
       height: video.height,
+      fit: video.fit,
       format: video.format,
       aspect: video.aspect,
       scaling: video.scaling,
@@ -126,13 +131,13 @@ function transformToJSON(formData: IFFMpegOptionsForm) {
       deinterlace: filters.deinterlace,
       brightness: (parseInt(filters.brightness, 10) / 100).toString(),
       contrast: ((parseInt(filters.contrast, 10) + 100) / 100).toString(),
-      // ffmpegd reads 0 as unset, so keep 0 for an untouched slider and send
-      // the eq multiplier otherwise, as contrast does.
-      saturation: (parseInt(filters.saturation, 10) === 0
-        ? 0
-        : (parseInt(filters.saturation, 10) + 100) / 100).toString(),
+      // The eq multiplier, as contrast sends; null when untouched (see version).
+      saturation: parseInt(filters.saturation, 10) === 0
+        ? null
+        : ((parseInt(filters.saturation, 10) + 100) / 100).toString(),
       gamma: (parseInt(filters.gamma, 10) / 10).toString(),
       acontrast: filters.acontrast.toString(),
+      adelay: filters.adelay,
     },
   };
   return json;
@@ -205,7 +210,7 @@ function transformToQueryParams(form: IFFMpegOptionsForm) {
     ...(video.codec !== 'x264' && { 'video.codec': video.codec }),
     ...(video.preset !== 'none' && { 'video.preset': video.preset }),
     ...(video.pass !== '1' && { 'video.pass': video.pass }),
-    ...(video.crf !== '0' && video.pass === 'crf' && { 'video.crf': video.crf }),
+    ...(video.pass === 'crf' && video.crf !== null && video.crf !== '' && { 'video.crf': video.crf }),
     ...(video.bitrate && { 'video.bitrate': video.bitrate }),
     ...(video.minrate && { 'video.minrate': video.minrate }),
     ...(video.maxrate && { 'video.maxrate': video.maxrate }),

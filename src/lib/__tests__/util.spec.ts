@@ -388,12 +388,29 @@ describe('util.transformToJSON', () => {
       saturation: '1.02',
       gamma: '1.5',
       acontrast: '50',
+      adelay: 0,
     });
   });
 
-  it('keeps an untouched saturation at 0, which ffmpegd reads as unset', () => {
-    expect(util.transformToJSON(makeForm()).filter.saturation).toBe('0');
-    expect(util.transformToJSON(makeForm({ filters: { saturation: -100 } })).filter.saturation).toBe('0');
+  // ffmpegd reads these, and its own cross-check tests pin the same contract.
+  describe('ffmpegd payload contract', () => {
+    it('is version 2', () => {
+      expect(util.transformToJSON(makeForm()).version).toBe(2);
+    });
+
+    it('sends an untouched saturation as null, so 0 can mean greyscale', () => {
+      expect(util.transformToJSON(makeForm()).filter.saturation).toBeNull();
+      expect(util.transformToJSON(makeForm({ filters: { saturation: -100 } })).filter.saturation).toBe('0');
+      expect(util.transformToJSON(makeForm({ filters: { saturation: 100 } })).filter.saturation).toBe('2');
+    });
+
+    it('carries fit and the audio delay', () => {
+      const json = util.transformToJSON(makeForm({
+        video: { size: 'custom', fit: true }, filters: { adelay: '150' },
+      }));
+      expect(json.video.fit).toBe(true);
+      expect(json.filter.adelay).toBe('150');
+    });
   });
 
   it('resolves codec slugs to ffmpeg encoder names', () => {

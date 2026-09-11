@@ -88,7 +88,10 @@ function setVideoFilters(options: IFFmpegOptions) {
     } else if (options.size === 'custom') {
       arg = [`scale=${options.width}:${options.height}`];
     } else {
-      arg = options.format === 'widescreen' ? [`scale=${options.size}:-1`] : [`scale=-1:${options.size}`];
+      // -2 keeps the aspect ratio but rounds to an even number, which x264 and
+      // x265 require: 1280x534 scaled to 1920 wide is 801 high with -1, and the
+      // encode fails. ffmpegd does the same.
+      arg = options.format === 'widescreen' ? [`scale=${options.size}:-2`] : [`scale=-2:${options.size}`];
     }
     scaleFilters.push(...arg);
   }
@@ -203,12 +206,13 @@ function setVideoFilters(options: IFFmpegOptions) {
 function setAudioFilters(options: IFFmpegOptions): string {
   const af = [];
 
-  if (options.volume && parseInt(options.volume, 10) !== 100) {
+  // Checked with isSet, not truthiness: volume 0 (silence) is a real value.
+  if (isSet(options.volume) && parseInt(options.volume, 10) !== 100) {
     const arg = [`volume=${parseInt(options.volume, 10) / 100}`];
     af.push(...arg);
   }
 
-  if (options.acontrast && parseInt(options.acontrast, 10) !== 33) {
+  if (isSet(options.acontrast) && parseInt(options.acontrast, 10) !== 33) {
     // acontrast takes 0-100 itself; this used to divide by 100, leaving almost
     // no effect. 33, the filter's default, is treated as off.
     const arg = [`acontrast=${parseInt(options.acontrast, 10)}`];
@@ -265,7 +269,8 @@ function setVideoFlags(options: IFFmpegOptions) {
   //
   // Set more complex options that can't be set from the videoOptionsMap.
   //
-  if (options.crf !== '0' && options.pass === 'crf') {
+  // 0 is a real value: lossless for x264.
+  if (options.pass === 'crf' && isSet(options.crf)) {
     const arg = ['-crf', options.crf];
     flags.push(...arg);
   }
