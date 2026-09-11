@@ -7,6 +7,8 @@ import type { IFFMpegOptionsForm } from '@/lib/types'
 
 interface Props {
   value: IFFMpegOptionsForm['filters']
+  /** Streams whose codec is copy while filters are set for them. */
+  conflicts?: { video: boolean; audio: boolean }
   onChange: (patch: Partial<IFFMpegOptionsForm['filters']>) => void
 }
 
@@ -33,11 +35,19 @@ const eq = [
 
 const label = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
 
-export default function FiltersSection({ value, onChange }: Props) {
+const CopyWarning = ({ stream }: { stream: 'video' | 'audio' }) => (
+  <p role="alert" className="mb-3 text-xs text-danger">
+    The {stream} codec is set to copy, so these filters cannot apply. Pick a {stream} codec on
+    the {stream === 'video' ? 'Video' : 'Audio'} tab.
+  </p>
+)
+
+export default function FiltersSection({ value, conflicts, onChange }: Props) {
   return (
     <div className="flex flex-col gap-5">
       <div>
         <h3 className="mb-3 text-xs font-semibold tracking-wide text-muted uppercase">Video</h3>
+        {conflicts?.video ? <CopyWarning stream="video" /> : null}
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
           {toggles.map(({ key, options }) => (
             <Field key={key} label={label(key)} htmlFor={`filters-${key}`}>
@@ -83,6 +93,7 @@ export default function FiltersSection({ value, onChange }: Props) {
 
       <div>
         <h3 className="mb-3 text-xs font-semibold tracking-wide text-muted uppercase">Audio</h3>
+        {conflicts?.audio ? <CopyWarning stream="audio" /> : null}
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
           <Range
             id="filters-acontrast"

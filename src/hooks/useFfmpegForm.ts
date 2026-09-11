@@ -48,6 +48,7 @@ export function useFfmpegForm() {
   const [form, setForm] = useState<IFFMpegOptionsForm>(formFromUrl)
 
   const cmd = useMemo(() => ffmpeg.build(util.transform(form) as never), [form])
+  const conflicts = useMemo(() => ffmpeg.copyConflicts(util.transform(form) as never), [form])
 
   useEffect(() => {
     const params = util.transformToQueryParams(form) as Record<string, string>
@@ -104,5 +105,5 @@ export function useFfmpegForm() {
 
   const reset = useCallback(() => setForm(freshForm()), [])
 
-  return { form, cmd, update, updateFormat, updateVideo, updateOptions, reset, setForm }
+  return { form, cmd, conflicts, update, updateFormat, updateVideo, updateOptions, reset, setForm }
 }

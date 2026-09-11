@@ -297,6 +297,15 @@ function setAudioFlags(options: IFFmpegOptions) {
   return flags;
 }
 
+// Filters need decoded frames, so ffmpeg refuses to filter a stream it is only
+// copying. Reports which streams have filters set while their codec is copy.
+function copyConflicts(opt: IFFmpegOptions) {
+  return {
+    video: opt.vcodec === 'copy' && setVideoFilters(opt) !== '',
+    audio: opt.acodec === 'copy' && setAudioFilters(opt) !== '',
+  };
+}
+
 // Build an array of FFmpeg from options parameter.
 function build(opt: IFFmpegOptions): string {
   const options = opt || {};
@@ -392,4 +401,5 @@ function build(opt: IFFmpegOptions): string {
 
 export default {
   build,
+  copyConflicts,
 };

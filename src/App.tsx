@@ -26,8 +26,9 @@ const selectClass =
   'focus:border-ring focus:ring-1 focus:ring-ring focus:outline-none'
 
 export default function App() {
-  const { form, cmd, update, updateFormat, updateVideo, updateOptions, reset, setForm } =
-    useFfmpegForm()
+  const {
+    form, cmd, conflicts, update, updateFormat, updateVideo, updateOptions, reset, setForm,
+  } = useFfmpegForm()
   const preset = usePresets({ form, setForm })
   const ffmpegd = useFfmpegd()
   const [showJson, setShowJson] = useState(false)
@@ -48,6 +49,7 @@ export default function App() {
         <VideoSection
           value={form.video}
           container={container}
+          copyConflict={conflicts.video}
           onChange={updateVideo}
         />
       ),
@@ -59,6 +61,7 @@ export default function App() {
         <AudioSection
           value={form.audio}
           container={container}
+          copyConflict={conflicts.audio}
           onChange={(patch) => update('audio', patch)}
         />
       ),
@@ -67,7 +70,11 @@ export default function App() {
       id: 'filters',
       label: 'Filters',
       content: (
-        <FiltersSection value={form.filters} onChange={(patch) => update('filters', patch)} />
+        <FiltersSection
+          value={form.filters}
+          conflicts={conflicts}
+          onChange={(patch) => update('filters', patch)}
+        />
       ),
     },
     {

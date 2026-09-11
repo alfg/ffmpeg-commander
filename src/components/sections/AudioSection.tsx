@@ -9,15 +9,21 @@ import { filterSupported, type SupportedOption } from './supported'
 interface Props {
   value: IFFMpegOptionsForm['audio']
   container: string
+  /** Audio filters (volume included) are set while the codec is copy. */
+  copyConflict?: boolean
   onChange: (patch: Partial<IFFMpegOptionsForm['audio']>) => void
 }
 
-export default function AudioSection({ value, container, onChange }: Props) {
+export default function AudioSection({ value, container, copyConflict, onChange }: Props) {
   const codecs = filterSupported(form.codecs.audio as SupportedOption[], container)
 
   return (
     <Section title="Audio">
-      <Field label="Codec" htmlFor="audio-codec">
+      <Field
+        label="Codec"
+        htmlFor="audio-codec"
+        error={copyConflict ? 'Copy cannot be filtered. Pick a codec to apply the volume and audio filters.' : undefined}
+      >
         <Select
           id="audio-codec"
           value={value.codec}

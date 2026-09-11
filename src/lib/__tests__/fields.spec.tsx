@@ -228,3 +228,33 @@ describe('two-pass without a bit rate', () => {
     expect(screen.queryByRole('alert')).toBeNull()
   })
 })
+
+describe('filters on a copied stream', () => {
+  it('warns on the Filters and Audio tabs until the audio is re-encoded', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    await openTab(user, 'Filters')
+
+    expect(screen.queryByRole('alert')).toBeNull()
+    await user.type(screen.getByLabelText('Delay (ms)'), '5')
+    expect(screen.getByRole('alert').textContent).toContain('audio codec is set to copy')
+
+    await openTab(user, 'Audio')
+    expect(screen.getByRole('alert').textContent).toContain('Copy cannot be filtered')
+
+    await user.selectOptions(screen.getByLabelText('Codec', { selector: '#audio-codec' }), 'aac')
+    expect(screen.queryByRole('alert')).toBeNull()
+    expect(command()).toContain('-c:a aac -af "adelay=delays=5:all=1"')
+  })
+
+  it('warns on the Video tab when a copied video stream is resized', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    await openTab(user, 'Video')
+
+    await user.selectOptions(screen.getByLabelText('Codec', { selector: '#video-codec' }), 'copy')
+    expect(screen.queryByRole('alert')).toBeNull()
+    await user.selectOptions(screen.getByLabelText('Size'), '1280')
+    expect(screen.getByRole('alert').textContent).toContain('Copy cannot be filtered, resized')
+  })
+})

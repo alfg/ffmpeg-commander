@@ -13,6 +13,8 @@ type Video = IFFMpegOptionsForm['video']
 interface Props {
   value: Video
   container: string
+  /** Video filters are set while the codec is copy, which ffmpeg rejects. */
+  copyConflict?: boolean
   onChange: (patch: Partial<Video>) => void
 }
 
@@ -44,7 +46,7 @@ const encodeFields = [
 // drive a two-pass encode: pass 2 fails to open the encoder.
 const twoPassNeedsBitrate = ['x264', 'x265']
 
-export default function VideoSection({ value, container, onChange }: Props) {
+export default function VideoSection({ value, container, copyConflict, onChange }: Props) {
   // Mirrors the Vue app: the codec list narrows to what the container supports,
   // and the encoder presets narrow to what the codec supports.
   const codecs = filterSupported(form.codecs.video as SupportedOption[], container)
@@ -74,7 +76,11 @@ export default function VideoSection({ value, container, onChange }: Props) {
   return (
     <div className="flex flex-col gap-5">
       <Group title="Encoder">
-        <Field label="Codec" htmlFor="video-codec">
+        <Field
+          label="Codec"
+          htmlFor="video-codec"
+          error={copyConflict ? 'Copy cannot be filtered, resized or sped up. Pick a codec to apply those settings.' : undefined}
+        >
           <Select id="video-codec" value={value.codec} options={codecs} onChange={set('codec')} />
         </Field>
         <Field label="Encoder preset" htmlFor="video-preset">

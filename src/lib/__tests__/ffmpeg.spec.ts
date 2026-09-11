@@ -149,6 +149,39 @@ describe('ffmpeg.build', () => {
     });
   });
 
+  describe('copyConflicts', () => {
+    const conflicts = (overrides = {}) => ffmpeg.copyConflicts(util.transform(makeForm(overrides)) as never);
+
+    it('reports nothing for the default form', () => {
+      expect(conflicts()).toEqual({ video: false, audio: false });
+    });
+
+    it.each([
+      ['a delay', { filters: { adelay: 5 } }],
+      ['a volume change', { audio: { volume: 50 } }],
+      ['acontrast', { filters: { acontrast: 50 } }],
+    ])('flags copied audio with %s', (_, overrides) => {
+      expect(conflicts(overrides)).toEqual({ video: false, audio: true });
+    });
+
+    it('clears once the audio is re-encoded', () => {
+      expect(conflicts({ audio: { codec: 'aac' }, filters: { adelay: 5 } }).audio).toBe(false);
+    });
+
+    it.each([
+      ['a filter', { video: { codec: 'copy' }, filters: { deband: true } }],
+      ['a size', { video: { codec: 'copy', size: '1280' } }],
+      ['a speed', { video: { codec: 'copy', speed: '2*PTS' } }],
+    ])('flags copied video with %s', (_, overrides) => {
+      expect(conflicts(overrides).video).toBe(true);
+    });
+
+    it('ignores video filters on an encoded or disabled stream', () => {
+      expect(conflicts({ filters: { deband: true } }).video).toBe(false);
+      expect(conflicts({ video: { codec: 'none' }, filters: { deband: true } }).video).toBe(false);
+    });
+  });
+
   describe('VideoToolbox encoders (#49)', () => {
     it.each(['h264_videotoolbox', 'hevc_videotoolbox'])('emits %s', (codec) => {
       expect(build({ video: { codec } }))
