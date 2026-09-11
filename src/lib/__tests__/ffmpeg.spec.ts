@@ -61,15 +61,16 @@ describe('ffmpeg.build', () => {
   });
 
   describe('two pass', () => {
-    it('splits into two commands joined by /dev/null &&', () => {
+    // Pass 1 needs -f null: ffmpeg cannot infer a muxer from /dev/null (#54).
+    it('splits into two commands, discarding pass 1 through the null muxer', () => {
       expect(build({ video: { pass: '2', bitrate: '3000k' } }))
-        .toBe('ffmpeg -i input.mp4 -c:v libx264 -b:v 3000k -c:a copy -pass 1 /dev/null && '
+        .toBe('ffmpeg -i input.mp4 -c:v libx264 -b:v 3000k -c:a copy -pass 1 -an -f null /dev/null && '
           + 'ffmpeg -i input.mp4 -c:v libx264 -b:v 3000k -c:a copy -pass 2 output.mp4');
     });
 
     it('uses -x265-params for x265', () => {
       expect(build({ video: { codec: 'x265', pass: '2', bitrate: '3000k' } }))
-        .toBe('ffmpeg -i input.mp4 -c:v libx265 -b:v 3000k -c:a copy -x265-params pass=1 /dev/null && '
+        .toBe('ffmpeg -i input.mp4 -c:v libx265 -b:v 3000k -c:a copy -x265-params pass=1 -an -f null /dev/null && '
           + 'ffmpeg -i input.mp4 -c:v libx265 -b:v 3000k -c:a copy -x265-params pass=2 output.mp4');
     });
 
@@ -79,8 +80,79 @@ describe('ffmpeg.build', () => {
           codec: 'x265', pass: '2', bitrate: '3000k', codec_options: 'crf=20',
         },
       })).toBe('ffmpeg -i input.mp4 -c:v libx265 -b:v 3000k -x265-params crf=20:pass=1 -c:a copy '
-        + '/dev/null && '
+        + '-an -f null /dev/null && '
         + 'ffmpeg -i input.mp4 -c:v libx265 -b:v 3000k -x265-params crf=20:pass=2 -c:a copy output.mp4');
+    });
+
+    it('does not repeat -an when audio is already disabled', () => {
+      expect(build({ video: { pass: '2', bitrate: '3000k' }, audio: { codec: 'none' } }))
+        .toBe('ffmpeg -i input.mp4 -c:v libx264 -b:v 3000k -an -pass 1 -f null /dev/null && '
+          + 'ffmpeg -i input.mp4 -c:v libx264 -b:v 3000k -an -pass 2 output.mp4');
+    });
+  });
+
+  describe('file name quoting (#40)', () => {
+    it('quotes input and output paths containing spaces', () => {
+      expect(build({ io: { input: 'my clip.mp4', output: 'my clip out.mp4' } }))
+        .toBe('ffmpeg -i "my clip.mp4" -c:v libx264 -c:a copy "my clip out.mp4"');
+    });
+
+    it('escapes characters the shell would expand inside double quotes', () => {
+      expect(build({ io: { input: 'a "b" $c.mp4' } }))
+        .toBe('ffmpeg -i "a \\"b\\" \\$c.mp4" -c:v libx264 -c:a copy output.mp4');
+    });
+
+    it('leaves a path the user already quoted as typed', () => {
+      expect(build({ io: { input: '"my clip.mp4"' } }))
+        .toBe('ffmpeg -i "my clip.mp4" -c:v libx264 -c:a copy output.mp4');
+    });
+
+    it('quotes both commands of a two-pass encode', () => {
+      expect(build({ io: { input: 'my clip.mp4' }, video: { pass: '2', bitrate: '3000k' } }))
+        .toBe('ffmpeg -i "my clip.mp4" -c:v libx264 -b:v 3000k -c:a copy -pass 1 -an -f null /dev/null && '
+          + 'ffmpeg -i "my clip.mp4" -c:v libx264 -b:v 3000k -c:a copy -pass 2 output.mp4');
+    });
+  });
+
+  describe('fit inside a box (#46)', () => {
+    it('keeps the aspect ratio when fit is enabled for a custom size', () => {
+      expect(build({ video: { size: 'custom', width: '1280', height: '720', fit: true } }))
+        .toBe('ffmpeg -i input.mp4 -c:v libx264 '
+          + '-vf "scale=1280:720:force_original_aspect_ratio=decrease:force_divisible_by=2" -c:a copy output.mp4');
+    });
+
+    it('stretches to the exact size when fit is off', () => {
+      expect(build({ video: { size: 'custom', width: '1280', height: '720' } }))
+        .toBe('ffmpeg -i input.mp4 -c:v libx264 -vf "scale=1280:720" -c:a copy output.mp4');
+    });
+
+    it('ignores fit for the preset sizes', () => {
+      expect(build({ video: { size: '1280', fit: true } }))
+        .toBe('ffmpeg -i input.mp4 -c:v libx264 -vf "scale=1280:-1" -c:a copy output.mp4');
+    });
+  });
+
+  describe('audio delay (#38)', () => {
+    it('delays every channel with adelay', () => {
+      expect(build({ filters: { adelay: 150 } }))
+        .toBe('ffmpeg -i input.mp4 -c:v libx264 -c:a copy -af "adelay=delays=150:all=1" output.mp4');
+    });
+
+    it('chains after the other audio filters', () => {
+      expect(build({ audio: { volume: 50 }, filters: { adelay: '150' } }))
+        .toBe('ffmpeg -i input.mp4 -c:v libx264 -c:a copy -af "volume=0.5,adelay=delays=150:all=1" output.mp4');
+    });
+
+    it.each([0, '', '-20'])('emits nothing for %j', (adelay) => {
+      expect(build({ filters: { adelay } }))
+        .toBe('ffmpeg -i input.mp4 -c:v libx264 -c:a copy output.mp4');
+    });
+  });
+
+  describe('VideoToolbox encoders (#49)', () => {
+    it.each(['h264_videotoolbox', 'hevc_videotoolbox'])('emits %s', (codec) => {
+      expect(build({ video: { codec } }))
+        .toBe(`ffmpeg -i input.mp4 -c:v ${codec} -c:a copy output.mp4`);
     });
   });
 

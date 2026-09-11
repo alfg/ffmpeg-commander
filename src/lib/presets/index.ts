@@ -79,6 +79,7 @@ export interface IPresetData {
     size?: string;
     width?: string;
     height?: string;
+    fit?: boolean;
     format?: string;
     aspect?: string;
     scaling?: string;
@@ -106,6 +107,7 @@ export interface IPresetData {
     saturation?: number;
     gamma?: number;
     acontrast?: number;
+    adelay?: number;
   };
 }
 

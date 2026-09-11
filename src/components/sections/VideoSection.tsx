@@ -45,6 +45,7 @@ export default function VideoSection({ value, container, onChange }: Props) {
   // and the encoder presets narrow to what the codec supports.
   const codecs = filterSupported(form.codecs.video as SupportedOption[], container)
   const presets = filterSupported(form.presets as SupportedOption[], value.codec)
+  const profiles = filterSupported(form.profiles as SupportedOption[], value.codec)
   const set = (key: keyof Video) => (v: string) => onChange({ [key]: v } as Partial<Video>)
 
   // "None" is -vn: there is no video stream left to configure, so every control
@@ -115,8 +116,8 @@ export default function VideoSection({ value, container, onChange }: Props) {
           <Field key={f.key} label={f.label} htmlFor={`video-${f.key}`}>
             <Select
               id={`video-${f.key}`}
-              value={value[f.key]}
-              options={f.options}
+              value={String(value[f.key])}
+              options={f.key === 'profile' ? profiles : f.options}
               onChange={set(f.key)}
             />
           </Field>
@@ -142,6 +143,14 @@ export default function VideoSection({ value, container, onChange }: Props) {
             </Field>
             <Field label="Height" htmlFor="video-height">
               <Input id="video-height" type="number" value={value.height} onChange={set('height')} />
+            </Field>
+            <Field label="Fit" htmlFor="video-fit">
+              <Select
+                id="video-fit"
+                value={String(value.fit)}
+                options={form.fits}
+                onChange={(v) => onChange({ fit: v === 'true' })}
+              />
             </Field>
           </>
         ) : (

@@ -136,3 +136,67 @@ describe('audio controls reach the command', () => {
     expect(command()).toContain('-af "volume=0.5"')
   })
 })
+
+describe('profiles follow the codec (#35)', () => {
+  const profileOptions = () =>
+    Array.from((screen.getByLabelText('Profile') as HTMLSelectElement).options).map((o) => o.value)
+
+  it('offers only HEVC profiles for hevc_nvenc', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    await openTab(user, 'Video')
+
+    await user.selectOptions(screen.getByLabelText('Codec', { selector: '#video-codec' }), 'hevc_nvenc')
+
+    expect(profileOptions()).toEqual(['none', 'main', 'main10', 'rext'])
+  })
+
+  it('drops a profile the new codec does not accept', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    await openTab(user, 'Video')
+
+    await user.selectOptions(screen.getByLabelText('Profile'), 'high')
+    expect(command()).toContain('-profile:v high')
+
+    await user.selectOptions(screen.getByLabelText('Codec', { selector: '#video-codec' }), 'hevc_nvenc')
+    expect(command()).not.toContain('-profile:v')
+    expect((screen.getByLabelText('Profile') as HTMLSelectElement).value).toBe('none')
+  })
+
+  it('keeps a profile both codecs accept', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    await openTab(user, 'Video')
+
+    await user.selectOptions(screen.getByLabelText('Profile'), 'main')
+    await user.selectOptions(screen.getByLabelText('Codec', { selector: '#video-codec' }), 'x265')
+    expect(command()).toContain('-profile:v main')
+  })
+})
+
+describe('new controls reach the command', () => {
+  it('Fit keeps the aspect ratio of a custom size (#46)', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    await openTab(user, 'Video')
+
+    expect(screen.queryByLabelText('Fit')).toBeNull()
+    await user.selectOptions(screen.getByLabelText('Size'), 'custom')
+    await user.selectOptions(screen.getByLabelText('Fit'), 'true')
+
+    expect(command()).toContain('force_original_aspect_ratio=decrease')
+  })
+
+  it('Delay adds adelay to the audio filters (#38)', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    await openTab(user, 'Filters')
+
+    const delay = screen.getByLabelText('Delay (ms)')
+    await user.clear(delay)
+    await user.type(delay, '150')
+
+    expect(command()).toContain('-af "adelay=delays=150:all=1"')
+  })
+})

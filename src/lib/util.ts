@@ -37,6 +37,7 @@ function transform(formData: IFFMpegOptionsForm) {
     size: video.size,
     width: video.width,
     height: video.height,
+    fit: video.fit,
     format: video.format,
     aspect: video.aspect,
     scaling: video.scaling,
@@ -62,6 +63,7 @@ function transform(formData: IFFMpegOptionsForm) {
     saturation: filters.saturation,
     gamma: filters.gamma,
     acontrast: filters.acontrast,
+    adelay: filters.adelay,
 
     // Options.
     extra: options.extra,
@@ -160,6 +162,7 @@ function transformFromQueryParams(form: IFFMpegOptionsForm, query: {[key: string
   video.size = query['video.size'] || video.size;
   video.width = query['video.width'] || video.width;
   video.height = query['video.height'] || video.height;
+  video.fit = (query['video.fit'] === 'true') || video.fit;
   video.format = query['video.format'] || video.format;
   video.aspect = query['video.aspect'] || video.aspect;
   video.scaling = query['video.scaling'] || video.scaling;
@@ -182,6 +185,7 @@ function transformFromQueryParams(form: IFFMpegOptionsForm, query: {[key: string
   filters.saturation = query['filters.saturation'] || filters.saturation;
   filters.gamma = query['filters.gamma'] || filters.gamma;
   filters.acontrast = query['filters.acontrast'] || filters.acontrast;
+  filters.adelay = query['filters.adelay'] || filters.adelay;
 }
 
 function transformToQueryParams(form: IFFMpegOptionsForm) {
@@ -213,6 +217,7 @@ function transformToQueryParams(form: IFFMpegOptionsForm) {
     ...(video.size !== 'source' && { 'video.size': video.size }),
     ...(video.width !== '0' && video.size === 'custom' && { 'video.width': video.width }),
     ...(video.height !== '0' && video.size === 'custom' && { 'video.height': video.height }),
+    ...(video.fit && video.size === 'custom' && { 'video.fit': 'true' }),
     ...(video.format !== 'widescreen' && { 'video.format': video.format }),
     ...(video.aspect !== 'auto' && { 'video.aspect': video.aspect }),
     ...(video.scaling !== 'auto' && { 'video.scaling': video.scaling }),
@@ -235,6 +240,7 @@ function transformToQueryParams(form: IFFMpegOptionsForm) {
     ...(parseInt(filters.saturation, 10) !== 0 && { 'filters.saturation': filters.saturation }),
     ...(parseInt(filters.gamma, 10) !== 0 && { 'filters.gamma': filters.gamma }),
     ...(parseInt(filters.acontrast, 10) !== 33 && { 'filters.acontrast': filters.acontrast }),
+    ...(parseInt(filters.adelay, 10) > 0 && { 'filters.adelay': filters.adelay }),
   };
   return params;
 }

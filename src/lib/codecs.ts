@@ -4,6 +4,8 @@ const codecs = {
   x265: 'libx265',
   h264_nvenc: 'h264_nvenc',
   hevc_nvenc: 'hevc_nvenc',
+  h264_videotoolbox: 'h264_videotoolbox',
+  hevc_videotoolbox: 'hevc_videotoolbox',
   vp8: 'libvpx',
   vp9: 'libvpx-vp9',
   av1: 'libaom-av1',

@@ -45,6 +45,8 @@ const tooltips = [
   { value: 'libx265', tip: 'H.265/HEVC Encoder.' },
   { value: 'h264_nvenc', tip: 'NVIDIA NVENC H.264 encoder.' },
   { value: 'hevc_nvenc', tip: 'NVIDIA NVENC hevc encoder.' },
+  { value: 'h264_videotoolbox', tip: 'Apple VideoToolbox H.264 hardware encoder (macOS).' },
+  { value: 'hevc_videotoolbox', tip: 'Apple VideoToolbox HEVC hardware encoder (macOS).' },
 
   // Filters.
   { value: 'scale', tip: 'Scale (resize) the input video, using the libswscale library.' },
@@ -57,6 +59,7 @@ const tooltips = [
   { value: 'yadif', tip: 'Deinterlace the input video ("yadif" means "yet another deinterlacing filter"). ' },
   { value: 'volume', tip: 'Set audio volume expression. <code>output_volume = volume * input_volume</code>' },
   { value: 'acontrast', tip: 'Simple audio dynamic range compression/expansion filter.' },
+  { value: 'adelay', tip: 'Delay the audio by the given number of milliseconds, to fix audio/video sync.' },
 ];
 
 export default tooltips;

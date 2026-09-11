@@ -154,6 +154,24 @@ describe('util.transformToQueryParams', () => {
   });
 });
 
+describe('fit and adelay query params', () => {
+  it('round-trips through the URL', () => {
+    const params = util.transformToQueryParams(makeForm({
+      video: { size: 'custom', fit: true }, filters: { adelay: '150' },
+    })) as Record<string, string>;
+    expect(params).toMatchObject({ 'video.fit': 'true', 'filters.adelay': '150' });
+
+    const form = makeForm();
+    util.transformFromQueryParams(form, params);
+    expect(form.video.fit).toBe(true);
+    expect(form.filters.adelay).toBe('150');
+  });
+
+  it('omits fit unless the size is custom', () => {
+    expect(util.transformToQueryParams(makeForm({ video: { fit: true } }))).toEqual({});
+  });
+});
+
 describe('util.transformFromQueryParams', () => {
   it('leaves the form untouched for an empty query', () => {
     const form = makeForm();

@@ -42,6 +42,7 @@ export function createDefaultForm() {
       size: 'source',
       width: '1080',
       height: '1920',
+      fit: false,
       format: 'widescreen',
       aspect: 'auto',
       scaling: 'auto',
@@ -66,6 +67,7 @@ export function createDefaultForm() {
       saturation: 0,
       gamma: 0,
       acontrast: 33,
+      adelay: 0,
     },
     options: {
       extra: [],

@@ -34,6 +34,20 @@ function isSet(value: unknown): boolean {
   return value !== undefined && value !== null && value !== '';
 }
 
+// Characters that would split a path into several shell words or be read as
+// shell syntax. Plain names and URLs are left alone so the command stays tidy.
+const SHELL_UNSAFE = /[\s"'`$&|;<>()]/;
+
+// Double-quotes a file path when it needs it. Double quotes work in POSIX
+// shells, cmd.exe and PowerShell alike. A path the user already quoted is left
+// as typed.
+function quotePath(path: string): string {
+  if (!path || !SHELL_UNSAFE.test(path) || /^(".*"|'.*')$/.test(path)) {
+    return path;
+  }
+  return `"${path.replace(/(["\\$`])/g, '\\$1')}"`;
+}
+
 function setFlagsFromMap(map: IFFmpegOptions, options: IFFmpegOptions): string[] {
   const flags: string[] = [];
   // Set flags by adding provided options from the map parameter and adding the
@@ -60,7 +74,11 @@ function setVideoFilters(options: IFFmpegOptions) {
   const scaleFilters = [];
   if (options.size && options.size !== 'source') {
     let arg;
-    if (options.size === 'custom') {
+    if (options.size === 'custom' && options.fit) {
+      // Fit inside the box, keeping the source aspect ratio. Rounding to even
+      // dimensions keeps encoders like x264 from rejecting the result.
+      arg = [`scale=${options.width}:${options.height}:force_original_aspect_ratio=decrease:force_divisible_by=2`];
+    } else if (options.size === 'custom') {
       arg = [`scale=${options.width}:${options.height}`];
     } else {
       arg = options.format === 'widescreen' ? [`scale=${options.size}:-1`] : [`scale=-1:${options.size}`];
@@ -184,11 +202,20 @@ function setAudioFilters(options: IFFmpegOptions): string {
     af.push(...arg);
   }
 
+  // Delay every channel by the same amount, in milliseconds.
+  if (options.adelay && parseInt(options.adelay, 10) > 0) {
+    const arg = [`adelay=delays=${parseInt(options.adelay, 10)}:all=1`];
+    af.push(...arg);
+  }
+
   return af.join(',');
 }
 
 function set2Pass(flags: string[], options: IFFmpegOptions) {
-  const op = '/dev/null &&'; // For Windows use `NUL && \`
+  // Pass 1 only writes the stats log, so its output is discarded. ffmpeg cannot
+  // infer a muxer from /dev/null, so name the null muxer explicitly, and skip
+  // audio since it would be thrown away anyway. For Windows use `NUL`.
+  const op = `${flags.includes('-an') ? '' : '-an '}-f null /dev/null &&`;
   const copy = flags.slice(); // Array clone for pass 2.
 
   // Rewrite command with 1 and 2 pass flags and append to flags array.
@@ -282,7 +309,7 @@ function build(opt: IFFmpegOptions): string {
 
   const flags = [
     'ffmpeg',
-    '-i', `${input}`,
+    '-i', quotePath(`${input}`),
   ];
 
   // Set format flags if clip options are set.
@@ -356,7 +383,7 @@ function build(opt: IFFmpegOptions): string {
   }
 
   // Set output.
-  extra.push(output);
+  extra.push(quotePath(output));
 
   // Push all flags and join them as a space separated string.
   flags.push(...extra);

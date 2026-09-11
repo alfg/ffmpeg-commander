@@ -30,6 +30,7 @@ interface Video {
   size: string;
   width: string;
   height: string;
+  fit: boolean;
   format: string;
   aspect: string;
   scaling: string;
@@ -57,6 +58,7 @@ interface Filters {
   saturation: string;
   gamma: string;
   acontrast: string;
+  adelay: string;
 }
 
 interface Options {

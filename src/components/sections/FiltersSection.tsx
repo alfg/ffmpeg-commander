@@ -1,4 +1,5 @@
 import Field from '@/components/ui/Field'
+import Input from '@/components/ui/Input'
 import Range from '@/components/ui/Range'
 import Select from '@/components/ui/Select'
 import form from '@/lib/form'
@@ -91,6 +92,14 @@ export default function FiltersSection({ value, onChange }: Props) {
             max={100}
             onChange={(acontrast) => onChange({ acontrast })}
           />
+          <Field label="Delay (ms)" htmlFor="filters-adelay" hint="Shifts the audio later to fix sync.">
+            <Input
+              id="filters-adelay"
+              type="number"
+              value={String(value.adelay ?? '')}
+              onChange={(adelay) => onChange({ adelay })}
+            />
+          </Field>
         </div>
       </div>
     </div>

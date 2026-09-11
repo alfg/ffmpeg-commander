@@ -38,6 +38,8 @@ const form = {
       { name: 'x265', value: 'x265', supported: ['mp4', 'mkv', 'avi'] },
       { name: 'h264_nvenc (Nvidia NVENC)', value: 'h264_nvenc', supported: ['mp4'] },
       { name: 'hevc_nvenc (Nvidia NVENC)', value: 'hevc_nvenc', supported: ['mp4'] },
+      { name: 'h264_videotoolbox (Apple VideoToolbox)', value: 'h264_videotoolbox', supported: ['mp4', 'mkv'] },
+      { name: 'hevc_videotoolbox (Apple VideoToolbox)', value: 'hevc_videotoolbox', supported: ['mp4', 'mkv'] },
       { name: 'AV1', value: 'av1', supported: ['mp4', 'mkv'] },
       { name: 'VP8', value: 'vp8', supported: ['mp4', 'webm', 'mkv', 'avi'] },
       { name: 'VP9', value: 'vp9', supported: ['mp4', 'webm', 'mkv', 'avi'] },
@@ -135,11 +137,18 @@ const form = {
     { name: 'Fast Decode', value: 'fastdecode' },
     { name: 'Zero Latency', value: 'zerolatency' },
   ],
+  // Gated by codec like the presets: each encoder accepts its own profile names.
   profiles: [
     { name: 'None', value: 'none' },
-    { name: 'Baseline', value: 'baseline' },
-    { name: 'Main', value: 'main' },
-    { name: 'High', value: 'high' },
+    { name: 'Baseline', value: 'baseline', supported: ['x264', 'h264_nvenc', 'h264_videotoolbox'] },
+    { name: 'Main', value: 'main', supported: ['x264', 'x265', 'h264_nvenc', 'hevc_nvenc', 'h264_videotoolbox', 'hevc_videotoolbox'] },
+    { name: 'High', value: 'high', supported: ['x264', 'h264_nvenc', 'h264_videotoolbox'] },
+    { name: 'Main 10', value: 'main10', supported: ['x265', 'hevc_nvenc', 'hevc_videotoolbox'] },
+    { name: 'Rext', value: 'rext', supported: ['hevc_nvenc'] },
+    { name: '0', value: '0', supported: ['vp9'] },
+    { name: '1', value: '1', supported: ['vp9'] },
+    { name: '2', value: '2', supported: ['vp9'] },
+    { name: '3', value: '3', supported: ['vp9'] },
   ],
   levels: [
     { name: 'None', value: 'none' },
@@ -182,6 +191,10 @@ const form = {
     { name: '320p', value: '480' },
     { name: '240p', value: '320' },
     { name: 'Custom', value: 'custom' },
+  ],
+  fits: [
+    { name: 'Exact size', value: false },
+    { name: 'Fit inside (keep aspect)', value: true },
   ],
   formats: [
     { name: 'Widescreen', value: 'widescreen' },
