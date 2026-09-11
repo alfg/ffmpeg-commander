@@ -1,3 +1,4 @@
+import FfmpegdSetup from '@/components/FfmpegdSetup'
 import { Status, type Job, type Progress } from '@/lib/ffmpegd'
 
 interface Props {
@@ -64,6 +65,8 @@ export default function Queue({
           Clear all
         </button>
       </div>
+
+      {!connected ? <FfmpegdSetup /> : null}
 
       {ordered.length === 0 ? (
         <p className="rounded-lg border border-line bg-panel p-6 text-center text-sm text-muted">

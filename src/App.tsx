@@ -85,6 +85,7 @@ export default function App() {
           value={form.options}
           onChange={updateOptions}
           ffmpegdEnabled={ffmpegd.enabled}
+          ffmpegdConnected={ffmpegd.connected}
           onFfmpegdChange={ffmpegd.setEnabled}
           ffmpegdAddress={ffmpegd.address}
           onFfmpegdAddressChange={ffmpegd.setAddress}

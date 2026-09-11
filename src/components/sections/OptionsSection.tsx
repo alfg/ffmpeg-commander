@@ -3,6 +3,7 @@ import Field from '@/components/ui/Field'
 import Input from '@/components/ui/Input'
 import Select from '@/components/ui/Select'
 import Toggle from '@/components/ui/Toggle'
+import FfmpegdSetup, { FFMPEGD_INSTALL_URL } from '@/components/FfmpegdSetup'
 import { defaultHost, parseAddress } from '@/lib/ffmpegd'
 import form from '@/lib/form'
 import type { IFFMpegOptionsForm } from '@/lib/types'
@@ -11,6 +12,7 @@ interface Props {
   value: IFFMpegOptionsForm['options']
   onChange: (patch: Partial<IFFMpegOptionsForm['options']>) => void
   ffmpegdEnabled: boolean
+  ffmpegdConnected: boolean
   onFfmpegdChange: (enabled: boolean) => void
   /** Saved daemon origin, or '' when the default is in use. */
   ffmpegdAddress: string
@@ -70,6 +72,7 @@ export default function OptionsSection({
   value,
   onChange,
   ffmpegdEnabled,
+  ffmpegdConnected,
   onFfmpegdChange,
   ffmpegdAddress,
   onFfmpegdAddressChange,
@@ -110,8 +113,27 @@ export default function OptionsSection({
           label="Send encode jobs to a local ffmpegd daemon (experimental)."
           onChange={onFfmpegdChange}
         />
+        <p className="mt-1 max-w-xl text-xs text-muted">
+          ffmpegd is a small companion app that runs these commands on your computer and reports
+          progress here.{' '}
+          <a
+            href={FFMPEGD_INSTALL_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-accent underline underline-offset-2 hover:text-accent-hover"
+          >
+            Install ffmpegd
+          </a>
+        </p>
         {ffmpegdEnabled ? (
-          <DaemonAddress value={ffmpegdAddress} onChange={onFfmpegdAddressChange} />
+          <>
+            <DaemonAddress value={ffmpegdAddress} onChange={onFfmpegdAddressChange} />
+            {!ffmpegdConnected ? (
+              <div className="mt-3 max-w-xl">
+                <FfmpegdSetup explain={false} />
+              </div>
+            ) : null}
+          </>
         ) : null}
       </div>
 

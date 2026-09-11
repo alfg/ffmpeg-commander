@@ -1,9 +1,10 @@
 import { describe, it, expect, afterEach, beforeEach, vi } from 'vitest'
-import { render, screen, cleanup, act, waitFor } from '@testing-library/react'
+import { render, screen, cleanup, act, waitFor, fireEvent, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import App from '@/App'
 import storage from '@/lib/storage'
 import { FFMPEGD_KEY, POLL_MS, QUEUE_KEY, Status } from '@/lib/ffmpegd'
+import { FFMPEGD_INSTALL_URL, SETUP_DELAY_MS } from '@/components/FfmpegdSetup'
 
 const commandText = () =>
   screen.getByTestId('command').textContent?.replace(/\s+/g, ' ').trim() ?? ''
@@ -291,5 +292,72 @@ describe('ffmpegd', () => {
 
     expect(first.closed).toBe(true)
     expect(FakeSocket.instances).toHaveLength(1)
+  })
+})
+
+describe('ffmpegd setup hint', () => {
+  const setup = () => screen.queryByRole('status')
+  const wait = (ms: number) => act(async () => { vi.advanceTimersByTime(ms) })
+
+  it('links to the install guide from Options, even while ffmpegd is off', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    await user.click(screen.getByRole('tab', { name: 'Options' }))
+
+    const link = screen.getByRole('link', { name: 'Install ffmpegd' })
+    expect(link.getAttribute('href')).toBe(FFMPEGD_INSTALL_URL)
+    expect(setup()).toBeNull()
+  })
+
+  it('shows setup steps in Options when enabled but not connected, after a grace period', async () => {
+    vi.useFakeTimers()
+    enableFfmpegd()
+    render(<App />)
+    fireEvent.click(screen.getByRole('tab', { name: 'Options' }))
+
+    // A normal connect takes a moment; don't flash install steps at it.
+    await wait(SETUP_DELAY_MS - 100)
+    expect(setup()).toBeNull()
+
+    await wait(200)
+    const hint = setup()!
+    expect(hint.textContent).toContain("Can't reach ffmpegd at localhost:3000")
+    expect(hint.textContent).toContain('brew install alfg/tap/ffmpegd')
+    expect(within(hint).getByRole('link', { name: 'the install guide' }).getAttribute('href'))
+      .toBe(FFMPEGD_INSTALL_URL)
+  })
+
+  it('goes away once the daemon connects', async () => {
+    vi.useFakeTimers()
+    enableFfmpegd()
+    render(<App />)
+    fireEvent.click(screen.getByRole('tab', { name: 'Options' }))
+    await wait(SETUP_DELAY_MS)
+    expect(setup()).not.toBeNull()
+
+    await act(async () => socket().open())
+    expect(setup()).toBeNull()
+  })
+
+  it('names a saved daemon address', async () => {
+    vi.useFakeTimers()
+    enableFfmpegd()
+    localStorage.setItem('host', 'http://mybox:9000')
+    render(<App />)
+    fireEvent.click(screen.getByRole('tab', { name: 'Options' }))
+    await wait(SETUP_DELAY_MS)
+
+    expect(setup()!.textContent).toContain("Can't reach ffmpegd at mybox:9000")
+  })
+
+  it('shows the same steps on the Queue while offline', async () => {
+    vi.useFakeTimers()
+    enableFfmpegd()
+    render(<App />)
+    fireEvent.click(screen.getByRole('tab', { name: 'Queue' }))
+    await wait(SETUP_DELAY_MS)
+
+    expect(screen.getByText('● ffmpegd offline')).toBeTruthy()
+    expect(setup()!.textContent).toContain('Run ffmpegd in the folder with your videos')
   })
 })
