@@ -29,7 +29,7 @@ const selects = [
 const eq = [
   { key: 'contrast', min: -100, max: 100 },
   { key: 'brightness', min: -100, max: 100 },
-  { key: 'saturation', min: 0, max: 300 },
+  { key: 'saturation', min: -100, max: 200 },
   { key: 'gamma', min: 0, max: 100 },
 ] as const
 

@@ -164,6 +164,10 @@ describe('ffmpeg.build', () => {
       expect(conflicts(overrides)).toEqual({ video: false, audio: true });
     });
 
+    it('does not flag copied audio that is muted', () => {
+      expect(conflicts({ audio: { quality: 'mute' }, filters: { adelay: 5 } }).audio).toBe(false);
+    });
+
     it('clears once the audio is re-encoded', () => {
       expect(conflicts({ audio: { codec: 'aac' }, filters: { adelay: 5 } }).audio).toBe(false);
     });
@@ -252,11 +256,24 @@ describe('ffmpeg.build', () => {
         },
       })).toBe('ffmpeg -i input.mp4 -c:v libx264 -vf "deband,deshake,deflicker,dejudder,'
         + 'vaguedenoiser=threshold=6:method=soft:nsteps=5,yadif=1:-1:0,'
-        + 'eq=contrast=1.2:brightness=0.1:saturation=2:gamma=1.5" -c:a copy output.mp4');
+        + 'eq=contrast=1.2:brightness=0.1:saturation=1.02:gamma=1.5" -c:a copy output.mp4');
     });
 
     it.each([
-      ['default', 'removegrain=0'],
+      [-100, 'saturation=0'],
+      [-33, 'saturation=0.67'],
+      [100, 'saturation=2'],
+      [200, 'saturation=3'],
+    ])('maps saturation %i%% to %s', (saturation, expected) => {
+      expect(build({ filters: { saturation } })).toContain(`-vf "eq=${expected}"`);
+    });
+
+    it('prints contrast without floating-point noise', () => {
+      expect(build({ filters: { contrast: -33 } })).toContain('-vf "eq=contrast=0.67"');
+    });
+
+    it.each([
+      ['default', 'hqdn3d'],
       ['light', 'removegrain=22'],
       ['medium', 'vaguedenoiser=threshold=3:method=soft:nsteps=5'],
       ['heavy', 'vaguedenoiser=threshold=6:method=soft:nsteps=5'],
@@ -294,9 +311,20 @@ describe('ffmpeg.build', () => {
         .toBe('ffmpeg -i input.mp4 -c:v libx264 -c:a aac -b:a 333k output.mp4');
     });
 
+    // acontrast takes 0-100 itself; this used to emit acontrast=0.5.
     it('emits acontrast when moved off its default of 33', () => {
       expect(build({ filters: { acontrast: 50 } }))
-        .toBe('ffmpeg -i input.mp4 -c:v libx264 -c:a copy -af "acontrast=0.5" output.mp4');
+        .toBe('ffmpeg -i input.mp4 -c:v libx264 -c:a copy -af "acontrast=50" output.mp4');
+    });
+
+    it('drops the audio for the "Mute" quality instead of emitting -b:a mute', () => {
+      expect(build({ audio: { codec: 'aac', quality: 'mute', volume: 50 }, filters: { adelay: 100 } }))
+        .toBe('ffmpeg -i input.mp4 -c:v libx264 -an output.mp4');
+    });
+
+    it('enables experimental codecs for the DTS encoder', () => {
+      expect(build({ format: { container: 'mkv' }, audio: { codec: 'dts' } }))
+        .toBe('ffmpeg -i input.mp4 -c:v libx264 -c:a dca -strict -2 output.mp4');
     });
 
     it.each([

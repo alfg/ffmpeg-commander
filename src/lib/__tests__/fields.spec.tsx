@@ -258,3 +258,30 @@ describe('filters on a copied stream', () => {
     expect(screen.getByRole('alert').textContent).toContain('Copy cannot be filtered, resized')
   })
 })
+
+describe('tunes follow the codec', () => {
+  const tuneOptions = () =>
+    Array.from((screen.getByLabelText('Tune') as HTMLSelectElement).options).map((o) => o.value)
+
+  it('hides the x264-only tunes for x265, and drops a selected one', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    await openTab(user, 'Video')
+
+    await user.selectOptions(screen.getByLabelText('Tune'), 'film')
+    expect(command()).toContain('-tune film')
+
+    await user.selectOptions(screen.getByLabelText('Codec', { selector: '#video-codec' }), 'x265')
+    expect(tuneOptions()).toEqual(['none', 'animation', 'grain', 'fastdecode', 'zerolatency'])
+    expect(command()).not.toContain('-tune')
+  })
+
+  it('offers no tunes for encoders without them', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    await openTab(user, 'Video')
+
+    await user.selectOptions(screen.getByLabelText('Codec', { selector: '#video-codec' }), 'h264_nvenc')
+    expect(tuneOptions()).toEqual(['none'])
+  })
+})

@@ -125,8 +125,12 @@ function transformToJSON(formData: IFFMpegOptionsForm) {
       denoise: filters.denoise,
       deinterlace: filters.deinterlace,
       brightness: (parseInt(filters.brightness, 10) / 100).toString(),
-      contrast: ((parseInt(filters.contrast, 10) / 100) + 1).toString(),
-      saturation: filters.saturation.toString(),
+      contrast: ((parseInt(filters.contrast, 10) + 100) / 100).toString(),
+      // ffmpegd reads 0 as unset, so keep 0 for an untouched slider and send
+      // the eq multiplier otherwise, as contrast does.
+      saturation: (parseInt(filters.saturation, 10) === 0
+        ? 0
+        : (parseInt(filters.saturation, 10) + 100) / 100).toString(),
       gamma: (parseInt(filters.gamma, 10) / 10).toString(),
       acontrast: filters.acontrast.toString(),
     },

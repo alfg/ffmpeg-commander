@@ -38,12 +38,15 @@ export function reconcile(next: IFFMpegOptionsForm): IFFMpegOptionsForm {
   if (!isSupported(form.codecs.audio as Supported[], audio.codec, container)) {
     audio.codec = firstSupported(form.codecs.audio as Supported[], container, 'copy')
   }
-  // Encoder presets and profiles are gated by the codec, not the container.
+  // Encoder presets, profiles and tunes are gated by the codec, not the container.
   if (!isSupported(form.presets as Supported[], video.preset, video.codec)) {
     video.preset = 'none'
   }
   if (!isSupported(form.profiles as Supported[], String(video.profile), video.codec)) {
     video.profile = 'none'
+  }
+  if (!isSupported(form.tunes as Supported[], video.tune, video.codec)) {
+    video.tune = 'none'
   }
 
   return {

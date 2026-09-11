@@ -52,6 +52,7 @@ export default function VideoSection({ value, container, copyConflict, onChange 
   const codecs = filterSupported(form.codecs.video as SupportedOption[], container)
   const presets = filterSupported(form.presets as SupportedOption[], value.codec)
   const profiles = filterSupported(form.profiles as SupportedOption[], value.codec)
+  const tunes = filterSupported(form.tunes as SupportedOption[], value.codec)
   const missingBitrate =
     value.pass === '2' && twoPassNeedsBitrate.includes(value.codec) && !value.bitrate
   const set = (key: keyof Video) => (v: string) => onChange({ [key]: v } as Partial<Video>)
@@ -134,7 +135,7 @@ export default function VideoSection({ value, container, copyConflict, onChange 
             <Select
               id={`video-${f.key}`}
               value={String(value[f.key])}
-              options={f.key === 'profile' ? profiles : f.options}
+              options={f.key === 'profile' ? profiles : f.key === 'tune' ? tunes : f.options}
               onChange={set(f.key)}
             />
           </Field>

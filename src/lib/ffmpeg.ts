@@ -48,6 +48,13 @@ function quotePath(path: string): string {
   return `"${path.replace(/(["\\$`])/g, '\\$1')}"`;
 }
 
+// eq takes a multiplier where 1 is unchanged; the sliders run in percent around
+// 0. Divided last, because 1 + -33 / 100 is 0.6699999999999999 in floating point.
+const eqFactor = (percent: number) => (percent + 100) / 100;
+
+// "Mute" in the quality list drops the audio track, the same as codec "None".
+const audioDisabled = (options: IFFmpegOptions) => options.acodec === 'none' || options.quality === 'mute';
+
 function setFlagsFromMap(map: IFFmpegOptions, options: IFFmpegOptions): string[] {
   const flags: string[] = [];
   // Set flags by adding provided options from the map parameter and adding the
@@ -131,7 +138,9 @@ function setVideoFilters(options: IFFmpegOptions) {
         arg = ['vaguedenoiser=threshold=6:method=soft:nsteps=5'];
         break;
       default:
-        arg = ['removegrain=0'];
+        // A general-purpose denoiser at its own default strength. This was
+        // removegrain=0, which leaves every plane unchanged.
+        arg = ['hqdn3d'];
         break;
     }
     vf.push(...arg);
@@ -161,7 +170,7 @@ function setVideoFilters(options: IFFmpegOptions) {
   // EQ Filters.
   const eq = [];
   if (parseInt(options.contrast, 10) !== 0) {
-    const arg = [`contrast=${(parseInt(options.contrast, 10) / 100) + 1}`];
+    const arg = [`contrast=${eqFactor(parseInt(options.contrast, 10))}`];
     eq.push(...arg);
   }
 
@@ -171,7 +180,9 @@ function setVideoFilters(options: IFFmpegOptions) {
   }
 
   if (parseInt(options.saturation, 10) !== 0) {
-    const arg = [`saturation=${parseInt(options.saturation, 10)}`];
+    // Percent around 0 like contrast: -100 is greyscale, 200 triples, the most
+    // eq allows. It used to pass the raw 0-300 value, which eq clamps at 3.
+    const arg = [`saturation=${eqFactor(parseInt(options.saturation, 10))}`];
     eq.push(...arg);
   }
 
@@ -198,7 +209,9 @@ function setAudioFilters(options: IFFmpegOptions): string {
   }
 
   if (options.acontrast && parseInt(options.acontrast, 10) !== 33) {
-    const arg = [`acontrast=${parseInt(options.acontrast, 10) / 100}`];
+    // acontrast takes 0-100 itself; this used to divide by 100, leaving almost
+    // no effect. 33, the filter's default, is treated as off.
+    const arg = [`acontrast=${parseInt(options.acontrast, 10)}`];
     af.push(...arg);
   }
 
@@ -271,12 +284,17 @@ function setVideoFlags(options: IFFmpegOptions) {
 }
 
 function setAudioFlags(options: IFFmpegOptions) {
-  // "None" means no audio track at all, so -an replaces every other audio flag.
-  if (options.acodec === 'none') {
+  // No audio track at all, so -an replaces every other audio flag.
+  if (audioDisabled(options)) {
     return ['-an'];
   }
 
   const flags = setFlagsFromMap(audioOptionsMap, options);
+
+  // ffmpeg's DTS encoder is marked experimental and refuses to run without this.
+  if (options.acodec === 'dca') {
+    flags.push('-strict', '-2');
+  }
 
   //
   // Set more complex options that can't be set from the audioOptionsMap.
@@ -302,7 +320,7 @@ function setAudioFlags(options: IFFmpegOptions) {
 function copyConflicts(opt: IFFmpegOptions) {
   return {
     video: opt.vcodec === 'copy' && setVideoFilters(opt) !== '',
-    audio: opt.acodec === 'copy' && setAudioFilters(opt) !== '',
+    audio: opt.acodec === 'copy' && !audioDisabled(opt) && setAudioFilters(opt) !== '',
   };
 }
 
@@ -342,7 +360,7 @@ function build(opt: IFFmpegOptions): string {
   flags.push(...audioFlags);
 
   // Set audio filters. Skipped when the audio track is disabled.
-  const af = options.acodec === 'none' ? '' : setAudioFilters(options);
+  const af = audioDisabled(options) ? '' : setAudioFilters(options);
   if (af) {
     flags.push(`-af "${af}"`);
   }

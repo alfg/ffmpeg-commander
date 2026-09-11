@@ -157,13 +157,13 @@ const help: Record<string, FieldHelp> = {
   },
   'video-tune': {
     flag: '-tune',
-    text: 'Adjusts x264 and x265 for a type of content. x265 accepts only Grain, Animation, Fast Decode and Zero Latency.',
+    text: 'Adjusts x264 and x265 for a type of content. The list shows the tunes the chosen encoder accepts; other encoders have none.',
     values: {
       none: 'No tuning. Right for most content.',
-      film: 'High-quality live-action footage. x264 only.',
+      film: 'High-quality live-action footage.',
       animation: 'Cartoons and anime with flat colour areas.',
       grain: 'Keeps film grain instead of smoothing it away. Makes larger files.',
-      stillimage: 'Slideshow-like content that barely moves. x264 only.',
+      stillimage: 'Slideshow-like content that barely moves.',
       fastdecode: 'Turns off features that are expensive to decode, for weak playback devices.',
       zerolatency: 'Live streaming and video calls: no frames held back for look-ahead.',
     },
@@ -247,7 +247,7 @@ const help: Record<string, FieldHelp> = {
     values: {
       aac: 'The standard for MP4 and M4A. Widely compatible.',
       ac3: 'Dolby Digital. Common for surround sound on DVDs and TVs.',
-      dts: 'DTS surround. ffmpeg\'s DTS encoder is experimental.',
+      dts: 'DTS surround. ffmpeg\'s DTS encoder is experimental, so -strict -2 is added to allow it.',
       vorbis: 'Open codec for Ogg and WebM. Opus is usually the better choice now.',
       opus: 'Excellent quality even at low bit rates. For WebM, Ogg and MKV.',
       lame: 'MP3. Plays on anything.',
@@ -265,6 +265,11 @@ const help: Record<string, FieldHelp> = {
   'audio-quality': {
     flag: '-b:a',
     text: 'Audio bit rate. For stereo AAC, 128k sounds good and 192k or more is hard to tell from the original. Opus sounds good from about 96k.',
+    values: {
+      auto: 'Let the encoder pick its default bit rate.',
+      custom: 'Enter your own bit rate below.',
+      mute: 'Remove the audio track entirely (-an), like the codec None.',
+    },
   },
   'audio-bitrate': {
     flag: '-b:a',
@@ -299,6 +304,7 @@ const help: Record<string, FieldHelp> = {
   'filters-denoise': {
     text: 'Reduces noise and grain. Stronger settings remove more noise but also soften fine detail.',
     values: {
+      default: 'A general-purpose denoiser (hqdn3d) at its default strength.',
       light: 'A light spatial filter (removegrain).',
       medium: 'Wavelet denoising (vaguedenoiser) at a moderate strength.',
       heavy: 'Wavelet denoising at double the medium strength, for very noisy footage.',
@@ -324,7 +330,7 @@ const help: Record<string, FieldHelp> = {
   },
   'filters-saturation': {
     flag: 'eq saturation',
-    text: 'Colour intensity. Leave it at 0 for no change.',
+    text: 'Colour intensity. 0 leaves it unchanged, -100 is black and white, 100 doubles it and 200 triples it.',
   },
   'filters-gamma': {
     flag: 'eq gamma',
@@ -334,7 +340,7 @@ const help: Record<string, FieldHelp> = {
   // Filters: audio.
   'filters-acontrast': {
     flag: 'acontrast',
-    text: 'Audio dynamic range compression: brings quiet and loud parts closer together, which sounds louder and punchier. 33 is off.',
+    text: 'Audio dynamic range compression: brings quiet and loud parts closer together, which sounds louder and punchier. Higher values are stronger; 33 leaves it off.',
   },
   'filters-adelay': {
     flag: 'adelay',

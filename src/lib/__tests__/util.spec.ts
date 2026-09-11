@@ -385,10 +385,15 @@ describe('util.transformToJSON', () => {
       deinterlace: 'none',
       brightness: '0.1',
       contrast: '1.2',
-      saturation: '2',
+      saturation: '1.02',
       gamma: '1.5',
       acontrast: '50',
     });
+  });
+
+  it('keeps an untouched saturation at 0, which ffmpegd reads as unset', () => {
+    expect(util.transformToJSON(makeForm()).filter.saturation).toBe('0');
+    expect(util.transformToJSON(makeForm({ filters: { saturation: -100 } })).filter.saturation).toBe('0');
   });
 
   it('resolves codec slugs to ffmpeg encoder names', () => {

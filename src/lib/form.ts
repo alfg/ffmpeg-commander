@@ -128,16 +128,17 @@ const form = {
     { name: '300%', value: '.33333*PTS' },
     { name: '500%', value: '.2*PTS' },
   ],
+  // Gated by codec like presets and profiles. x265 has no film or stillimage
+  // tune, and the other encoders here take none of these.
   tunes: [
     { name: 'None', value: 'none' },
-    { name: 'Film', value: 'film' },
-    { name: 'Animation', value: 'animation' },
-    { name: 'Grain', value: 'grain' },
-    { name: 'Still Image', value: 'stillimage' },
-    { name: 'Fast Decode', value: 'fastdecode' },
-    { name: 'Zero Latency', value: 'zerolatency' },
+    { name: 'Film', value: 'film', supported: ['x264'] },
+    { name: 'Animation', value: 'animation', supported: ['x264', 'x265'] },
+    { name: 'Grain', value: 'grain', supported: ['x264', 'x265'] },
+    { name: 'Still Image', value: 'stillimage', supported: ['x264'] },
+    { name: 'Fast Decode', value: 'fastdecode', supported: ['x264', 'x265'] },
+    { name: 'Zero Latency', value: 'zerolatency', supported: ['x264', 'x265'] },
   ],
-  // Gated by codec like the presets: each encoder accepts its own profile names.
   profiles: [
     { name: 'None', value: 'none' },
     { name: 'Baseline', value: 'baseline', supported: ['x264', 'h264_nvenc', 'h264_videotoolbox'] },
