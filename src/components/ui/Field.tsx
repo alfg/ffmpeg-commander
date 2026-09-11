@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import HelpTip from './HelpTip'
 
 interface FieldProps {
   label: string
@@ -13,9 +14,12 @@ interface FieldProps {
 export default function Field({ label, htmlFor, hint, error, children }: FieldProps) {
   return (
     <div className="flex min-w-0 flex-col gap-1">
-      <label htmlFor={htmlFor} className="text-xs font-medium text-muted">
-        {label}
-      </label>
+      <div className="flex items-center gap-1">
+        <label htmlFor={htmlFor} className="text-xs font-medium text-muted">
+          {label}
+        </label>
+        {htmlFor ? <HelpTip id={htmlFor} label={label} /> : null}
+      </div>
       {children}
       {error ? (
         <p role="alert" className="text-xs text-danger">{error}</p>

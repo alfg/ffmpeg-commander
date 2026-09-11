@@ -80,10 +80,10 @@ describe('video controls reach the command', () => {
     render(<App />)
     await openTab(user, 'Video')
 
-    expect(screen.queryByLabelText(/CRF/)).toBeNull()
+    expect(screen.queryByLabelText('CRF')).toBeNull()
     await user.selectOptions(screen.getByLabelText('Rate control'), 'crf')
 
-    const crf = screen.getByLabelText(/CRF/)
+    const crf = screen.getByLabelText('CRF')
     expect(crf.getAttribute('type')).toBe('range')
     expect(crf.getAttribute('max')).toBe('51')
     expect(command()).toContain('-crf')

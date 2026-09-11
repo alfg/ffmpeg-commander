@@ -1,3 +1,5 @@
+import HelpTip from './HelpTip'
+
 interface RangeProps {
   id: string
   label: string
@@ -11,10 +13,15 @@ interface RangeProps {
 export default function Range({ id, label, value, min, max, onChange }: RangeProps) {
   return (
     <div className="flex min-w-0 flex-col gap-1">
-      <label htmlFor={id} className="flex justify-between text-xs font-medium text-muted">
-        <span>{label}</span>
+      {/* The help button sits outside the label: a button inside a label also
+          activates the slider when clicked. */}
+      <div className="flex items-center justify-between gap-1 text-xs font-medium text-muted">
+        <span className="flex items-center gap-1">
+          <label htmlFor={id}>{label}</label>
+          <HelpTip id={id} label={label} />
+        </span>
         <span className="font-mono text-fg tabular-nums">{value}</span>
-      </label>
+      </div>
       <input
         id={id}
         type="range"
