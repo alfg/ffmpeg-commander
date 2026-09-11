@@ -57,28 +57,62 @@ export const DAEMON_ORIGIN = 'http://localhost:8080'
 const LOCAL_HOSTNAMES = ['localhost', '127.0.0.1', '[::1]']
 const isLocalPage = () => LOCAL_HOSTNAMES.includes(window.location.hostname)
 
-const defaultHost = () => (isLocalPage() ? window.location.origin : DAEMON_ORIGIN)
+export const defaultHost = () => (isLocalPage() ? window.location.origin : DAEMON_ORIGIN)
 
-const defaultWsUri = () => {
-  if (!isLocalPage()) return `${DAEMON_ORIGIN.replace(/^http/, 'ws')}/ws`
-  return `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/ws`
+const toWs = (origin: string) => `${origin.replace(/^http/, 'ws')}/ws`
+
+const defaultWsUri = () => (isLocalPage() ? toWs(window.location.origin) : toWs(DAEMON_ORIGIN))
+
+const read = (key: string) => {
+  try {
+    return localStorage.getItem(key)
+  } catch {
+    return null
+  }
 }
 
+/**
+ * Turns what someone typed into an http(s) origin, or null if it is not one.
+ * Accepts a bare host:port ("mybox:9000") as well as a full URL; ws:// and
+ * wss:// are read as the matching http scheme, and any path is dropped.
+ */
+export function parseAddress(input: string): string | null {
+  const trimmed = input.trim()
+  if (!trimmed) return null
+  try {
+    const url = new URL(/^[a-z]+:\/\//i.test(trimmed) ? trimmed : `http://${trimmed}`)
+    const scheme = { 'http:': 'http:', 'https:': 'https:', 'ws:': 'http:', 'wss:': 'https:' }[url.protocol]
+    return scheme && url.host ? `${scheme}//${url.host}` : null
+  } catch {
+    return null
+  }
+}
+
+/** The daemon address saved from the Options tab, or '' for the default. */
+export const readAddress = () => read(HOST_KEY) ?? ''
+
+/**
+ * Saves the daemon address, or clears it with null. Also drops any separate
+ * ws_uri override so the socket follows the address rather than a stale value.
+ */
+export function writeAddress(origin: string | null): void {
+  try {
+    if (origin) localStorage.setItem(HOST_KEY, origin)
+    else localStorage.removeItem(HOST_KEY)
+    localStorage.removeItem(WS_URI_KEY)
+  } catch {
+    // Storage blocked; the default address stays in use.
+  }
+}
+
+// ws_uri alone still overrides the socket, for setups where the websocket is
+// proxied somewhere other than the /files endpoint.
 export const wsUri = () => {
-  try {
-    return localStorage.getItem(WS_URI_KEY) || defaultWsUri()
-  } catch {
-    return defaultWsUri()
-  }
+  const saved = read(HOST_KEY)
+  return read(WS_URI_KEY) || (saved ? toWs(saved) : defaultWsUri())
 }
 
-export const host = () => {
-  try {
-    return localStorage.getItem(HOST_KEY) || defaultHost()
-  } catch {
-    return defaultHost()
-  }
-}
+export const host = () => read(HOST_KEY) || defaultHost()
 
 export async function listFiles(prefix = ''): Promise<FileListing> {
   const res = await fetch(`${host()}/files?prefix=${encodeURIComponent(prefix)}`)

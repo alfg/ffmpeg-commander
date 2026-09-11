@@ -5,9 +5,11 @@ import {
   isFinished,
   POLL_MS,
   QUEUE_KEY,
+  readAddress,
   readEnabled,
   RETRY_MS,
   Status,
+  writeAddress,
   writeEnabled,
   wsUri,
   type Job,
@@ -26,6 +28,7 @@ import {
  */
 export function useFfmpegd() {
   const [enabled, setEnabledState] = useState(readEnabled)
+  const [address, setAddressState] = useState(readAddress)
   const [socketOpen, setSocketOpen] = useState(false)
   const [jobs, setJobs] = useState<Job[]>(() => storage.getAll(QUEUE_KEY) as Job[])
   const [progress, setProgress] = useState<Progress | null>(null)
@@ -129,7 +132,8 @@ export function useFfmpegd() {
       ws.onopen = null
       ws.close()
     }
-  }, [enabled])
+    // Reconnects when the address changes; wsUri() reads it from storage.
+  }, [enabled, address])
 
   /**
    * Dispatch the next queued job, if nothing is already encoding.
@@ -180,6 +184,12 @@ export function useFfmpegd() {
     writeEnabled(value)
   }, [])
 
+  /** Takes a parsed origin from parseAddress, or null for the default. */
+  const setAddress = useCallback((origin: string | null) => {
+    writeAddress(origin)
+    setAddressState(origin ?? '')
+  }, [])
+
   const enqueue = useCallback(
     (input: string, output: string, payload: unknown) => {
       storage.add(QUEUE_KEY, {
@@ -217,6 +227,8 @@ export function useFfmpegd() {
   return {
     enabled,
     setEnabled,
+    address,
+    setAddress,
     connected,
     jobs,
     progress,

@@ -86,6 +86,8 @@ export default function App() {
           onChange={updateOptions}
           ffmpegdEnabled={ffmpegd.enabled}
           onFfmpegdChange={ffmpegd.setEnabled}
+          ffmpegdAddress={ffmpegd.address}
+          onFfmpegdAddressChange={ffmpegd.setAddress}
         />
       ),
     },

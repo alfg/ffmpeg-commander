@@ -93,8 +93,14 @@ When running the dev server, the Vite config proxies `/ws` and `/files` to
 `localhost:8080` and presents an origin `ffmpegd` accepts, since the dev
 server's own port is not on the list.
 
-To use a daemon on another host or port, set `host` (e.g. `http://mybox:8080`)
-and `ws_uri` (e.g. `ws://mybox:8080/ws`) in the browser's localStorage.
+To use a daemon on another host or port, turn on ffmpegd in the Options tab and
+enter its address under **Daemon address**, e.g. `mybox:9000` or
+`https://ffmpegd.example.com`. It is saved in the browser's localStorage.
+
+Browsers only let an https page open a plain `ws://` connection to `localhost`.
+To reach a daemon on another machine from https://ffmpeg-commander.com, serve it
+over https (for example behind a TLS reverse proxy) and enter an `https://`
+address.
 
 
 

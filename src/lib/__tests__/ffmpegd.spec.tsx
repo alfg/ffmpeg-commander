@@ -93,6 +93,37 @@ describe('ffmpegd', () => {
     expect(screen.getByRole('tab', { name: 'Builder' })).toBeTruthy()
   })
 
+  it('reconnects to a daemon address saved in Options', async () => {
+    enableFfmpegd()
+    const user = userEvent.setup()
+    render(<App />)
+    await user.click(screen.getByRole('tab', { name: 'Options' }))
+    const first = socket()
+
+    await user.type(screen.getByLabelText('Daemon address'), 'mybox:9000')
+    expect(FakeSocket.instances).toHaveLength(1)
+    await user.click(screen.getByRole('button', { name: 'Save' }))
+
+    expect(socket().url).toBe('ws://mybox:9000/ws')
+    expect(first).not.toBe(socket())
+    expect((screen.getByLabelText('Daemon address') as HTMLInputElement).value).toBe('http://mybox:9000')
+    expect(localStorage.getItem('host')).toBe('http://mybox:9000')
+  })
+
+  it('rejects an address it cannot parse and keeps the connection', async () => {
+    enableFfmpegd()
+    const user = userEvent.setup()
+    render(<App />)
+    await user.click(screen.getByRole('tab', { name: 'Options' }))
+
+    await user.type(screen.getByLabelText('Daemon address'), 'ftp://mybox')
+    await user.click(screen.getByRole('button', { name: 'Save' }))
+
+    expect(screen.getByRole('alert').textContent).toContain('Enter a host and port')
+    expect(FakeSocket.instances).toHaveLength(1)
+    expect(localStorage.getItem('host')).toBeNull()
+  })
+
   it('offers Encode only once the socket is actually open', async () => {
     enableFfmpegd()
     render(<App />)
