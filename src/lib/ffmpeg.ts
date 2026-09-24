@@ -257,6 +257,68 @@ function setFormatFlags(options: IFFmpegOptions) {
   return setFlagsFromMap(formatOptionsMap, options);
 }
 
+function setHevcNvencFlags(options: IFFmpegOptions): string[] {
+  if (options.vcodec !== 'hevc_nvenc') {
+    return [];
+  }
+
+  const flags: string[] = [];
+
+  if (isSet(options.nvencRc) && options.nvencRc !== 'none') {
+    flags.push('-rc', options.nvencRc);
+  }
+
+  if (options.nvencRc === 'vbr'&& isSet(options.nvencCq)) {
+    flags.push('-cq', options.nvencCq);
+  }
+
+  if (options.nvencRc === 'constqp' && isSet(options.nvencQp)) {
+    flags.push('-qp', options.nvencQp);
+  }
+
+  if (isSet(options.nvencMultipass) && options.nvencMultipass !== 'disabled') {
+    flags.push('-multipass', options.nvencMultipass);
+  }
+
+  if (isSet(options.nvencTier) && options.nvencTier !== 'none') {
+    flags.push('-tier', options.nvencTier);
+  }
+
+  if (isSet(options.nvencRcLookahead) && Number(options.nvencRcLookahead) > 0) {
+    flags.push('-rc-lookahead', options.nvencRcLookahead);
+  }
+
+  const booleanFlags: [string, string][] = [
+    ['-spatial-aq', options.nvencSpatialAq],
+    ['-temporal-aq', options.nvencTemporalAq],
+    ['-zerolatency', options.nvencZerolatency],
+    ['-strict_gop', options.nvencStrictGop],
+    ['-weighted_pred', options.nvencWeightedPred],
+    ['-no-scenecut', options.nvencNoScenecut],
+    ['-b_adapt', options.nvencBAdapt],
+  ];
+
+  booleanFlags.forEach(([flag, value]) => {
+    if (isSet(value) && value !== 'default') {
+      flags.push(flag, value);
+    }
+  });
+
+  if (options.nvencSpatialAq === '1' && isSet(options.nvencAqStrength)) {
+    flags.push('-aq-strength', options.nvencAqStrength);
+  }
+
+  if (isSet(options.nvencBRefMode) && options.nvencBRefMode !== 'none') {
+    flags.push('-b_ref_mode', options.nvencBRefMode);
+  }
+
+  if (isSet(options.nvencGpu)) {
+    flags.push('-gpu', options.nvencGpu);
+  }
+
+  return flags;
+}
+
 function setVideoFlags(options: IFFmpegOptions) {
   // "None" means no video track at all, so -vn replaces every other video flag.
   // Mirrors how acodec === 'none' is handled in setAudioFlags.
@@ -270,9 +332,8 @@ function setVideoFlags(options: IFFmpegOptions) {
   // Set more complex options that can't be set from the videoOptionsMap.
   //
   // 0 is a real value: lossless for x264.
-  if (options.pass === 'crf' && isSet(options.crf)) {
-    const arg = ['-crf', options.crf];
-    flags.push(...arg);
+  if (options.vcodec !== 'hevc_nvenc' && options.pass === 'crf' && isSet(options.crf)) {
+    flags.push('-crf', options.crf);
   }
 
   if (options.faststart) {
@@ -284,6 +345,8 @@ function setVideoFlags(options: IFFmpegOptions) {
     const arg = [`-${options.vcodec.replace('lib', '')}-params`, options.codecOptions];
     flags.push(...arg);
   }
+// TODO: Je crois que ca devrait être dans le IF hevc_nvenc.
+  flags.push(...setHevcNvencFlags(options));
 
   return flags;
 }
