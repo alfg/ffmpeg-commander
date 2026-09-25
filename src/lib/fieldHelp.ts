@@ -65,8 +65,8 @@ const help: Record<string, FieldHelp> = {
     values: {
       x264: 'H.264 (libx264). The most compatible choice and a good default.',
       x265: 'HEVC (libx265). Similar quality to H.264 in a noticeably smaller file, but slower to encode and not supported by every browser.',
-      h264_nvenc: 'H.264 on an NVIDIA GPU. Much faster than x264, but larger files at the same quality. Needs an NVIDIA card and an ffmpeg build with NVENC.',
-      hevc_nvenc: 'HEVC on an NVIDIA GPU. Fast, with the same trade-offs as h264_nvenc.',
+      h264_nvenc: 'H.264 on an NVIDIA GPU. Much faster than x264, but larger files at the same quality. Needs an NVIDIA card and an ffmpeg build with NVENC. Brings its own rate control and an NVENC group of settings.',
+      hevc_nvenc: 'HEVC on an NVIDIA GPU. Fast, with the same trade-offs and settings as h264_nvenc.',
       h264_videotoolbox: 'H.264 on Apple hardware (macOS). Very fast, larger files than x264 at the same quality.',
       hevc_videotoolbox: 'HEVC on Apple hardware (macOS). Very fast; for 10-bit, pick Main 10 and a 10-bit pixel format.',
       av1: 'AV1 (libaom). The best compression here, but by far the slowest to encode.',
@@ -85,24 +85,24 @@ const help: Record<string, FieldHelp> = {
       veryslow: 'Smallest files for the time spent. Good for archiving.',
       medium: 'The x264/x265 default. A sensible balance.',
       ultrafast: 'Fastest, with much larger files. Handy for quick tests or live capture.',
-      hp: 'NVENC high performance: favours speed.',
-      hq: 'NVENC high quality: favours quality.',
-      bd: 'NVENC Blu-ray disc compatible settings.',
-      lossless: 'NVENC lossless. Very large files.',
-      losslesshp: 'NVENC lossless, favouring speed.',
+      p1: 'NVENC\'s fastest preset, with the largest files.',
+      p4: 'NVENC\'s default. A sensible balance.',
+      p7: 'NVENC\'s slowest preset and best compression. Still far faster than x264 or x265.',
     },
   },
   'video-pass': {
     text: 'How the encoder decides how many bits to spend.',
     values: {
-      crf: 'Constant quality: you pick a quality level and the file size follows. Best for most encodes.',
-      '1': 'One pass aiming at the bit rate below. Predictable size, but quality varies with the content. Without a bit rate, x264 and x265 fall back to their default quality.',
+      crf: 'Constant quality: you pick a quality level and the file size follows. Best for most encodes. For NVENC this is -rc vbr with -cq.',
+      '1': 'One pass aiming at the bit rate below. Predictable size, but quality varies with the content. Without a bit rate, x264 and x265 fall back to their default quality. For NVENC this is VBR.',
       '2': 'Two passes: the first analyses the video, the second hits the bit rate as efficiently as possible. Best when you need a specific file size. Needs a bit rate.',
+      cbr: 'NVENC constant bit rate (-rc cbr): holds the bit rate steady for streaming, at a cost in quality. Needs a bit rate.',
+      constqp: 'NVENC constant QP (-rc constqp): the same quantizer for every frame, set on the QP slider. Simple but wasteful; constant quality is usually better.',
     },
   },
   'video-crf': {
     flag: '-crf',
-    text: 'Quality level for constant-quality encoding. Lower is better quality and a bigger file. For x264, 23 is the default and about 18 looks visually lossless; x265 defaults to 28. Each step of about 6 roughly halves or doubles the file size.',
+    text: 'Quality level for constant-quality encoding. Lower is better quality and a bigger file. For x264, 23 is the default and about 18 looks visually lossless; x265 defaults to 28. Each step of about 6 roughly halves or doubles the file size. For NVENC it sets -cq, where 0 leaves the choice to the encoder, or -qp in constant QP mode.',
   },
 
   // Video: bit rate.
@@ -157,7 +157,7 @@ const help: Record<string, FieldHelp> = {
   },
   'video-tune': {
     flag: '-tune',
-    text: 'Adjusts x264 and x265 for a type of content. The list shows the tunes the chosen encoder accepts; other encoders have none.',
+    text: 'Adjusts the encoder for a type of content, or for NVENC, a goal such as quality or latency. The list shows the tunes the chosen encoder accepts; other encoders have none.',
     values: {
       none: 'No tuning. Right for most content.',
       film: 'High-quality live-action footage.',
@@ -166,6 +166,11 @@ const help: Record<string, FieldHelp> = {
       stillimage: 'Slideshow-like content that barely moves.',
       fastdecode: 'Turns off features that are expensive to decode, for weak playback devices.',
       zerolatency: 'Live streaming and video calls: no frames held back for look-ahead.',
+      hq: 'NVENC high quality. The encoder default.',
+      uhq: 'NVENC ultra high quality: slower, for the best HEVC quality. Needs FFmpeg 7.1 or later and a recent GPU and driver.',
+      ll: 'NVENC low latency, for live streaming.',
+      ull: 'NVENC ultra low latency, for video calls and game streaming.',
+      lossless: 'NVENC lossless. Very large files.',
     },
   },
   'video-profile': {
@@ -187,6 +192,31 @@ const help: Record<string, FieldHelp> = {
   'video-level': {
     flag: '-level',
     text: 'Caps resolution, frame rate and bit rate so a specific device can decode the file. For example, 3.1 fits 720p and 4.0/4.1 fit 1080p30. Leave it on None unless something requires it.',
+  },
+
+  // Video: NVENC.
+  'video-nvenc_multipass': {
+    flag: '-multipass',
+    text: 'Runs a first analysis pass inside the same encode, like two-pass for x264 but without a second command. Better bit allocation for a little speed.',
+    values: {
+      disabled: 'Single pass.',
+      qres: 'The first pass at quarter resolution: most of the benefit, cheaply.',
+      fullres: 'The first pass at full resolution: the most accurate, and the slowest.',
+    },
+  },
+  'video-nvenc_aq': {
+    flag: '-spatial-aq / -temporal-aq',
+    text: 'Moves bits to where the eye notices them. Usually improves perceived quality at the same size.',
+    values: {
+      none: 'Off, the encoder default.',
+      spatial: 'Spends more on flat areas like skies and walls, where blocking shows, and less on busy detail.',
+      temporal: 'Spends more on parts of the picture that stay still, which later frames reuse. Needs a Turing or newer GPU.',
+      both: 'Spatial and temporal together.',
+    },
+  },
+  'video-nvenc_lookahead': {
+    flag: '-rc-lookahead',
+    text: 'Frames the encoder looks ahead to place keyframes and B-frames and spread bits. Around 20 to 32 helps quality at some speed cost. Empty or 0 keeps the preset default; P6 and P7 already look ahead.',
   },
 
   // Video: size.

@@ -26,6 +26,9 @@ interface Video {
   tune: string;
   profile: string;
   level: string;
+  nvenc_multipass: string;
+  nvenc_aq: string;
+  nvenc_lookahead: string;
   faststart: boolean;
   size: string;
   width: string;

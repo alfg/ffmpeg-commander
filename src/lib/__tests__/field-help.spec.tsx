@@ -13,7 +13,8 @@ const openTab = (user: ReturnType<typeof userEvent.setup>, name: string) =>
 // Every control id in the editor. Only the active tab is mounted, so visit each
 // one, with every conditional control switched on: clip times, custom size and
 // fit, the CRF slider, the custom audio bit rate, and the daemon address, plus
-// the orientation that replaces width and height for the preset sizes.
+// the orientation that replaces width and height for the preset sizes and the
+// NVENC settings.
 async function collectControlIds() {
   window.history.replaceState(
     null,
@@ -36,6 +37,8 @@ async function collectControlIds() {
     // Orientation only shows for the preset sizes, not Custom.
     if (tab === 'Video') {
       await user.selectOptions(screen.getByLabelText('Size'), '1280')
+      collect()
+      await user.selectOptions(screen.getByLabelText('Codec', { selector: '#video-codec' }), 'hevc_nvenc')
       collect()
     }
   }
