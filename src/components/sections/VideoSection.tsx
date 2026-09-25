@@ -343,7 +343,7 @@ export default function VideoSection({ value, container, copyConflict, onChange 
                 options={form.fits}
                 onChange={(v) => onChange({ fit: v === 'true' })}
               />
-           </Field>
+            </Field>
           </>
         ) : (
           <Field label="Orientation" htmlFor="video-format">

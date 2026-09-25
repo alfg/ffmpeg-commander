@@ -172,7 +172,7 @@ const form = {
     { name: '3', value: '3', supported: ['vp9'] },
   ],
   nvencHevcLevels: [
-    { name: 'Auto', value: 'auto' },
+    { name: 'None / Auto', value: 'none' },
     { name: '1.0', value: '1.0' },
     { name: '2.0', value: '2.0' },
     { name: '2.1', value: '2.1' },

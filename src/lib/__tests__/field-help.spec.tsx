@@ -12,8 +12,9 @@ const openTab = (user: ReturnType<typeof userEvent.setup>, name: string) =>
 
 // Every control id in the editor. Only the active tab is mounted, so visit each
 // one, with every conditional control switched on: clip times, custom size and
-// fit, the CRF slider, the custom audio bit rate, and the daemon address, plus
-// the orientation that replaces width and height for the preset sizes.
+// fit, the CRF slider, HEVC NVENC controls, the custom audio bit rate, and the
+// daemon address, plus the orientation that replaces width and height for the
+// preset sizes.
 async function collectControlIds() {
   window.history.replaceState(
     null,
@@ -31,14 +32,31 @@ async function collectControlIds() {
   const collect = () =>
     document.querySelectorAll('input[id], select[id], textarea[id]').forEach((el) => ids.add(el.id))
   for (const tab of ['Format', 'Video', 'Audio', 'Filters', 'Options']) {
-    await openTab(user, tab)
-    collect()
+  await openTab(user, tab)
+  collect()
+
+  if (tab === 'Video') {
     // Orientation only shows for the preset sizes, not Custom.
-    if (tab === 'Video') {
-      await user.selectOptions(screen.getByLabelText('Size'), '1280')
-      collect()
-    }
+    await user.selectOptions(screen.getByLabelText('Size'), '1280')
+    collect()
+
+    // HEVC NVENC exposes encoder-specific controls.
+    await user.selectOptions(screen.getByLabelText('Codec'), 'hevc_nvenc')
+    collect()
+
+    // CQ is only visible with VBR rate control.
+    await user.selectOptions(screen.getByLabelText('Rate control'), 'vbr')
+    collect()
+
+    // QP is only visible with Constant QP rate control.
+    await user.selectOptions(screen.getByLabelText('Rate control'), 'constqp')
+    collect()
+
+    // AQ strength is only visible when Spatial AQ is enabled.
+    await user.selectOptions(screen.getByLabelText('Spatial AQ'), '1')
+    collect()
   }
+}
   return ids
 }
 

@@ -268,7 +268,7 @@ function setHevcNvencFlags(options: IFFmpegOptions): string[] {
     flags.push('-rc', options.nvencRc);
   }
 
-  if (options.nvencRc === 'vbr'&& isSet(options.nvencCq)) {
+  if (options.nvencRc === 'vbr' && isSet(options.nvencCq)) {
     flags.push('-cq', options.nvencCq);
   }
 
@@ -345,7 +345,6 @@ function setVideoFlags(options: IFFmpegOptions) {
     const arg = [`-${options.vcodec.replace('lib', '')}-params`, options.codecOptions];
     flags.push(...arg);
   }
-// TODO: Je crois que ca devrait être dans le IF hevc_nvenc.
   flags.push(...setHevcNvencFlags(options));
 
   return flags;

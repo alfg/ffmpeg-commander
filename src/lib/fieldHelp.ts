@@ -90,6 +90,13 @@ const help: Record<string, FieldHelp> = {
       bd: 'NVENC Blu-ray disc compatible settings.',
       lossless: 'NVENC lossless. Very large files.',
       losslesshp: 'NVENC lossless, favouring speed.',
+      p1: 'Fastest NVENC preset. Lowest compression efficiency and lowest encoder latency.',
+      p2: 'Very fast NVENC preset with slightly better compression than P1.',
+      p3: 'Fast NVENC preset that favours encoding speed.',
+      p4: 'Default NVENC preset. Balanced speed and compression efficiency.',
+      p5: 'Slower NVENC preset with improved compression efficiency.',
+      p6: 'High-quality NVENC preset. Slower, with better compression efficiency.',
+      p7: 'Slowest NVENC preset. Highest compression efficiency and quality for a given bit rate.',
     },
   },
   'video-pass': {
@@ -157,7 +164,7 @@ const help: Record<string, FieldHelp> = {
   },
   'video-tune': {
     flag: '-tune',
-    text: 'Adjusts x264 and x265 for a type of content. The list shows the tunes the chosen encoder accepts; other encoders have none.',
+    text: 'Adjusts encoder behaviour for a particular workload or quality goal. The available choices depend on the selected encoder.',
     values: {
       none: 'No tuning. Right for most content.',
       film: 'High-quality live-action footage.',
@@ -166,6 +173,11 @@ const help: Record<string, FieldHelp> = {
       stillimage: 'Slideshow-like content that barely moves.',
       fastdecode: 'Turns off features that are expensive to decode, for weak playback devices.',
       zerolatency: 'Live streaming and video calls: no frames held back for look-ahead.',
+      hq: 'High-quality NVENC tuning for normal offline encoding.',
+      uhq: 'Ultra-high-quality NVENC tuning when supported by the FFmpeg/NVENC SDK build.',
+      ll: 'Low-latency tuning for streaming and interactive workloads.',
+      ull: 'Ultra-low-latency tuning where minimizing delay is more important than compression efficiency.',
+      lossless: 'Lossless NVENC encoding. Produces very large files with no encoder quality loss.',
     },
   },
   'video-profile': {
@@ -187,6 +199,143 @@ const help: Record<string, FieldHelp> = {
   'video-level': {
     flag: '-level',
     text: 'Caps resolution, frame rate and bit rate so a specific device can decode the file. For example, 3.1 fits 720p and 4.0/4.1 fit 1080p30. Leave it on None unless something requires it.',
+  },
+
+  'video-nvenc-rc': {
+    flag: '-rc',
+    text: 'Selects the NVIDIA NVENC rate-control mode. Leave it on Auto to let the selected preset choose the encoder default.',
+    values: {
+      none: 'Use the encoder or preset default.',
+      vbr: 'Variable bit rate. Allows the bit rate to vary according to scene complexity and can be combined with CQ.',
+      cbr: 'Constant bit rate. Tries to keep the output near the requested bit rate; useful for streaming and bandwidth-limited delivery.',
+      constqp: 'Constant quantizer. Uses a fixed QP value instead of targeting a bit rate.',
+    },
+  },
+
+  'video-nvenc-cq': {
+    flag: '-cq',
+    text: 'Target constant-quality level for NVENC VBR mode. Lower values mean higher quality and larger files. 0 lets NVENC choose automatically.',
+  },
+
+  'video-nvenc-qp': {
+    flag: '-qp',
+    text: 'Constant quantizer used with Constant QP rate control. Lower values mean higher quality and larger files.',
+  },
+
+  'video-nvenc-multipass': {
+    flag: '-multipass',
+    text: 'Controls NVENC multipass analysis. Extra analysis can improve bit allocation but uses more GPU resources.',
+    values: {
+      disabled: 'Single-pass encoding. Fastest and uses the fewest GPU resources.',
+      qres: 'Two-pass analysis with the first pass at quarter resolution. Lower overhead than full-resolution multipass.',
+      fullres: 'Two-pass analysis at full resolution. Highest analysis cost and potentially better bit allocation.',
+    },
+  },
+
+  'video-nvenc-tier': {
+    flag: '-tier',
+    text: 'Sets the HEVC tier. Leave it on Auto unless a playback device or delivery specification requires a particular tier.',
+    values: {
+      none: 'Let NVENC choose the tier.',
+      main: 'HEVC Main tier. Suitable for most normal bit rates and playback devices.',
+      high: 'HEVC High tier. Allows higher bit rates at supported levels.',
+    },
+  },
+
+  'video-nvenc-lookahead': {
+    flag: '-rc-lookahead',
+    text: 'Number of future frames NVENC examines when making rate-control decisions. Higher values may improve quality but increase latency and GPU memory use. 0 disables lookahead.',
+  },
+
+  'video-nvenc-spatial-aq': {
+    flag: '-spatial-aq',
+    text: 'Enables spatial adaptive quantization, allowing NVENC to redistribute bits within each frame according to visual complexity.',
+    values: {
+      default: 'Use the encoder default.',
+      '1': 'Enable spatial adaptive quantization.',
+      '0': 'Disable spatial adaptive quantization.',
+    },
+  },
+
+  'video-nvenc-aq-strength': {
+    flag: '-aq-strength',
+    text: 'Controls the strength of spatial adaptive quantization. Higher values redistribute bits more aggressively. Only applies when Spatial AQ is enabled.',
+  },
+
+  'video-nvenc-temporal-aq': {
+    flag: '-temporal-aq',
+    text: 'Enables temporal adaptive quantization, allowing NVENC to redistribute bits between frames based on motion and temporal importance.',
+    values: {
+      default: 'Use the encoder default.',
+      '1': 'Enable temporal adaptive quantization.',
+      '0': 'Disable temporal adaptive quantization.',
+    },
+  },
+
+  'video-nvenc-b-ref': {
+    flag: '-b_ref_mode',
+    text: 'Controls whether B-frames may also be used as reference frames. This can improve compression efficiency but may reduce decoder compatibility.',
+    values: {
+      none: 'Let NVENC choose the B-frame reference mode.',
+      disabled: 'Do not use B-frames as reference frames.',
+      each: 'Allow each B-frame to be used as a reference.',
+      middle: 'Use only the middle B-frame as a reference.',
+    },
+  },
+
+  'video-nvenc-zero-latency': {
+    flag: '-zerolatency',
+    text: 'Configures NVENC for low-latency operation by avoiding buffering that would delay encoded frames. Useful for live streaming or interactive video.',
+    values: {
+      default: 'Use the encoder default.',
+      '1': 'Enable zero-latency behavior.',
+      '0': 'Disable zero-latency behavior.',
+    },
+  },
+
+  'video-nvenc-strict-gop': {
+    flag: '-strict_gop',
+    text: 'Attempts to keep each GOP close to the configured rate-control limits instead of allowing more variation between GOPs.',
+    values: {
+      default: 'Use the encoder default.',
+      '1': 'Enable strict GOP rate control.',
+      '0': 'Disable strict GOP rate control.',
+    },
+  },
+
+  'video-nvenc-no-scenecut': {
+    flag: '-no-scenecut',
+    text: 'Controls automatic insertion of I-frames at detected scene changes.',
+    values: {
+      default: 'Use the encoder default.',
+      '0': 'Allow automatic I-frames at scene changes.',
+      '1': 'Disable automatic scene-cut I-frames.',
+    },
+  },
+
+  'video-nvenc-b-adapt': {
+    flag: '-b_adapt',
+    text: 'Lets NVENC adaptively decide where B-frames are useful instead of following only a fixed B-frame pattern.',
+    values: {
+      default: 'Use the encoder default.',
+      '1': 'Enable adaptive B-frame placement.',
+      '0': 'Disable adaptive B-frame placement.',
+    },
+  },
+
+  'video-nvenc-weighted-pred': {
+    flag: '-weighted_pred',
+    text: 'Enables weighted prediction, which can improve compression for fades and gradual brightness changes.',
+    values: {
+      default: 'Use the encoder default.',
+      '1': 'Enable weighted prediction.',
+      '0': 'Disable weighted prediction.',
+    },
+  },
+
+  'video-nvenc-gpu': {
+    flag: '-gpu',
+    text: 'Selects which NVIDIA GPU NVENC should use. Leave empty to use the default GPU. GPU numbering starts at 0.',
   },
 
   // Video: size.
