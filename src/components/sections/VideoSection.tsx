@@ -46,6 +46,8 @@ const encodeFields = [
 // drive a two-pass encode: pass 2 fails to open the encoder.
 const twoPassNeedsBitrate = ['x264', 'x265']
 
+const nvencCodecs = ['h264_nvenc', 'hevc_nvenc']
+
 export default function VideoSection({ value, container, copyConflict, onChange }: Props) {
   // Mirrors the Vue app: the codec list narrows to what the container supports,
   // and the encoder presets narrow to what the codec supports.
@@ -53,8 +55,20 @@ export default function VideoSection({ value, container, copyConflict, onChange 
   const presets = filterSupported(form.presets as SupportedOption[], value.codec)
   const profiles = filterSupported(form.profiles as SupportedOption[], value.codec)
   const tunes = filterSupported(form.tunes as SupportedOption[], value.codec)
-  const missingBitrate =
-    value.pass === '2' && twoPassNeedsBitrate.includes(value.codec) && !value.bitrate
+  const levels = filterSupported(form.levels as SupportedOption[], value.codec)
+  const gated: Partial<Record<keyof Video, SupportedOption[]>> = { profile: profiles, tune: tunes, level: levels }
+  const nvenc = nvencCodecs.includes(value.codec)
+  // NVENC reuses the pass field and the CRF slider for its own rate control:
+  // the slider is CQ, or QP in constant QP mode.
+  const quality = nvenc
+    ? { crf: 'CQ', constqp: 'QP' }[value.pass]
+    : value.pass === 'crf' ? 'CRF' : undefined
+  const bitrateError =
+    value.pass === 'cbr' && !value.bitrate
+      ? 'CBR needs a target bit rate.'
+      : value.pass === '2' && twoPassNeedsBitrate.includes(value.codec) && !value.bitrate
+        ? 'Two-pass needs a target bit rate.'
+        : undefined
   const set = (key: keyof Video) => (v: string) => onChange({ [key]: v } as Partial<Video>)
 
   // "None" is -vn: there is no video stream left to configure, so every control
@@ -91,15 +105,15 @@ export default function VideoSection({ value, container, copyConflict, onChange 
           <Select
             id="video-pass"
             value={value.pass}
-            options={form.passOptions}
+            options={nvenc ? form.nvencRateControls : form.passOptions}
             onChange={set('pass')}
           />
         </Field>
-        {value.pass === 'crf' ? (
+        {quality ? (
           <div className="col-span-2 sm:col-span-3">
             <Range
               id="video-crf"
-              label="CRF"
+              label={quality}
               value={String(value.crf ?? '')}
               min={0}
               max={51}
@@ -117,7 +131,7 @@ export default function VideoSection({ value, container, copyConflict, onChange 
               key={f.key}
               label={f.label}
               htmlFor={`video-${f.key}`}
-              error={f.key === 'bitrate' && missingBitrate ? 'Two-pass needs a target bit rate.' : undefined}
+              error={f.key === 'bitrate' ? bitrateError : undefined}
             >
               <Input
                 id={`video-${f.key}`}
@@ -135,12 +149,42 @@ export default function VideoSection({ value, container, copyConflict, onChange 
             <Select
               id={`video-${f.key}`}
               value={String(value[f.key])}
-              options={f.key === 'profile' ? profiles : f.key === 'tune' ? tunes : f.options}
+              options={gated[f.key] ?? f.options}
               onChange={set(f.key)}
             />
           </Field>
         ))}
       </Group>
+
+      {nvenc ? (
+        <Group title="NVENC">
+          <Field label="Multipass" htmlFor="video-nvenc_multipass">
+            <Select
+              id="video-nvenc_multipass"
+              value={value.nvenc_multipass}
+              options={form.nvencMultipass}
+              onChange={set('nvenc_multipass')}
+            />
+          </Field>
+          <Field label="Adaptive quantization" htmlFor="video-nvenc_aq">
+            <Select
+              id="video-nvenc_aq"
+              value={value.nvenc_aq}
+              options={form.nvencAq}
+              onChange={set('nvenc_aq')}
+            />
+          </Field>
+          <Field label="Lookahead" htmlFor="video-nvenc_lookahead">
+            <Input
+              id="video-nvenc_lookahead"
+              type="number"
+              value={value.nvenc_lookahead}
+              placeholder="Preset default"
+              onChange={set('nvenc_lookahead')}
+            />
+          </Field>
+        </Group>
+      ) : null}
 
       <Group title="Size">
         <Field label="Faststart" htmlFor="video-faststart">

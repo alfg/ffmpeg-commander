@@ -1,4 +1,22 @@
 // https://en.wikipedia.org/wiki/Comparison_of_video_container_formats
+const videoCodecs = [
+  { name: 'x264', value: 'x264', supported: ['mp4', 'mkv', 'avi'] },
+  { name: 'x265', value: 'x265', supported: ['mp4', 'mkv', 'avi'] },
+  { name: 'h264_nvenc (Nvidia NVENC)', value: 'h264_nvenc', supported: ['mp4', 'mkv'] },
+  { name: 'hevc_nvenc (Nvidia NVENC)', value: 'hevc_nvenc', supported: ['mp4', 'mkv'] },
+  { name: 'h264_videotoolbox (Apple VideoToolbox)', value: 'h264_videotoolbox', supported: ['mp4', 'mkv'] },
+  { name: 'hevc_videotoolbox (Apple VideoToolbox)', value: 'hevc_videotoolbox', supported: ['mp4', 'mkv'] },
+  { name: 'AV1', value: 'av1', supported: ['mp4', 'mkv'] },
+  { name: 'VP8', value: 'vp8', supported: ['mp4', 'webm', 'mkv', 'avi'] },
+  { name: 'VP9', value: 'vp9', supported: ['mp4', 'webm', 'mkv', 'avi'] },
+  { name: 'copy', value: 'copy', supported: null },
+  { name: 'None', value: 'none', supported: null },
+];
+
+// Levels H.264 defines and HEVC does not. hevc_nvenc rejects them, so they are
+// offered to every other codec.
+const notHevcNvenc = videoCodecs.map((c) => c.value).filter((c) => c !== 'hevc_nvenc');
+
 const form = {
   protocols: [
     { name: 'File', value: 'movie.mp4' },
@@ -33,19 +51,7 @@ const form = {
     { name: 'Enabled', value: true },
   ],
   codecs: {
-    video: [
-      { name: 'x264', value: 'x264', supported: ['mp4', 'mkv', 'avi'] },
-      { name: 'x265', value: 'x265', supported: ['mp4', 'mkv', 'avi'] },
-      { name: 'h264_nvenc (Nvidia NVENC)', value: 'h264_nvenc', supported: ['mp4'] },
-      { name: 'hevc_nvenc (Nvidia NVENC)', value: 'hevc_nvenc', supported: ['mp4'] },
-      { name: 'h264_videotoolbox (Apple VideoToolbox)', value: 'h264_videotoolbox', supported: ['mp4', 'mkv'] },
-      { name: 'hevc_videotoolbox (Apple VideoToolbox)', value: 'hevc_videotoolbox', supported: ['mp4', 'mkv'] },
-      { name: 'AV1', value: 'av1', supported: ['mp4', 'mkv'] },
-      { name: 'VP8', value: 'vp8', supported: ['mp4', 'webm', 'mkv', 'avi'] },
-      { name: 'VP9', value: 'vp9', supported: ['mp4', 'webm', 'mkv', 'avi'] },
-      { name: 'copy', value: 'copy', supported: null },
-      { name: 'None', value: 'none', supported: null },
-    ],
+    video: videoCodecs,
     audio: [
       { name: 'AAC', value: 'aac', supported: ['mp4', 'mp3', 'm4a', 'mkv', 'avi', 'flv'] },
       { name: 'AC3', value: 'ac3', supported: ['mp4', 'mkv', 'avi'] },
@@ -64,24 +70,50 @@ const form = {
     { name: 'Placebo', value: 'placebo', supported: ['x264', 'x265'] },
     { name: 'Very Slow', value: 'veryslow', supported: ['x264', 'x265'] },
     { name: 'Slower', value: 'slower', supported: ['x264', 'x265'] },
-    { name: 'Slow', value: 'slow', supported: ['x264', 'x265', 'h264_nvenc', 'hevc_nvenc'] },
-    { name: 'Medium', value: 'medium', supported: ['x264', 'x265', 'h264_nvenc', 'hevc_nvenc'] },
-    { name: 'Fast', value: 'fast', supported: ['x264', 'x265', 'h264_nvenc', 'hevc_nvenc'] },
+    { name: 'Slow', value: 'slow', supported: ['x264', 'x265'] },
+    { name: 'Medium', value: 'medium', supported: ['x264', 'x265'] },
+    { name: 'Fast', value: 'fast', supported: ['x264', 'x265'] },
     { name: 'Faster', value: 'faster', supported: ['x264', 'x265'] },
     { name: 'Very Fast', value: 'veryfast', supported: ['x264', 'x265'] },
     { name: 'Super Fast', value: 'superfast', supported: ['x264', 'x265'] },
     { name: 'Ultra Fast', value: 'ultrafast', supported: ['x264', 'x265'] },
-    { name: 'hp', value: 'hp', supported: ['h264_nvenc', 'hevc_nvenc'] },
-    { name: 'hq', value: 'hq', supported: ['h264_nvenc', 'hevc_nvenc'] },
-    { name: 'bd', value: 'bd', supported: ['h264_nvenc', 'hevc_nvenc'] },
-    { name: 'lossless', value: 'lossless', supported: ['h264_nvenc', 'hevc_nvenc'] },
-    { name: 'losslesshp', value: 'losslesshp', supported: ['h264_nvenc', 'hevc_nvenc'] },
+    // NVENC's own scale, slowest last. ffmpeg still takes slow, medium and fast
+    // for NVENC, but as aliases that also force the pass count, overriding
+    // Multipass; reconcile moves them and the removed legacy presets onto these.
+    { name: 'P1 (fastest)', value: 'p1', supported: ['h264_nvenc', 'hevc_nvenc'] },
+    { name: 'P2', value: 'p2', supported: ['h264_nvenc', 'hevc_nvenc'] },
+    { name: 'P3', value: 'p3', supported: ['h264_nvenc', 'hevc_nvenc'] },
+    { name: 'P4 (default)', value: 'p4', supported: ['h264_nvenc', 'hevc_nvenc'] },
+    { name: 'P5', value: 'p5', supported: ['h264_nvenc', 'hevc_nvenc'] },
+    { name: 'P6', value: 'p6', supported: ['h264_nvenc', 'hevc_nvenc'] },
+    { name: 'P7 (best quality)', value: 'p7', supported: ['h264_nvenc', 'hevc_nvenc'] },
     { name: 'None', value: 'none' },
   ],
   passOptions: [
     { name: 'CRF', value: 'crf' },
     { name: '1 Pass', value: '1' },
     { name: '2 Pass', value: '2' },
+  ],
+  // Rate control for the NVENC encoders, stored in the same video.pass field.
+  // 'crf' and '1' keep their meaning across a codec change: constant quality
+  // (-cq, on the CRF slider) and a bit rate target. NVENC has no two-command
+  // encode; Multipass does that inside the encoder.
+  nvencRateControls: [
+    { name: 'Constant quality (CQ)', value: 'crf' },
+    { name: 'VBR', value: '1' },
+    { name: 'CBR', value: 'cbr' },
+    { name: 'Constant QP', value: 'constqp' },
+  ],
+  nvencMultipass: [
+    { name: 'Off', value: 'disabled' },
+    { name: 'Quarter resolution', value: 'qres' },
+    { name: 'Full resolution', value: 'fullres' },
+  ],
+  nvencAq: [
+    { name: 'Off', value: 'none' },
+    { name: 'Spatial', value: 'spatial' },
+    { name: 'Temporal', value: 'temporal' },
+    { name: 'Spatial and temporal', value: 'both' },
   ],
   pixelFormats: [
     { name: 'auto', value: 'auto' },
@@ -129,7 +161,7 @@ const form = {
     { name: '500%', value: '.2*PTS' },
   ],
   // Gated by codec like presets and profiles. x265 has no film or stillimage
-  // tune, and the other encoders here take none of these.
+  // tune, NVENC has its own set, and the other encoders here take none.
   tunes: [
     { name: 'None', value: 'none' },
     { name: 'Film', value: 'film', supported: ['x264'] },
@@ -138,6 +170,12 @@ const form = {
     { name: 'Still Image', value: 'stillimage', supported: ['x264'] },
     { name: 'Fast Decode', value: 'fastdecode', supported: ['x264', 'x265'] },
     { name: 'Zero Latency', value: 'zerolatency', supported: ['x264', 'x265'] },
+    { name: 'High Quality', value: 'hq', supported: ['h264_nvenc', 'hevc_nvenc'] },
+    // Needs FFmpeg 7.1 or later; hevc_nvenc only.
+    { name: 'Ultra High Quality', value: 'uhq', supported: ['hevc_nvenc'] },
+    { name: 'Low Latency', value: 'll', supported: ['h264_nvenc', 'hevc_nvenc'] },
+    { name: 'Ultra Low Latency', value: 'ull', supported: ['h264_nvenc', 'hevc_nvenc'] },
+    { name: 'Lossless', value: 'lossless', supported: ['h264_nvenc', 'hevc_nvenc'] },
   ],
   profiles: [
     { name: 'None', value: 'none' },
@@ -154,18 +192,18 @@ const form = {
   levels: [
     { name: 'None', value: 'none' },
     { name: '1.0', value: '1.0' },
-    { name: '1.1', value: '1.1' },
-    { name: '1.2', value: '1.2' },
-    { name: '1.3', value: '1.3' },
+    { name: '1.1', value: '1.1', supported: notHevcNvenc },
+    { name: '1.2', value: '1.2', supported: notHevcNvenc },
+    { name: '1.3', value: '1.3', supported: notHevcNvenc },
     { name: '2.0', value: '2.0' },
     { name: '2.1', value: '2.1' },
-    { name: '2.2', value: '2.2' },
+    { name: '2.2', value: '2.2', supported: notHevcNvenc },
     { name: '3.0', value: '3.0' },
     { name: '3.1', value: '3.1' },
-    { name: '3.2', value: '3.2' },
+    { name: '3.2', value: '3.2', supported: notHevcNvenc },
     { name: '4.0', value: '4.0' },
     { name: '4.1', value: '4.1' },
-    { name: '4.2', value: '4.2' },
+    { name: '4.2', value: '4.2', supported: notHevcNvenc },
     { name: '5.0', value: '5.0' },
     { name: '5.1', value: '5.1' },
     { name: '5.2', value: '5.2' },

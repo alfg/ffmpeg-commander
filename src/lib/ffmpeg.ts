@@ -52,6 +52,9 @@ function quotePath(path: string): string {
 // 0. Divided last, because 1 + -33 / 100 is 0.6699999999999999 in floating point.
 const eqFactor = (percent: number) => (percent + 100) / 100;
 
+// NVENC takes its own rate-control flags in place of -crf and -pass.
+const isNvenc = (options: IFFmpegOptions) => ['h264_nvenc', 'hevc_nvenc'].includes(options.vcodec);
+
 // "Mute" in the quality list drops the audio track, the same as codec "None".
 const audioDisabled = (options: IFFmpegOptions) => options.acodec === 'none' || options.quality === 'mute';
 
@@ -253,6 +256,38 @@ function set2Pass(flags: string[], options: IFFmpegOptions) {
   return copy;
 }
 
+// Rate control and the NVENC-only settings. The CRF slider carries the CQ or QP
+// value. -rc is spelled out even though -cq and -qp imply it, so the command
+// says which mode it is in.
+function setNvencFlags(options: IFFmpegOptions): string[] {
+  const flags: string[] = [];
+
+  if (options.pass === 'crf' && isSet(options.crf)) {
+    flags.push('-rc', 'vbr', '-cq', options.crf);
+  } else if (options.pass === 'cbr') {
+    flags.push('-rc', 'cbr');
+  } else if (options.pass === 'constqp' && isSet(options.crf)) {
+    flags.push('-rc', 'constqp', '-qp', options.crf);
+  }
+
+  if (isSet(options.nvencMultipass) && options.nvencMultipass !== 'disabled') {
+    flags.push('-multipass', options.nvencMultipass);
+  }
+
+  if (options.nvencAq === 'spatial' || options.nvencAq === 'both') {
+    flags.push('-spatial-aq', '1');
+  }
+  if (options.nvencAq === 'temporal' || options.nvencAq === 'both') {
+    flags.push('-temporal-aq', '1');
+  }
+
+  if (parseInt(options.nvencLookahead, 10) > 0) {
+    flags.push('-rc-lookahead', String(parseInt(options.nvencLookahead, 10)));
+  }
+
+  return flags;
+}
+
 function setFormatFlags(options: IFFmpegOptions) {
   return setFlagsFromMap(formatOptionsMap, options);
 }
@@ -269,8 +304,10 @@ function setVideoFlags(options: IFFmpegOptions) {
   //
   // Set more complex options that can't be set from the videoOptionsMap.
   //
-  // 0 is a real value: lossless for x264.
-  if (options.pass === 'crf' && isSet(options.crf)) {
+  if (isNvenc(options)) {
+    flags.push(...setNvencFlags(options));
+  } else if (options.pass === 'crf' && isSet(options.crf)) {
+    // 0 is a real value: lossless for x264.
     const arg = ['-crf', options.crf];
     flags.push(...arg);
   }
@@ -370,8 +407,8 @@ function build(opt: IFFmpegOptions): string {
     flags.push(`-af "${af}"`);
   }
 
-  // Set 2 pass output if option is set.
-  if (options.pass === '2') {
+  // Set 2 pass output if option is set. NVENC does its passes internally.
+  if (options.pass === '2' && !isNvenc(options)) {
     const copy = set2Pass(flags, options);
     flags.push(...copy);
   }

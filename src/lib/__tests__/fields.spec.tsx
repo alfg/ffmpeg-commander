@@ -281,7 +281,18 @@ describe('tunes follow the codec', () => {
     render(<App />)
     await openTab(user, 'Video')
 
-    await user.selectOptions(screen.getByLabelText('Codec', { selector: '#video-codec' }), 'h264_nvenc')
+    await user.selectOptions(screen.getByLabelText('Codec', { selector: '#video-codec' }), 'h264_videotoolbox')
     expect(tuneOptions()).toEqual(['none'])
+  })
+
+  it('offers the NVENC tunes, with uhq for HEVC only', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    await openTab(user, 'Video')
+
+    await user.selectOptions(screen.getByLabelText('Codec', { selector: '#video-codec' }), 'h264_nvenc')
+    expect(tuneOptions()).toEqual(['none', 'hq', 'll', 'ull', 'lossless'])
+    await user.selectOptions(screen.getByLabelText('Codec', { selector: '#video-codec' }), 'hevc_nvenc')
+    expect(tuneOptions()).toEqual(['none', 'hq', 'uhq', 'll', 'ull', 'lossless'])
   })
 })

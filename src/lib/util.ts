@@ -33,6 +33,9 @@ function transform(formData: IFFMpegOptionsForm) {
     tune: video.tune,
     profile: video.profile,
     level: video.level,
+    nvencMultipass: video.nvenc_multipass,
+    nvencAq: video.nvenc_aq,
+    nvencLookahead: video.nvenc_lookahead,
     faststart: video.faststart,
     size: video.size,
     width: video.width,
@@ -104,6 +107,9 @@ function transformToJSON(formData: IFFMpegOptionsForm) {
       tune: video.tune,
       profile: video.profile,
       level: video.level,
+      nvenc_multipass: video.nvenc_multipass,
+      nvenc_aq: video.nvenc_aq,
+      nvenc_lookahead: video.nvenc_lookahead,
       faststart: video.faststart,
       size: video.size,
       width: video.width,
@@ -167,6 +173,9 @@ function transformFromQueryParams(form: IFFMpegOptionsForm, query: {[key: string
   video.tune = query['video.tune'] || video.tune;
   video.profile = query['video.profile'] || video.profile;
   video.level = query['video.level'] || video.level;
+  video.nvenc_multipass = query['video.nvenc_multipass'] || video.nvenc_multipass;
+  video.nvenc_aq = query['video.nvenc_aq'] || video.nvenc_aq;
+  video.nvenc_lookahead = query['video.nvenc_lookahead'] || video.nvenc_lookahead;
   video.faststart = (query['video.faststart'] === 'true') || video.faststart;
   video.size = query['video.size'] || video.size;
   video.width = query['video.width'] || video.width;
@@ -210,7 +219,8 @@ function transformToQueryParams(form: IFFMpegOptionsForm) {
     ...(video.codec !== 'x264' && { 'video.codec': video.codec }),
     ...(video.preset !== 'none' && { 'video.preset': video.preset }),
     ...(video.pass !== '1' && { 'video.pass': video.pass }),
-    ...(video.pass === 'crf' && video.crf !== null && video.crf !== '' && { 'video.crf': video.crf }),
+    // The CRF slider also holds NVENC's constant QP.
+    ...((video.pass === 'crf' || video.pass === 'constqp') && video.crf !== null && video.crf !== '' && { 'video.crf': video.crf }),
     ...(video.bitrate && { 'video.bitrate': video.bitrate }),
     ...(video.minrate && { 'video.minrate': video.minrate }),
     ...(video.maxrate && { 'video.maxrate': video.maxrate }),
@@ -222,6 +232,9 @@ function transformToQueryParams(form: IFFMpegOptionsForm) {
     ...(video.tune !== 'none' && { 'video.tune': video.tune }),
     ...(video.profile !== 'none' && { 'video.profile': video.profile }),
     ...(video.level !== 'none' && { 'video.level': video.level }),
+    ...(video.nvenc_multipass !== 'disabled' && { 'video.nvenc_multipass': video.nvenc_multipass }),
+    ...(video.nvenc_aq !== 'none' && { 'video.nvenc_aq': video.nvenc_aq }),
+    ...(video.nvenc_lookahead && { 'video.nvenc_lookahead': video.nvenc_lookahead }),
     ...(video.faststart && { 'video.faststart': 'true' }),
     ...(video.size !== 'source' && { 'video.size': video.size }),
     ...(video.width !== '0' && video.size === 'custom' && { 'video.width': video.width }),
