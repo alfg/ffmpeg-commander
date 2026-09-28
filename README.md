@@ -85,6 +85,9 @@ npm run deploy
 
 See: https://github.com/alfg/ffmpegd
 
+`ffmpeg-commander` and `ffmpegd` share version numbers: releases with the same
+major.minor version (2.1.x with 2.1.x) speak the same payload format.
+
 The app connects to `ffmpegd` at `localhost:8080`. `ffmpegd` only accepts
 connections from a fixed list of origins, so the site you load
 `ffmpeg-commander` from must be on that list.
