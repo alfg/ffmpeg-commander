@@ -13,7 +13,13 @@ export default function Navbar() {
           aria-label="FFmpeg Commander"
           className="flex items-center gap-2.5 transition-opacity hover:opacity-90"
         >
-          <img src="/ffmpeg.svg" width="24" height="24" alt="" />
+          <img
+            src="/ffmpeg-commander-logo.png"
+            width="28"
+            height="28"
+            alt=""
+            className="-my-0.5"
+          />
           <span aria-hidden className="font-mono text-[13px] font-semibold tracking-tight sm:text-[15px]">
             <span className="text-terminal">❯</span> ffmpeg-commander
           </span>

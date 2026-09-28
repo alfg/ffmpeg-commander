@@ -20,6 +20,12 @@ describe('Navbar', () => {
     )
   })
 
+  it('uses the project logo rather than the FFmpeg mark', () => {
+    render(<Navbar />)
+    const logo = screen.getByRole('link', { name: 'FFmpeg Commander' }).querySelector('img')
+    expect(logo?.getAttribute('src')).toBe('/ffmpeg-commander-logo.png')
+  })
+
   it('keeps the GitHub badge in the same bar', () => {
     render(<Navbar />)
     expect(screen.getByRole('link', { name: /View this project on GitHub/ })).toBeTruthy()
