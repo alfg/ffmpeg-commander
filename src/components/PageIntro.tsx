@@ -1,5 +1,3 @@
-import ProductHuntBadge from './ProductHuntBadge'
-
 /**
  * The indexable copy from Home.vue.
  *
@@ -13,16 +11,13 @@ import ProductHuntBadge from './ProductHuntBadge'
  */
 export function PageHeading() {
   return (
-    <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-      <div>
-        <h1 className="text-base font-semibold tracking-tight">
-          FFmpeg Command Generator for Common Encoding Workflows
-        </h1>
-        <p className="text-sm text-muted">
-          Build FFmpeg commands without memorizing every flag.
-        </p>
-      </div>
-      <ProductHuntBadge />
+    <header>
+      <h1 className="text-base font-semibold tracking-tight">
+        FFmpeg Command Generator for Common Encoding Workflows
+      </h1>
+      <p className="text-sm text-muted">
+        Build FFmpeg commands without memorizing every flag.
+      </p>
     </header>
   )
 }

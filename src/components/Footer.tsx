@@ -1,4 +1,5 @@
 import pkg from '../../package.json'
+import ProductHuntBadge from './ProductHuntBadge'
 
 const links = [
   { href: 'https://github.com/alfg/ffmpeg-commander/issues', label: 'Report a Bug' },
@@ -24,6 +25,9 @@ export default function Footer() {
             alfg
           </a>
         </span>
+      </div>
+      <div className="mt-4">
+        <ProductHuntBadge />
       </div>
     </footer>
   )
